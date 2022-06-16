@@ -14,6 +14,6 @@ RUN apt update && \
 COPY ./.docker/default /etc/nginx/sites-available/default
 COPY --from=build /app/dist /var/www/html
 
-COPY ./start.sh /var/www/html
+COPY ./start.sh /bin/start.sh
 
-CMD [ "./var/www/html/start.sh" ]
+CMD [ "./bin/start.sh" ]
