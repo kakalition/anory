@@ -1,53 +1,38 @@
-FROM alpine:3.16
+FROM ubuntu:22.10
 
 WORKDIR /var/www/html
 
-RUN cat > /etc/apk/repositories << EOF; $(echo) \
-http://dl-cdn.alpinelinux.org/alpine/v3.16/main/ \
-http://dl-cdn.alpinelinux.org/alpine/v3.16/community/ \
-EOF
-
-RUN apk update 
-
-ADD https://php.hernandev.com/key/php-alpine.rsa.pub /etc/apk/keys/php-alpine.rsa.pub
-
-RUN apk --update-cache add ca-certificates && \
-  echo "https://php.hernandev.com/v3.15/php-8.1" >> /etc/apk/repositories
-
 # Essential
 RUN echo "UTC" > /etc/timezone
-RUN apk add --no-cache zip unzip curl supervisor 
-
-# Add bash
-RUN apk add bash
-RUN sed -i 's/bin\/ash/bin\/bash/g' /etc/passwd
 
 # Add PHP 9 dependencies
-RUN apk add --update-cache php \
-  php-common \
-  php-fpm \
-  php-pdo \
-  php-opcache \
-  php-zip \
-  php-phar \
-  php-iconv \
-  php-cli \
-  php-curl \
-  php-openssl \
-  php-mbstring \
-  php-tokenizer \
-  php-fileinfo \
-  php-json \
-  php-xml \
-  php-xmlwriter \
-  php-simplexml \
-  php-dom \
-  php-pdo_mysql \
-  php-pdo_sqlite \
-  php8-pecl-redis 
+RUN apt update
 
-# RUN rm /usr/bin/php
-# RUN ln -s /usr/bin/php81 /usr/bin/php 
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+RUN apt-get install -y tzdata
+
+RUN apt install -y \
+  php8.1 \
+  php8.1-common \
+  php8.1-fpm \
+  php8.1-pdo \
+  php8.1-opcache \
+  php8.1-zip \
+  php8.1-phar \
+  php8.1-iconv \
+  php8.1-cli \
+  php8.1-curl \
+  php8.1-mbstring \
+  php8.1-tokenizer \
+  php8.1-fileinfo \
+  php-json \
+  php8.1-xml \
+  php8.1-xmlwriter \
+  php8.1-simplexml \
+  php8.1-dom \
+  openssl \
+  php-redis 
 
 # Install composer
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
@@ -77,11 +62,17 @@ COPY .docker/php.ini-production /etc/php8/php.ini
 # RUN ln -sf /dev/stdout /var/log/nginx/access.log
 # RUN ln -sf /dev/stdout /var/log/nginx/error.log
 
+RUN apt install zip unzip
+
 # Build
 COPY . .
 RUN composer update
 RUN composer install --no-dev
-RUN chown -R nobody:nobody /var/www/html/storage
+RUN chown -R www-data:www-data ./storage
 
-RUN sed -i 's/listen = 127.0.0.1:9000/listen = 0.0.0.0:9000/' /etc/php8/php-fpm.d/www.conf
-CMD ["php-fpm8", "-F"]
+RUN php artisan config:clear
+RUN php artisan config:cache
+
+RUN sed -i 's/listen = \/run\/php\/php8.1-fpm.sock/listen = 0.0.0.0:9000/' /etc/php/8.1/fpm/pool.d/www.conf
+
+CMD ["./start.sh"]
