@@ -7,24 +7,21 @@ services:
     volumes:
       - ./backend/:/var/www/html
 
-  proxy: 
-    image: proxyr:latest
+  frontend:
+    image: anory-frontend:1.0
+    working_dir: /var/www/html
+    volumes:
+      - ./frontend:/var/www/html
+
+  proxy:
+    image: anory-proxy:1.0
     ports:
       - 8000:80
     volumes:
-      - ./backend/:/var/www/html
-
-  # frontend:
-    # image: anory-frontend:1.0
-    # ports:
-      # - 4173:4173
-    # working_dir: /app
-    # volumes:
-    #   - ./frontend:/app
-
-  # postgres:
-    # image: postgres:14.3-alpine
-    # volumes:
-    #   - ./db:/app
-    # environment:
+      - ./proxy/:/var/www/html
+      # postgres:
+      # image: postgres:14.3-alpine
+      # volumes:
+      #   - ./db:/app
+      # environment:
       # - POSTGRES_PASSWORD=secretsecret
