@@ -1,20 +1,74 @@
-FROM archlinux:latest
+FROM nginx:1.22.0-alpine
 
-RUN pacman-key --init
-RUN pacman-db-upgrade
-RUN pacman -Syyu --noconfirm
+WORKDIR /var/www/html
 
-RUN pacman -S php --noconfirm
+# Essential
+RUN echo "UTC" > /etc/timezone
+RUN apk add --no-cache zip unzip curl supervisor 
 
-RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-RUN php -r "if (hash_file('sha384', 'composer-setup.php') === '55ce33d7678c5a611085589f1f3ddf8b3c52d662cd01d4ba75c0ee0459970c2200a51f492d557530c71c15d8dba01eae') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
-RUN php composer-setup.php
-RUN php -r "unlink('composer-setup.php');"
-RUN mv composer.phar /bin/composer
+# Add bash
+RUN apk add bash
+RUN sed -i 's/bin\/ash/bin\/bash/g' /etc/passwd
 
-WORKDIR /app
+# Add PHP 9 dependencies
+RUN apk add --no-cache php8 \
+  php8-common \
+  php8-fpm \
+  php8-pdo \
+  php8-opcache \
+  php8-zip \
+  php8-phar \
+  php8-iconv \
+  php8-cli \
+  php8-curl \
+  php8-openssl \
+  php8-mbstring \
+  php8-tokenizer \
+  php8-fileinfo \
+  php8-json \
+  php8-xml \
+  php8-xmlwriter \
+  php8-simplexml \
+  php8-dom \
+  php8-pdo_mysql \
+  php8-pdo_sqlite \
+  php8-pecl-redis 
 
+RUN rm /usr/bin/php
+RUN ln -s /usr/bin/php8 /usr/bin/php 
+
+# Install composer
+RUN curl -sS https://getcomposer.org/installer -o composer-setup.php
+RUN php composer-setup.php --install-dir=/usr/local/bin --filename=composer
+RUN rm -rf composer-setup.php
+
+
+# Configure supervisor
+RUN mkdir -p /etc/supervisor.d/
+COPY .docker/supervisord.ini /etc/supervisor.d/supervisord.ini
+
+# Configure PHP
+RUN mkdir -p /run/php/
+RUN touch /run/php/php8.0-fpm.pid
+
+COPY .docker/php-fpm.ini /etc/php8/php-fpm.ini
+COPY .docker/php.ini-production /etc/php8/php.ini
+
+# Configure nginx
+COPY .docker/nginx.conf /etc/nginx/
+COPY .docker/nginx-laravel.conf /etc/nginx/modules/
+
+RUN mkdir -p /run/nginx/
+RUN touch /run/nginx/nginx.pid
+
+RUN ln -sf /dev/stdout /var/log/nginx/access.log
+RUN ln -sf /dev/stdout /var/log/nginx/error.log
+
+# Build
 COPY . .
-RUN composer install
+RUN composer update
+RUN composer install --no-dev
+RUN chown -R nobody:nobody /var/www/html/storage
 
-CMD [ "php",  "artisan", "serve", "--host=0.0.0.0" ]
+EXPOSE 80
+CMD ["supervisord", "-c", "/etc/supervisor.d/supervisord.ini"]
