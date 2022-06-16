@@ -2,24 +2,29 @@ version: '3.9'
 
 services:
   backend:
-    image: anory-backend:1.0
-    ports:
-      - 8000:8000
-    working_dir: /app
+    image: laravel-alpine:latest
+    working_dir: /var/www/html
     volumes:
-      - ./backend/:/app
+      - ./backend/:/var/www/html
 
-  frontend:
-    image: anory-frontend:1.0
+  proxy: 
+    image: proxyr:latest
     ports:
-      - 4173:4173
-    working_dir: /app
+      - 8000:80
     volumes:
-      - ./frontend:/app
+      - ./backend/:/var/www/html
 
-  postgres:
-    image: postgres:14.3-alpine
-    volumes:
-      - ./db:/app
-    environment:
-      - POSTGRES_PASSWORD=secretsecret
+  # frontend:
+    # image: anory-frontend:1.0
+    # ports:
+      # - 4173:4173
+    # working_dir: /app
+    # volumes:
+    #   - ./frontend:/app
+
+  # postgres:
+    # image: postgres:14.3-alpine
+    # volumes:
+    #   - ./db:/app
+    # environment:
+      # - POSTGRES_PASSWORD=secretsecret
