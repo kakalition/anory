@@ -41,27 +41,6 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" &&
   php -r "unlink('composer-setup.php');" && \
   mv composer.phar /usr/local/bin/composer
 
-# Configure supervisor
-# RUN mkdir -p /etc/supervisor.d/
-# COPY .docker/supervisord.ini /etc/supervisor.d/supervisord.ini
-
-# Configure PHP
-RUN mkdir -p /run/php/
-RUN touch /run/php/php8.0-fpm.pid
-
-COPY .docker/php-fpm.ini /etc/php8/php-fpm.ini
-COPY .docker/php.ini-production /etc/php8/php.ini
-
-# Configure nginx
-# COPY .docker/nginx.conf /etc/nginx/
-# COPY .docker/nginx-laravel.conf /etc/nginx/modules/
-
-# RUN mkdir -p /run/nginx/
-# RUN touch /run/nginx/nginx.pid
-
-# RUN ln -sf /dev/stdout /var/log/nginx/access.log
-# RUN ln -sf /dev/stdout /var/log/nginx/error.log
-
 RUN apt install zip unzip
 
 # Build

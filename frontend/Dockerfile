@@ -1,3 +1,4 @@
+# Build
 FROM node:18-alpine3.15 AS build
 WORKDIR /app
 COPY ./package.json .
@@ -6,6 +7,13 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-FROM nginx:1.22.0-alpine
-COPY ./.docker/nginx.conf /etc/nginx/
-COPY --from=build /app/dist /var/www
+# Deployment
+FROM ubuntu:22.10
+RUN apt update && \
+  apt install -y nginx
+COPY ./.docker/default /etc/nginx/sites-available/default
+COPY --from=build /app/dist /var/www/html
+
+COPY ./start.sh /var/www/html
+
+CMD [ "./var/www/html/start.sh" ]
