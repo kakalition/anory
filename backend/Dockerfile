@@ -42,10 +42,9 @@ RUN curl -sS https://getcomposer.org/installer -o composer-setup.php
 RUN php composer-setup.php --install-dir=/usr/local/bin --filename=composer
 RUN rm -rf composer-setup.php
 
-
 # Configure supervisor
-RUN mkdir -p /etc/supervisor.d/
-COPY .docker/supervisord.ini /etc/supervisor.d/supervisord.ini
+# RUN mkdir -p /etc/supervisor.d/
+# COPY .docker/supervisord.ini /etc/supervisor.d/supervisord.ini
 
 # Configure PHP
 RUN mkdir -p /run/php/
@@ -70,5 +69,7 @@ RUN composer update
 RUN composer install --no-dev
 RUN chown -R nobody:nobody /var/www/html/storage
 
+RUN php-fpm8 -D
+# RUN sed -i 's/listen = 127.0.0.1:9000/listen = 0.0.0.0:9000/' /etc/php8/php-fpm.d/www.conf
 EXPOSE 80
-CMD ["supervisord", "-c", "/etc/supervisor.d/supervisord.ini"]
+CMD ["nginx"]
