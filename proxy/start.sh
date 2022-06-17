@@ -1,3 +1,2 @@
 #!/bin/sh
-service nginx start
-tail -f /dev/null
+nginx -g 'daemon off;'

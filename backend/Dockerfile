@@ -5,7 +5,7 @@ WORKDIR /var/www/html
 # Essential
 RUN echo "UTC" > /etc/timezone
 
-# Add PHP 9 dependencies
+# Add PHP 8 dependencies
 RUN apt update
 
 ARG DEBIAN_FRONTEND=noninteractive
@@ -34,6 +34,9 @@ RUN apt install -y \
   openssl \
   php-redis 
 
+# Install another essential
+RUN apt install zip unzip
+
 # Install composer
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
   php -r "if (hash_file('sha384', 'composer-setup.php') === '55ce33d7678c5a611085589f1f3ddf8b3c52d662cd01d4ba75c0ee0459970c2200a51f492d557530c71c15d8dba01eae') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" && \
@@ -41,7 +44,16 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" &&
   php -r "unlink('composer-setup.php');" && \
   mv composer.phar /usr/local/bin/composer
 
-RUN apt install zip unzip
+# Nginx setting
+RUN apt install -y nginx
+COPY .docker/default /etc/nginx/sites-available/default
+
+# PHP FPM setting
+RUN sed -i 's/listen = \/run\/php\/php8.1-fpm.sock/listen = 0.0.0.0:9000/' /etc/php/8.1/fpm/pool.d/www.conf
+
+# Supervisor
+RUN apt install -y supervisor
+COPY ./.docker/supervisord.conf /etc/supervisor/supervisord.conf
 
 # Build
 COPY . .
@@ -49,9 +61,9 @@ RUN composer update
 RUN composer install --no-dev
 RUN chown -R www-data:www-data ./storage
 
+# Artisan cache
 RUN php artisan config:clear
 RUN php artisan config:cache
 
-RUN sed -i 's/listen = \/run\/php\/php8.1-fpm.sock/listen = 0.0.0.0:9000/' /etc/php/8.1/fpm/pool.d/www.conf
-
-CMD ["./start.sh"]
+# Execution
+CMD ["supervisord"]

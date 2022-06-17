@@ -1,4 +1,3 @@
 #!/bin/sh
-service php8.1-fpm start
-
+supervisord
 tail -f /dev/null
