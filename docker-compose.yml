@@ -1,9 +1,18 @@
 version: '3.9'
 
 services:
+  postgres:
+    image: postgres:14.3-bullseye
+    volumes:
+      - ./db:/var/lib/postgresql
+    environment:
+      - POSTGRES_PASSWORD=secretsecret
+
   backend:
     image: anory-backend:1.0
     working_dir: /var/www/html
+    depends_on:
+      - "postgres"
 
   frontend:
     image: anory-frontend:1.0
@@ -16,9 +25,4 @@ services:
     depends_on:
       - "backend"
       - "frontend"
-      # postgres:
-      # image: postgres:14.3-alpine
-      # volumes:
-      #   - ./db:/app
-      # environment:
-      # - POSTGRES_PASSWORD=secretsecret
+      - "postgres"
