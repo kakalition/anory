@@ -16,4 +16,4 @@ COPY --from=build /app/dist /var/www/html
 
 COPY ./start.sh /bin/start.sh
 
-CMD [ "./bin/start.sh" ]
+CMD [ "nginx",  "-g", "daemon off;" ]

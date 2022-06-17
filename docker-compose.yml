@@ -5,16 +5,17 @@ services:
     image: anory-backend:1.0
     working_dir: /var/www/html
 
-  # frontend:
-    # image: anory-frontend:1.0
-    # working_dir: /var/www/html
+  frontend:
+    image: anory-frontend:1.0
+    working_dir: /var/www/html
 
   proxy:
     image: anory-proxy:1.0
     ports:
       - 8000:80
-    depends_on: 
+    depends_on:
       - "backend"
+      - "frontend"
       # postgres:
       # image: postgres:14.3-alpine
       # volumes:
