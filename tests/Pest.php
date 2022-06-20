@@ -66,6 +66,16 @@ function loginUser($email, $password)
   return $user;
 }
 
+function createStory($email, $categoryName, $title, $body) {
+  $story = postJson('api/users/' . $email . '/stories', [
+    'category_name' => $categoryName,
+    'title' => $title,
+    'body' => $body,
+  ]);
+
+  return $story;
+}
+
 function findUserId($userEmail)
 {
   $id = User::where('email', $userEmail)

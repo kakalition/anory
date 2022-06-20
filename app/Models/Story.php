@@ -13,8 +13,6 @@ class Story extends Model
     'author_id',
     'category_id',
     'views',
-    'likes',
-    'dislikes',
     'title',
     'body'
   ];

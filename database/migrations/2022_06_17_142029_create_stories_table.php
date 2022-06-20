@@ -18,9 +18,7 @@ return new class extends Migration
         ->references('id')
         ->on('categories')
         ->cascadeOnDelete();
-      $table->integer('views');
-      $table->integer('likes');
-      $table->integer('dislikes');
+      $table->integer('views')->default(0);
       $table->string('title');
       $table->text('body');
       $table->timestamps();

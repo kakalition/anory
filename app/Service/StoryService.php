@@ -51,9 +51,6 @@ class StoryService
     $story = Story::create([
       'author_id' => $userId,
       'category_id' => $categoryId,
-      'views' => 0,
-      'likes' => 0,
-      'dislikes' => 0,
       'title' => $validated['title'],
       'body' => $validated['body'],
     ]);
