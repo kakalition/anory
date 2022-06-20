@@ -9,5 +9,11 @@ class Category extends Model
 {
   use HasFactory;
 
-  protected $fillable = ['name'];
+  public function getCategoryId(String $name)
+  {
+    $id = $this
+      ->where('name', $name)
+      ->first();
+    return $id;
+  }
 }

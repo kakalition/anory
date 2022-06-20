@@ -5,61 +5,58 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreStoryRequest;
 use App\Http\Requests\UpdateStoryRequest;
 use App\Models\Story;
+use App\Service\StoryService;
+use Illuminate\Http\Request;
 
 class StoryController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
+  private $service;
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StoreStoryRequest  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(StoreStoryRequest $request)
-    {
-        //
-    }
+  public function __construct(StoryService $service)
+  {
+    $this->service = $service;
+  }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Story  $story
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Story $story)
-    {
-        //
-    }
+  public function index()
+  {
+    $result = $this->service->getAllStories();
+    return response(
+      $result->getContent(),
+      $result->getHttpStatus()
+    );
+  }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\UpdateStoryRequest  $request
-     * @param  \App\Models\Story  $story
-     * @return \Illuminate\Http\Response
-     */
-    public function update(UpdateStoryRequest $request, Story $story)
-    {
-        //
-    }
+  public function userIndex(Request $request)
+  {
+    $result = $this->service->getUserStory($request);
+    return response(
+      $result->getContent(),
+      $result->getHttpStatus()
+    );
+  }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Story  $story
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Story $story)
-    {
-        //
-    }
+  public function store(StoreStoryRequest $request)
+  {
+    $result = $this->service->createNewStory($request);
+
+    return response(
+      $result->getContent(),
+      $result->getHttpStatus()
+    );
+  }
+
+  public function show(Story $story)
+  {
+    //
+  }
+
+  public function update(UpdateStoryRequest $request, Story $story)
+  {
+    //
+  }
+
+  public function destroy(Story $story)
+  {
+    //
+  }
 }

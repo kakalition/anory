@@ -11,6 +11,11 @@
 |
 */
 
+use App\Models\Category;
+use App\Models\User;
+
+use function Pest\Laravel\postJson;
+
 uses(Tests\TestCase::class)->in('Feature');
 
 /*
@@ -25,7 +30,7 @@ uses(Tests\TestCase::class)->in('Feature');
 */
 
 expect()->extend('toBeOne', function () {
-    return $this->toBe(1);
+  return $this->toBe(1);
 });
 
 /*
@@ -39,7 +44,42 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+function registerUser($name, $email, $password)
 {
-    // ..
+  $user = postJson('register', [
+    'name' => $name,
+    'email' => $email,
+    'password' => $password,
+    'password_confirmation' => $password,
+  ]);
+
+  return $user;
+}
+
+function loginUser($email, $password)
+{
+  $user = postJson('login', [
+    'email' => $email,
+    'password' => $password,
+  ]);
+
+  return $user;
+}
+
+function findUserId($userEmail)
+{
+  $id = User::where('email', $userEmail)
+    ->first()
+    ?->id;
+
+  return $id;
+}
+
+function findCategoryId($categoryName)
+{
+  $id = Category::where('name', $categoryName)
+    ->first()
+    ?->id;
+
+  return $id;
 }

@@ -12,6 +12,9 @@ class Story extends Model
   protected $fillable = [
     'author_id',
     'category_id',
+    'views',
+    'likes',
+    'dislikes',
     'title',
     'body'
   ];

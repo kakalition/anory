@@ -19,6 +19,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::apiResources([
-  'stories' => StoryController::class
-]);
+Route::get('/stories', [StoryController::class, 'index']);
+Route::get('/users/{author_email}/stories', [StoryController::class, 'userIndex']);
+Route::post('/users/{author_email}/stories', [StoryController::class, 'store']);
