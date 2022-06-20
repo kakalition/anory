@@ -47,16 +47,29 @@ class StoryController extends Controller
 
   public function show(Story $story)
   {
-    //
+  }
+
+  public function like(Request $request)
+  {
+  }
+
+  public function unlike(Request $request)
+  {
+  }
+
+  public function dislike(Request $request)
+  {
+  }
+
+  public function undislike(Request $request)
+  {
   }
 
   public function update(UpdateStoryRequest $request, Story $story)
   {
-    //
   }
 
   public function destroy(Story $story)
   {
-    //
   }
 }
