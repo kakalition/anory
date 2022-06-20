@@ -26,24 +26,24 @@ Route::controller(StoryController::class)->group(function () {
   Route::get('/users/{author_email}/stories', 'userIndex');
   Route::post('/users/{author_email}/stories', 'store');
   Route::get('/users/{author_email}/stories{story_title}', 'show');
-  Route::post('/users/{author_email}/stories{story_title}', 'like');
-  Route::post('/users/{author_email}/stories{story_title}', 'unlike');
-  Route::post('/users/{author_email}/stories{story_title}', 'dislike');
-  Route::post('/users/{author_email}/stories{story_title}', 'undislike');
   Route::put('/users/{author_email}/stories/{story_title}', 'update');
   Route::patch('/users/{author_email}/stories/{story_title}', 'update');
   Route::delete('/users/{author_email}/stories/{story_title}', 'delete');
+
+  Route::post('/users/{author_email}/stories{story_title}', 'like');
+  Route::post('/users/{author_email}/stories{story_title}', 'dislike');
+  Route::delete('/users/{author_email}/stories{story_title}', 'removeLikeDislike');
 });
 
 Route::controller(CommentController::class)->group(function () {
   Route::get('/users/{author_email}/stories/{story_title}/comments', 'index');
   Route::post('/users/{author_email}/stories/{story_title}/comments', 'store');
   Route::get('/users/{author_email}/stories/{story_title}/comments/{comment_id}', 'show');
-  Route::post('/users/{author_email}/stories/{story_title}/comments/{comment_id}', 'like');
-  Route::post('/users/{author_email}/stories/{story_title}/comments/{comment_id}', 'unlike');
-  Route::post('/users/{author_email}/stories/{story_title}/comments/{comment_id}', 'dislike');
-  Route::post('/users/{author_email}/stories/{story_title}/comments/{comment_id}', 'undislike');
   Route::put('/users/{author_email}/stories/{story_title}/comments/{comment_id}', 'update');
   Route::patch('/users/{author_email}/stories/{story_title}/comments/{comment_id}', 'update');
   Route::delete('/users/{author_email}/stories/{story_title}/comments/{comment_id}', 'delete');
+
+  Route::post('/users/{author_email}/stories/{story_title}/comments/{comment_id}', 'like');
+  Route::post('/users/{author_email}/stories/{story_title}/comments/{comment_id}', 'dislike');
+  Route::delete('/users/{author_email}/stories/{story_title}/comments/{comment_id}', 'removeLikeDislike');
 });
