@@ -16,9 +16,14 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+  return $request->user();
 });
 
-Route::get('/stories', [StoryController::class, 'index']);
-Route::get('/users/{author_email}/stories', [StoryController::class, 'userIndex']);
-Route::post('/users/{author_email}/stories', [StoryController::class, 'store']);
+Route::controller(StoryController::class)->group(function () {
+  Route::get('/stories', 'index');
+  Route::get('/users/{author_email}/stories', 'userIndex');
+  Route::post('/users/{author_email}/stories', 'store');
+  Route::put('/users/{author_email}/stories/{story_title}', 'update');
+  Route::patch('/users/{author_email}/stories/{story_title}', 'update');
+  Route::delete('/users/{author_email}/stories/{story_title}', 'delete');
+});
