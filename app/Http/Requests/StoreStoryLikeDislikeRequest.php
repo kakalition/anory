@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateCommentRequest extends FormRequest
+class StoreStoryLikeDislikeRequest extends FormRequest
 {
   public function authorize()
   {
@@ -13,13 +13,13 @@ class UpdateCommentRequest extends FormRequest
       return false;
     }
 
-    return $user->email == $this->route('author_email');
+    return $user->email == $this->input('email');
   }
 
   public function rules()
   {
     return [
-      //
+      'email' => 'required|email'
     ];
   }
 }

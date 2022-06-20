@@ -16,4 +16,27 @@ class Story extends Model
     'title',
     'body'
   ];
+
+  function categoryName()
+  {
+    return Category::where('id', $this->category_id)
+      ->first()
+      ->name;
+  }
+
+  function likes()
+  {
+    return $this
+      ->hasMany(StoryLikeDislike::class, 'story_id')
+      ->where('status', 1)
+      ->count();
+  }
+
+  function dislikes()
+  {
+    return $this
+      ->hasMany(StoryLikeDislike::class, 'story_id')
+      ->where('status', -1)
+      ->count();
+  }
 }

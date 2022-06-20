@@ -7,5 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class StoryLikeDislike extends Model
 {
-    use HasFactory;
+  use HasFactory;
+
+  protected $fillable = [
+    'story_id',
+    'email',
+    'status'
+  ];
 }

@@ -6,25 +6,22 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateStoryRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
-    public function authorize()
-    {
-        return false;
+  public function authorize()
+  {
+    $user = $this->user();
+    if ($user == null) {
+      return false;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, mixed>
-     */
-    public function rules()
-    {
-        return [
-            //
-        ];
-    }
+    return $user->email == $this->route('author_email');
+  }
+
+  public function rules()
+  {
+    return [
+      'category_name' => 'string',
+      'title' => 'string|max:255',
+      'body' => 'string',
+    ];
+  }
 }

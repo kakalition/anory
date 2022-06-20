@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreStoryRequest;
 use App\Http\Requests\UpdateStoryRequest;
+use App\Http\Resources\StoryResource;
 use App\Models\Story;
 use App\Service\StoryService;
 use Illuminate\Http\Request;
@@ -21,7 +22,7 @@ class StoryController extends Controller
   {
     $result = $this->service->getAllStories();
     return response(
-      $result->getContent(),
+      StoryResource::collection($result->getContent()),
       $result->getHttpStatus()
     );
   }
@@ -30,7 +31,7 @@ class StoryController extends Controller
   {
     $result = $this->service->getUserStory($request);
     return response(
-      $result->getContent(),
+      StoryResource::collection($result->getContent()),
       $result->getHttpStatus()
     );
   }
@@ -40,36 +41,70 @@ class StoryController extends Controller
     $result = $this->service->createNewStory($request);
 
     return response(
+      new StoryResource($result->getContent()),
+      $result->getHttpStatus()
+    );
+  }
+
+  public function show(Request $request)
+  {
+    $result = $this->service->getStory($request);
+
+    return response(
+      new StoryResource($result->getContent()),
+      $result->getHttpStatus()
+    );
+  }
+
+  public function update(UpdateStoryRequest $request)
+  {
+    $result = $this->service->updateStory($request);
+
+    return response(
+      is_object($result->getContent())
+        ? new StoryResource($result->getContent())
+        : $result->getContent(),
+      $result->getHttpStatus()
+    );
+  }
+
+  public function destroy(Request $request)
+  {
+    $result = $this->service->deleteStory($request);
+
+    return response(
       $result->getContent(),
       $result->getHttpStatus()
     );
   }
 
-  public function show(Story $story)
+  public function getLikeDislike(Request $request)
   {
+    $result = $this->service->getLikeDislike($request);
+
+    return response(
+      $result->getContent(),
+      $result->getHttpStatus()
+    );
   }
 
-  public function like(Request $request)
+  public function createLikeDislike(Request $request)
   {
+    $result = $this->service->createLikeDislike($request);
+
+    return response(
+      $result->getContent(),
+      $result->getHttpStatus()
+    );
   }
 
-  public function unlike(Request $request)
+  public function removeLikeDislike(Request $request)
   {
-  }
+    $result = $this->service->removeLikeDislike($request);
 
-  public function dislike(Request $request)
-  {
-  }
-
-  public function undislike(Request $request)
-  {
-  }
-
-  public function update(UpdateStoryRequest $request, Story $story)
-  {
-  }
-
-  public function destroy(Story $story)
-  {
+    return response(
+      $result->getContent(),
+      $result->getHttpStatus()
+    );
   }
 }

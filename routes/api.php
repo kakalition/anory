@@ -24,15 +24,16 @@ Route::controller(StoryController::class)->group(function () {
   Route::get('/stories', 'index');
   Route::get('/stories/{category_name}', 'indexByCategory');
   Route::get('/users/{author_email}/stories', 'userIndex');
-  Route::post('/users/{author_email}/stories', 'store');
-  Route::get('/users/{author_email}/stories{story_title}', 'show');
-  Route::put('/users/{author_email}/stories/{story_title}', 'update');
-  Route::patch('/users/{author_email}/stories/{story_title}', 'update');
-  Route::delete('/users/{author_email}/stories/{story_title}', 'delete');
 
-  Route::post('/users/{author_email}/stories{story_title}', 'like');
-  Route::post('/users/{author_email}/stories{story_title}', 'dislike');
-  Route::delete('/users/{author_email}/stories{story_title}', 'removeLikeDislike');
+  Route::post('/users/{author_email}/stories', 'store');
+  Route::get('/users/{author_email}/stories/{title}', 'show');
+  Route::put('/users/{author_email}/stories/{title}', 'update');
+  Route::patch('/users/{author_email}/stories/{title}', 'update');
+  Route::delete('/users/{author_email}/stories/{title}', 'destroy');
+
+  Route::get('users/{author_email}/stories/{title}/like-dislikes/{id}', 'getLikeDislike');
+  Route::post('/users/{author_email}/stories/{title}/like-dislikes', 'createlikeDislike');
+  Route::delete('/users/{author_email}/stories/{title}/like-dislikes/{id}', 'removeLikeDislike');
 });
 
 Route::controller(CommentController::class)->group(function () {

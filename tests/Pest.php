@@ -66,7 +66,8 @@ function loginUser($email, $password)
   return $user;
 }
 
-function createStory($email, $categoryName, $title, $body) {
+function createStory($email, $categoryName, $title, $body)
+{
   $story = postJson('api/users/' . $email . '/stories', [
     'category_name' => $categoryName,
     'title' => $title,
@@ -74,6 +75,14 @@ function createStory($email, $categoryName, $title, $body) {
   ]);
 
   return $story;
+}
+
+function likeDislikeStory($emailSlug, $titleSlug, $likeeEmail, $status)
+{
+  return postJson('api/users/' . $emailSlug . '/stories/' . $titleSlug . '/like-dislikes', [
+    'email' => $likeeEmail,
+    'status' => $status
+  ]);
 }
 
 function findUserId($userEmail)
