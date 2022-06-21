@@ -5,19 +5,51 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use function Pest\Laravel\deleteJson;
 use function Pest\Laravel\getJson;
-use function Pest\Laravel\postJson;
 use function Pest\Laravel\putJson;
 use function Pest\Laravel\seed;
 
 uses(RefreshDatabase::class);
 
-test('when get all stories, return all stories.', function () {
+/********
+ * READ *
+ ********/
+
+test('when get all stories, should returns all stories (HTTP 200).', function () {
   $response = getJson('api/stories');
   $response->assertOk();
   $response->assertJsonCount(0);
 });
 
-test('when create story, should return created story and 201 status code.', function () {
+test('when get user story (already have stories), returns an array of its own stories (HTTP 200).', function () {
+  seed();
+  registerUser('Kaka', 'k@k', '00000000');
+  createStory('k@k', 'Honor', 'This is Story', 'This is the body of story.');
+
+  $response = getJson('api/users/k@k/stories');
+  $response->assertOk();
+  $response->assertJsonCount(1);
+
+  $response = getJson('api/users/k@k/stories/this-is-story');
+  $response->assertOk();
+});
+
+test('when get likeDislike data, returns likeDislike data (HTTP 200).', function () {
+  seed();
+  registerUser('Kaka', 'k@k', '00000000');
+  createStory('k@k', 'Honor', 'This is Story', 'This is the body of story.');
+  $likeData = likeDislikeStory('k@k', 'this-is-story', 'k@k', 1);
+
+  $response = getJson('api/users/k@k/stories/this-is-story/like-dislikes/' . $likeData->json('id'));
+  $response->assertOk();
+  $response->assertJson(['id' => $likeData->json('id')]);
+});
+
+
+/**********
+ * CREATE *
+ **********/
+
+test('when create story, should return created story (HTTP 201).', function () {
   seed();
   registerUser('Kaka', 'k@k', '00000000');
 
@@ -33,20 +65,7 @@ test('when create story, should return created story and 201 status code.', func
   );
 });
 
-test('when get user story (already have stories), returns correct data of its own stories.', function () {
-  seed();
-  registerUser('Kaka', 'k@k', '00000000');
-  createStory('k@k', 'Honor', 'This is Story', 'This is the body of story.');
-
-  $response = getJson('api/users/k@k/stories');
-  $response->assertOk();
-  $response->assertJsonCount(1);
-
-  $response = getJson('api/users/k@k/stories/this-is-story');
-  $response->assertOk();
-});
-
-test('when like story, returns likeDislike data.', function () {
+test('when like story, returns likeDislike data (HTTP 200).', function () {
   seed();
   registerUser('Kaka', 'k@k', '00000000');
   createStory('k@k', 'Honor', 'This is Story', 'This is the body of story.');
@@ -55,18 +74,7 @@ test('when like story, returns likeDislike data.', function () {
   $response->assertCreated();
 });
 
-test('when get likeDislike data, returns correct likeDislike data.', function () {
-  seed();
-  registerUser('Kaka', 'k@k', '00000000');
-  createStory('k@k', 'Honor', 'This is Story', 'This is the body of story.');
-  $likeData = likeDislikeStory('k@k', 'this-is-story', 'k@k', 1);
-
-  $response = getJson('api/users/k@k/stories/this-is-story/like-dislikes/' . $likeData->json('id'));
-  $response->assertOk();
-  $response->assertJson(['id' => $likeData->json('id')]);
-});
-
-test('when like story, increment total likes.', function () {
+test('when like story, returns story data with incremented total likes (HTTP 200).', function () {
   seed();
   registerUser('Kaka', 'k@k', '00000000');
   createStory('k@k', 'Honor', 'This is Story', 'This is the body of story.');
@@ -80,7 +88,7 @@ test('when like story, increment total likes.', function () {
   ]);
 });
 
-test('when dislike story, increment total likes.', function () {
+test('when dislike story, returns story data with incremented total dislikes (HTTP 200).', function () {
   seed();
   registerUser('Kaka', 'k@k', '00000000');
   createStory('k@k', 'Honor', 'This is Story', 'This is the body of story.');
@@ -94,7 +102,7 @@ test('when dislike story, increment total likes.', function () {
   ]);
 });
 
-test('when like an already disliked story, change dislike to like.', function () {
+test('when like an already disliked story, returns story data with changed total likes and dislikes (HTTP 200).', function () {
   seed();
   registerUser('Kaka', 'k@k', '00000000');
   createStory('k@k', 'Honor', 'This is Story', 'This is the body of story.');
@@ -115,6 +123,15 @@ test('when like an already disliked story, change dislike to like.', function ()
     'dislikes' => 0
   ]);
 });
+
+
+/**********
+ * UPDATE *
+ **********/
+
+/**********
+ * DELETE *
+ **********/
 
 test('when successfully remove like dislike, returns 204.', function () {
   seed();

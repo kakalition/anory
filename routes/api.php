@@ -20,31 +20,31 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
   return $request->user();
 });
 
-Route::controller(StoryController::class)->group(function () {
-  Route::get('/stories', 'index');
-  Route::get('/stories/{category_name}', 'indexByCategory');
-  Route::get('/users/{author_email}/stories', 'userIndex');
+Route::get('/stories', [StoryController::class, 'index']);
+Route::get('/stories/{category_name}', [StoryController::class, 'indexByCategory']);
 
-  Route::post('/users/{author_email}/stories', 'store');
-  Route::get('/users/{author_email}/stories/{title}', 'show');
-  Route::put('/users/{author_email}/stories/{title}', 'update');
-  Route::patch('/users/{author_email}/stories/{title}', 'update');
-  Route::delete('/users/{author_email}/stories/{title}', 'destroy');
+Route::controller(StoryController::class)->prefix('users/{author_email}')->group(function () {
+  Route::get('/stories', 'userIndex');
+  Route::post('/stories', 'store');
+  Route::get('/stories/{title}', 'show');
+  Route::put('/stories/{title}', 'update');
+  Route::patch('/stories/{title}', 'update');
+  Route::delete('/stories/{title}', 'destroy');
 
-  Route::get('users/{author_email}/stories/{title}/like-dislikes/{id}', 'getLikeDislike');
-  Route::post('/users/{author_email}/stories/{title}/like-dislikes', 'createlikeDislike');
-  Route::delete('/users/{author_email}/stories/{title}/like-dislikes/{id}', 'removeLikeDislike');
+  Route::get('/stories/{title}/like-dislikes/{id}', 'getLikeDislike');
+  Route::post('/stories/{title}/like-dislikes', 'createlikeDislike');
+  Route::delete('/stories/{title}/like-dislikes/{id}', 'removeLikeDislike');
 });
 
-Route::controller(CommentController::class)->group(function () {
-  Route::get('/users/{author_email}/stories/{story_title}/comments', 'index');
-  Route::post('/users/{author_email}/stories/{story_title}/comments', 'store');
-  Route::get('/users/{author_email}/stories/{story_title}/comments/{comment_id}', 'show');
-  Route::put('/users/{author_email}/stories/{story_title}/comments/{comment_id}', 'update');
-  Route::patch('/users/{author_email}/stories/{story_title}/comments/{comment_id}', 'update');
-  Route::delete('/users/{author_email}/stories/{story_title}/comments/{comment_id}', 'delete');
+Route::controller(CommentController::class)->prefix('/users/{author_email}/stories/{story_title}')->group(function () {
+  Route::get('/comments', 'index');
+  Route::post('/comments', 'store');
+  Route::get('/comments/{comment_id}', 'show');
+  Route::put('/comments/{comment_id}', 'update');
+  Route::patch('/comments/{comment_id}', 'update');
+  Route::delete('/comments/{comment_id}', 'delete');
 
-  Route::post('/users/{author_email}/stories/{story_title}/comments/{comment_id}', 'like');
-  Route::post('/users/{author_email}/stories/{story_title}/comments/{comment_id}', 'dislike');
-  Route::delete('/users/{author_email}/stories/{story_title}/comments/{comment_id}', 'removeLikeDislike');
+  Route::get('/comments/{comment_id}', 'getLikeDislike');
+  Route::post('/comments/{comment_id}', 'createLikeDislike');
+  Route::delete('/comments/{comment_id}', 'removeLikeDislike');
 });

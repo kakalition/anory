@@ -4,7 +4,7 @@ namespace App\Service;
 
 class ServiceResult
 {
-  private $content = null;
+  private $content;
   private $httpStatus = null;
 
   public function __construct($content, int $httpStatus)
