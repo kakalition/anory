@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreStoryRequest;
 use App\Http\Requests\UpdateStoryRequest;
 use App\Http\Resources\StoryResource;
-use App\Models\Story;
 use App\Service\StoryService;
 use Illuminate\Http\Request;
 
@@ -71,36 +70,6 @@ class StoryController extends Controller
   public function destroy(Request $request)
   {
     $result = $this->service->deleteStory($request);
-
-    return response(
-      $result->getContent(),
-      $result->getHttpStatus()
-    );
-  }
-
-  public function getLikeDislike(Request $request)
-  {
-    $result = $this->service->getLikeDislike($request);
-
-    return response(
-      $result->getContent(),
-      $result->getHttpStatus()
-    );
-  }
-
-  public function createLikeDislike(Request $request)
-  {
-    $result = $this->service->createLikeDislike($request);
-
-    return response(
-      $result->getContent(),
-      $result->getHttpStatus()
-    );
-  }
-
-  public function removeLikeDislike(Request $request)
-  {
-    $result = $this->service->removeLikeDislike($request);
 
     return response(
       $result->getContent(),

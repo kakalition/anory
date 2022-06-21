@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\StoryController;
+use App\Http\Controllers\StoryLikeDislikeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -30,10 +31,12 @@ Route::controller(StoryController::class)->prefix('users/{author_email}')->group
   Route::put('/stories/{title}', 'update');
   Route::patch('/stories/{title}', 'update');
   Route::delete('/stories/{title}', 'destroy');
+});
 
-  Route::get('/stories/{title}/like-dislikes/{id}', 'getLikeDislike');
-  Route::post('/stories/{title}/like-dislikes', 'createlikeDislike');
-  Route::delete('/stories/{title}/like-dislikes/{id}', 'removeLikeDislike');
+Route::controller(StoryLikeDislikeController::class)->prefix('users/{author_email}/stories/{title}')->group(function () {
+  Route::get('/like-dislikes/{id}', 'getLikeDislike');
+  Route::post('/like-dislikes', 'createlikeDislike');
+  Route::delete('/like-dislikes/{id}', 'removeLikeDislike');
 });
 
 Route::controller(CommentController::class)->prefix('/users/{author_email}/stories/{story_title}')->group(function () {
