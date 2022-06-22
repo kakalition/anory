@@ -13,13 +13,13 @@ class StoreStoryRequest extends FormRequest
       return false;
     }
 
-    return $user->email == $this->route('author_email');
+    return $user->email == $this->route('authorEmail');
   }
 
   public function rules()
   {
     return [
-      'category_name' => 'required|string',
+      'categoryName' => 'required|string',
       'title' => 'required|string|max:255',
       'body' => 'required|string',
     ];

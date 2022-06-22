@@ -2,114 +2,128 @@
 
 namespace App\Service;
 
-use App\Helpers\ResourceIdFinder;
+use App\Exceptions\CategoryNotFoundException;
+use App\Exceptions\StoryNotFoundException;
+use App\Exceptions\UserNotFoundException;
+use App\Models\Category;
 use App\Models\Story;
-use App\Models\StoryLikeDislike;
-use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\Request;
+use App\Models\User;
 
 class StoryService
 {
-  use ResourceIdFinder;
-
   public function getAllStories()
   {
     $stories = Story::all();
 
-    return new ServiceResult($stories, 200);
+    return $stories;
   }
 
-  public function getUserStory(Request $request)
+  public function getUserStory(String $authorEmail)
   {
-    $user_id = $this->findUserId($request->route('author_email'));
-    if ($user_id == null) {
-      return new ServiceResult('User not found', 404);
+    $author = User::where('email', $authorEmail)->first();
+    if (!$author) {
+      throw new UserNotFoundException();
     }
 
-    $stories = Story::where('author_id', $user_id)
+    $stories = Story::where('author_id', $author->id)
       ->get();
 
-    return new ServiceResult($stories, 200);
+    return $stories;
   }
 
-  public function createNewStory(FormRequest $request)
+  public function createNewStory(String $authorEmail, String $categoryName, String $title, String $body)
   {
-    $validated = $request->validated();
-    $userId = $this->findUserId($request->route('author_email'));
-    $categoryId = $this->findCategoryId($validated['category_name']);
-
-    if ($userId == null) {
-      return new ServiceResult('User not found.', 404);
+    $author = User::where('email', $authorEmail)->first();
+    if (!$author) {
+      throw new UserNotFoundException();
     }
 
-    if ($categoryId == null) {
-      return new ServiceResult('Category not found.', 404);
+    $category = Category::where('name', $categoryName)->first();
+    if ($category) {
+      throw new CategoryNotFoundException();
     }
 
     $story = Story::create([
-      'author_id' => $userId,
-      'category_id' => $categoryId,
-      'title' => $validated['title'],
-      'body' => $validated['body'],
+      'author_id' => $author->id,
+      'category_id' => $category->id,
+      'title' => $title,
+      'body' => $body,
     ]);
 
-    return new ServiceResult($story, 201);
+    return $story;
   }
 
-  public function getStory(Request $request)
+  public function getStory($authorEmail, $title)
   {
-    $storyId = $this->findStoryId(
-      $request->route('author_email'),
-      $request->route('title'),
-    );
+    $author = User::where('email', $authorEmail)
+      ->first();
 
-    $story = Story::find($storyId);
+    if (!$author) {
+      throw new UserNotFoundException();
+    }
+
+    $story = Story::where('author_id', $author->id)
+      ->where('title', $title)
+      ->first();
+
+    if (!$story) {
+      throw new StoryNotFoundException();
+    }
+
     $story->increment('views');
 
-    if ($story == null) {
-      return new ServiceResult('Story not found.', 404);
-    }
-
-    return new ServiceResult($story, 200);
+    return $story;
   }
 
-  public function updateStory(FormRequest $request)
+  public function updateStory(String $authorEmail, String $title, ?String $modifiedCategoryName, ?String $modifiedTitle, ?String $modifiedBody)
   {
-    $validated = $request->validated();
-    $categoryId = $this->findCategoryId($validated['category_name'] ?? '');
-    $storyId = $this->findStoryId(
-      $request->route('author_email'),
-      $request->route('title'),
-    );
+    $author = User::where('email', $authorEmail)
+      ->first();
 
-    if ($storyId == null) {
-      return new ServiceResult('Story not found.', 404);
+    if (!$author) {
+      throw new UserNotFoundException();
     }
 
-    $story = Story::find($storyId);
+    $story = Story::where('author_id', $author->id)
+      ->where('title', $title)
+      ->first();
 
-    $story->category_id = $categoryId ?? $story->category_id;
-    $story->title = $validated['title'] ?? $story->title;
-    $story->body = $validated['body'] ?? $story->body;
+    if (!$story) {
+      throw new StoryNotFoundException();
+    }
+
+    $modifiedCategory = Category::where('name', $modifiedCategoryName)
+      ->first();
+
+    if (!$modifiedCategory) {
+      throw new CategoryNotFoundException();
+    }
+
+    $story->category_id = $modifiedCategory->id;
+    $story->title = $modifiedTitle ?? $story->title;
+    $story->body = $modifiedBody ?? $story->body;
     $story->save();
 
-    return new ServiceResult($story, 200);
+    return $story;
   }
 
-  public function deleteStory(Request $request)
+  public function deleteStory(String $authorEmail, String $title)
   {
-    $storyId = $this->findStoryId(
-      $request->route('author_email'),
-      $request->route('title'),
-    );
+    $author = User::where('email', $authorEmail)
+      ->first();
 
-    $story = Story::find($storyId);
-
-    if ($story) {
-      $story->delete();
-      return new ServiceResult('', 204);
+    if (!$author) {
+      throw new UserNotFoundException();
     }
 
-    return new ServiceResult('Story not found.', 404);
+    $story = Story::where('author_id', $author->id)
+      ->where('title', $title)
+      ->first();
+
+    if (!$story) {
+      throw new StoryNotFoundException();
+    }
+
+    $story->delete();
   }
 }

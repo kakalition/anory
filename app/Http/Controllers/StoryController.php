@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\CategoryNotFoundException;
+use App\Exceptions\StoryNotFoundException;
+use App\Exceptions\UserNotFoundException;
 use App\Http\Requests\StoreStoryRequest;
 use App\Http\Requests\UpdateStoryRequest;
 use App\Http\Resources\StoryResource;
 use App\Service\StoryService;
+use Exception;
 use Illuminate\Http\Request;
 
 class StoryController extends Controller
@@ -19,61 +23,104 @@ class StoryController extends Controller
 
   public function index()
   {
-    $result = $this->service->getAllStories();
-    return response(
-      StoryResource::collection($result->getContent()),
-      $result->getHttpStatus()
-    );
+    $stories = $this->service->getAllStories();
+    return response(StoryResource::collection($stories), 200);
   }
 
   public function userIndex(Request $request)
   {
-    $result = $this->service->getUserStory($request);
-    return response(
-      StoryResource::collection($result->getContent()),
-      $result->getHttpStatus()
-    );
+    try {
+      $stories = $this->service
+        ->getUserStory($request->route('author_email'));
+    } catch (UserNotFoundException $exception) {
+      return response('User not found.', 404);
+    } catch (Exception $exception) {
+      return response($exception->getMessage(), 500);
+    }
+
+    return response(StoryResource::collection($stories), 200);
   }
 
   public function store(StoreStoryRequest $request)
   {
-    $result = $this->service->createNewStory($request);
+    $validated = $request->validated();
 
-    return response(
-      new StoryResource($result->getContent()),
-      $result->getHttpStatus()
-    );
+    try {
+      $story = $this->service->createNewStory(
+        $request->route('authorEmail'),
+        $validated['categoryName'],
+        $validated['title'],
+        $validated['body']
+      );
+    } catch (UserNotFoundException $exception) {
+      return response('User not found.', 404);
+    } catch (CategoryNotFoundException $exception) {
+      return response('Category not found.', 404);
+    } catch (Exception $exception) {
+      return response($exception->getMessage(), 500);
+    }
+
+    return response($story, 200);
   }
 
   public function show(Request $request)
   {
-    $result = $this->service->getStory($request);
+    try {
+      $story = $this->service->getStory(
+        $request->route('authorEmail'),
+        $request->route('title')
+      );
+    } catch (UserNotFoundException $exception) {
+      return response('User not found.', 404);
+    } catch (StoryNotFoundException $exception) {
+      return response('Story not found.', 404);
+    } catch (Exception $exception) {
+      return response($exception->getMessage(), 500);
+    }
 
-    return response(
-      new StoryResource($result->getContent()),
-      $result->getHttpStatus()
-    );
+    return response(new StoryResource($story), 200);
   }
 
   public function update(UpdateStoryRequest $request)
   {
-    $result = $this->service->updateStory($request);
+    $validated = $request->validated();
 
-    return response(
-      is_object($result->getContent())
-        ? new StoryResource($result->getContent())
-        : $result->getContent(),
-      $result->getHttpStatus()
-    );
+    try {
+      $story = $this->service->updateStory(
+        $request->route('authorEmail'),
+        $request->route('title'),
+        $validated['categoryName'],
+        $validated['title'],
+        $validated['body'],
+      );
+    } catch (UserNotFoundException $exception) {
+      return response('User not found.', 404);
+    } catch (StoryNotFoundException $exception) {
+      return response('Story not found.', 404);
+    } catch (CategoryNotFoundException $exception) {
+      return response('Category not found.', 404);
+    } catch (Exception $exception) {
+      return response($exception->getMessage(), 500);
+    }
+
+    return response($story, 200);
   }
 
   public function destroy(Request $request)
   {
-    $result = $this->service->deleteStory($request);
+    try {
+      $result = $this->service->deleteStory(
+        $request->route('authorEmail'),
+        $request->route('title'),
+      );
+    } catch (UserNotFoundException $exception) {
+      return response('User not found.', 404);
+    } catch (StoryNotFoundException $exception) {
+      return response('Story not found.', 404);
+    } catch (Exception $exception) {
+      return response($exception->getMessage(), 500);
+    }
 
-    return response(
-      $result->getContent(),
-      $result->getHttpStatus()
-    );
+    return response('',204);
   }
 }

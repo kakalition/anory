@@ -13,13 +13,13 @@ class UpdateStoryRequest extends FormRequest
       return false;
     }
 
-    return $user->email == $this->route('author_email');
+    return $user->email == $this->route('authorEmail');
   }
 
   public function rules()
   {
     return [
-      'category_name' => 'string',
+      'categoryName' => 'string',
       'title' => 'string|max:255',
       'body' => 'string',
     ];
