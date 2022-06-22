@@ -27,7 +27,7 @@ class Story extends Model
   function likes()
   {
     return $this
-      ->hasMany(StoryLikeDislike::class, 'story_id')
+      ->hasMany(StoryLikeData::class, 'story_id')
       ->where('status', 1)
       ->count();
   }
@@ -35,7 +35,7 @@ class Story extends Model
   function dislikes()
   {
     return $this
-      ->hasMany(StoryLikeDislike::class, 'story_id')
+      ->hasMany(StoryLikeData::class, 'story_id')
       ->where('status', -1)
       ->count();
   }

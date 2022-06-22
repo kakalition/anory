@@ -38,14 +38,15 @@ class StoryService
       throw new UserNotFoundException();
     }
 
-    $category = Category::where('name', $categoryName)->first();
-    if ($category) {
+    $category = Category::where('name', 'ilike', "%$categoryName%")->first();
+    if (!$category) {
       throw new CategoryNotFoundException();
     }
 
     $story = Story::create([
       'author_id' => $author->id,
       'category_id' => $category->id,
+      'views' => 0,
       'title' => $title,
       'body' => $body,
     ]);
@@ -63,7 +64,7 @@ class StoryService
     }
 
     $story = Story::where('author_id', $author->id)
-      ->where('title', $title)
+      ->where('title', 'ilike', "%$title%")
       ->first();
 
     if (!$story) {
@@ -85,7 +86,7 @@ class StoryService
     }
 
     $story = Story::where('author_id', $author->id)
-      ->where('title', $title)
+      ->where('title', 'ilike', "%$title%")
       ->first();
 
     if (!$story) {
@@ -117,7 +118,7 @@ class StoryService
     }
 
     $story = Story::where('author_id', $author->id)
-      ->where('title', $title)
+      ->where('title', 'ilike', "%$title%")
       ->first();
 
     if (!$story) {

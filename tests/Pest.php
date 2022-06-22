@@ -69,7 +69,7 @@ function loginUser($email, $password)
 function createStory($email, $categoryName, $title, $body)
 {
   $story = postJson('api/users/' . $email . '/stories', [
-    'category_name' => $categoryName,
+    'categoryName' => $categoryName,
     'title' => $title,
     'body' => $body,
   ]);
@@ -77,11 +77,11 @@ function createStory($email, $categoryName, $title, $body)
   return $story;
 }
 
-function likeDislikeStory($emailSlug, $titleSlug, $likeeEmail, $status)
+function likeDislikeStory($emailSlug, $titleSlug, $likeeEmail, $likeData)
 {
   return postJson('api/users/' . $emailSlug . '/stories/' . $titleSlug . '/like-dislikes', [
     'email' => $likeeEmail,
-    'status' => $status
+    'likeData' => $likeData
   ]);
 }
 

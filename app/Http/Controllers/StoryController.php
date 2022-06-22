@@ -31,7 +31,7 @@ class StoryController extends Controller
   {
     try {
       $stories = $this->service
-        ->getUserStory($request->route('author_email'));
+        ->getUserStory($request->route('authorEmail'));
     } catch (UserNotFoundException $exception) {
       return response('User not found.', 404);
     } catch (Exception $exception) {
@@ -60,15 +60,17 @@ class StoryController extends Controller
       return response($exception->getMessage(), 500);
     }
 
-    return response($story, 200);
+    return response(new StoryResource($story), 201);
   }
 
   public function show(Request $request)
   {
+    $formattedTitle = str_replace('-', ' ', $request->route('title'));
+
     try {
       $story = $this->service->getStory(
         $request->route('authorEmail'),
-        $request->route('title')
+        $formattedTitle
       );
     } catch (UserNotFoundException $exception) {
       return response('User not found.', 404);
@@ -84,14 +86,15 @@ class StoryController extends Controller
   public function update(UpdateStoryRequest $request)
   {
     $validated = $request->validated();
+    $formattedTitle = str_replace('-', ' ', $request->route('title'));
 
     try {
       $story = $this->service->updateStory(
         $request->route('authorEmail'),
-        $request->route('title'),
-        $validated['categoryName'],
-        $validated['title'],
-        $validated['body'],
+        $formattedTitle,
+        $validated['categoryName'] ?? null,
+        $validated['title'] ?? null,
+        $validated['body'] ?? null,
       );
     } catch (UserNotFoundException $exception) {
       return response('User not found.', 404);
@@ -103,15 +106,17 @@ class StoryController extends Controller
       return response($exception->getMessage(), 500);
     }
 
-    return response($story, 200);
+    return response(new StoryResource($story), 200);
   }
 
   public function destroy(Request $request)
   {
+    $formattedTitle = str_replace('-', ' ', $request->route('title'));
+
     try {
       $result = $this->service->deleteStory(
         $request->route('authorEmail'),
-        $request->route('title'),
+        $formattedTitle,
       );
     } catch (UserNotFoundException $exception) {
       return response('User not found.', 404);
@@ -121,6 +126,6 @@ class StoryController extends Controller
       return response($exception->getMessage(), 500);
     }
 
-    return response('',204);
+    return response('' ,204);
   }
 }

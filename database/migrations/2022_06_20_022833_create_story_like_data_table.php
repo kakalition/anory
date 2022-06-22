@@ -8,7 +8,7 @@ return new class extends Migration
 {
   public function up()
   {
-    Schema::create('story_like_dislikes', function (Blueprint $table) {
+    Schema::create('story_like_data', function (Blueprint $table) {
       $table->id();
       $table->foreignId('story_id')
         ->references('id')

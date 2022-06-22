@@ -10,41 +10,6 @@ use function Pest\Laravel\seed;
 
 uses(RefreshDatabase::class);
 
-/********
- * READ *
- ********/
-
-test('when get all stories, should returns all stories (HTTP 200).', function () {
-  $response = getJson('api/stories');
-  $response->assertOk();
-  $response->assertJsonCount(0);
-});
-
-test('when get user story (already have stories), returns an array of its own stories (HTTP 200).', function () {
-  seed();
-  registerUser('Kaka', 'k@k', '00000000');
-  createStory('k@k', 'Honor', 'This is Story', 'This is the body of story.');
-
-  $response = getJson('api/users/k@k/stories');
-  $response->assertOk();
-  $response->assertJsonCount(1);
-
-  $response = getJson('api/users/k@k/stories/this-is-story');
-  $response->assertOk();
-});
-
-test('when get likeDislike data, returns likeDislike data (HTTP 200).', function () {
-  seed();
-  registerUser('Kaka', 'k@k', '00000000');
-  createStory('k@k', 'Honor', 'This is Story', 'This is the body of story.');
-  $likeData = likeDislikeStory('k@k', 'this-is-story', 'k@k', 1);
-
-  $response = getJson('api/users/k@k/stories/this-is-story/like-dislikes/' . $likeData->json('id'));
-  $response->assertOk();
-  $response->assertJson(['id' => $likeData->json('id')]);
-});
-
-
 /**********
  * CREATE *
  **********/
@@ -65,7 +30,7 @@ test('when create story, should return created story (HTTP 201).', function () {
   );
 });
 
-test('when like story, returns likeDislike data (HTTP 200).', function () {
+test('when like story, returns likeDislike data (HTTP 201).', function () {
   seed();
   registerUser('Kaka', 'k@k', '00000000');
   createStory('k@k', 'Honor', 'This is Story', 'This is the body of story.');
@@ -124,32 +89,27 @@ test('when like an already disliked story, returns story data with changed total
   ]);
 });
 
+/********
+ * READ *
+ ********/
 
-/**********
- * UPDATE *
- **********/
-
-/**********
- * DELETE *
- **********/
-
-test('when successfully remove like dislike, returns 204.', function () {
-  seed();
-  registerUser('Kaka', 'k@k', '00000000');
-  createStory('k@k', 'Honor', 'This is Story', 'This is the body of story.');
-  $like = likeDislikeStory('k@k', 'this-is-story', 'k@k', -1);
-
-  $response = deleteJson('api/users/k@k/stories/this-is-story/like-dislikes/' . $like->json('id'));
-  $response->assertNoContent();
+test('when get all stories, should returns all stories (HTTP 200).', function () {
+  $response = getJson('api/stories');
+  $response->assertOk();
+  $response->assertJsonCount(0);
 });
 
-test('when remove non-existent like dislike data, returns 404.', function () {
+test('when get user story (already have stories), returns an array of its own stories (HTTP 200).', function () {
   seed();
   registerUser('Kaka', 'k@k', '00000000');
   createStory('k@k', 'Honor', 'This is Story', 'This is the body of story.');
 
-  $response = deleteJson('api/users/k@k/stories/this-is-story/like-dislikes/0');
-  $response->assertNotFound();
+  $response = getJson('api/users/k@k/stories');
+  $response->assertOk();
+  $response->assertJsonCount(1);
+
+  $response = getJson('api/users/k@k/stories/this-is-story');
+  $response->assertOk();
 });
 
 test('when get story, increment total views.', function () {
@@ -172,6 +132,22 @@ test('when get story, increment total views.', function () {
   ]);
 });
 
+
+test('when get likeDislike data, returns likeDislike data (HTTP 200).', function () {
+  seed();
+  registerUser('Kaka', 'k@k', '00000000');
+  createStory('k@k', 'Honor', 'This is Story', 'This is the body of story.');
+  $likeData = likeDislikeStory('k@k', 'this-is-story', 'k@k', 1);
+
+  $response = getJson('api/users/k@k/stories/this-is-story/like-dislikes?email=k@k');
+  $response->assertOk();
+  $response->assertJson(['id' => $likeData->json('id')]);
+});
+
+/**********
+ * UPDATE *
+ **********/
+
 test('when update non-existent story, returns 404.', function () {
   seed();
   registerUser('Kaka', 'k@k', '00000000');
@@ -189,7 +165,7 @@ test('when successfully update story, returns 200 and correct data.', function (
   createStory('k@k', 'Honor', 'This is Story', 'This is the body of story.');
 
   $response = putJson('api/users/k@k/stories/this-is-story', [
-    'category_name' => 'Education',
+    'categoryName' => 'Education',
     'title' => 'Updated Title'
   ]);
   $response->assertOk();
@@ -199,6 +175,10 @@ test('when successfully update story, returns 200 and correct data.', function (
     'body' => 'This is the body of story.'
   ]);
 });
+
+/**********
+ * DELETE *
+ **********/
 
 test('when successfully delete story, returns 204.', function () {
   seed();
@@ -214,5 +194,25 @@ test('when delete non-existent story, returns 404.', function () {
   registerUser('Kaka', 'k@k', '00000000');
 
   $response = deleteJson('api/users/k@k/stories/this-is-story');
+  $response->assertNotFound();
+});
+
+test('when successfully remove like dislike, returns 204.', function () {
+  seed();
+  registerUser('Kaka', 'k@k', '00000000');
+  createStory('k@k', 'Honor', 'This is Story', 'This is the body of story.');
+  likeDislikeStory('k@k', 'this-is-story', 'k@k', -1);
+
+  $response = deleteJson('api/users/k@k/stories/this-is-story/like-dislikes/?email=k@k');
+  $response->dump();
+  $response->assertNoContent();
+});
+
+test('when remove non-existent like dislike data, returns 404.', function () {
+  seed();
+  registerUser('Kaka', 'k@k', '00000000');
+  createStory('k@k', 'Honor', 'This is Story', 'This is the body of story.');
+
+  $response = deleteJson('api/users/k@k/stories/this-is-story/like-dislikes/0');
   $response->assertNotFound();
 });
