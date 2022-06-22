@@ -4,6 +4,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\StoryController;
 use App\Http\Controllers\StoryLikeDataController;
 use App\Http\Controllers\StoryLikeDislikeController;
+use App\Http\Middleware\EnsureLoggedIn;
 use App\Models\StoryLikeData;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -27,18 +28,22 @@ Route::get('/stories', [StoryController::class, 'index']);
 Route::get('/stories/{category_name}', [StoryController::class, 'indexByCategory']);
 
 Route::controller(StoryController::class)->prefix('users/{authorEmail}')->group(function () {
-  Route::get('/stories', 'userIndex');
-  Route::post('/stories', 'store');
   Route::get('/stories/{title}', 'show');
-  Route::put('/stories/{title}', 'update');
-  Route::patch('/stories/{title}', 'update');
-  Route::delete('/stories/{title}', 'destroy');
+  Route::middleware(EnsureLoggedIn::class)->group(function () {
+    Route::get('/stories', 'userIndex');
+    Route::post('/stories', 'store');
+    Route::put('/stories/{title}', 'update');
+    Route::patch('/stories/{title}', 'update');
+    Route::delete('/stories/{title}', 'destroy');
+  });
 });
 
 Route::controller(StoryLikeDataController::class)->prefix('users/{authorEmail}/stories/{title}')->group(function () {
   Route::get('/like-dislikes', 'show');
-  Route::post('/like-dislikes', 'store');
-  Route::delete('/like-dislikes', 'destroy');
+  Route::middleware(EnsureLoggedIn::class)->group(function () {
+    Route::post('/like-dislikes', 'store');
+    Route::delete('/like-dislikes', 'destroy');
+  });
 });
 
 Route::controller(CommentController::class)->prefix('/users/{author_email}/stories/{title}')->group(function () {

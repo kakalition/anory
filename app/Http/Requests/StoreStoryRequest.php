@@ -9,14 +9,7 @@ class StoreStoryRequest extends FormRequest
 {
   public function authorize()
   {
-    $user = $this->user();
-    if ($user == null) {
-      throw new HttpResponseException(
-        response('Unauthenticated.', 401)
-      );
-    }
-
-    return $user->email == $this->route('authorEmail');
+    return $this->user()->email == $this->route('authorEmail');
   }
 
   public function rules()

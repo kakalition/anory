@@ -12,6 +12,16 @@ uses(RefreshDatabase::class);
  * CREATE *
  **********/
 
+ test('when like story (not logged in), returns error (HTTP 401)', function() {
+  seed();
+  registerUser('Kaka', 'k@k', '00000000');
+  createStory('k@k', 'Honor', 'This is Story', 'This is the body of story.');
+  logout();
+
+  $response = likeDislikeStory('k@k', 'this-is-story', 'k@k', 1);
+  $response->assertUnauthorized();
+ });
+
 test('when like story, returns likeDislike data (HTTP 201).', function () {
   seed();
   registerUser('Kaka', 'k@k', '00000000');
@@ -90,22 +100,21 @@ test('when get likeDislike data, returns likeDislike data (HTTP 200).', function
  * DELETE *
  **********/
 
-test('when successfully remove like dislike, returns 204.', function () {
-  seed();
-  registerUser('Kaka', 'k@k', '00000000');
-  createStory('k@k', 'Honor', 'This is Story', 'This is the body of story.');
-  likeDislikeStory('k@k', 'this-is-story', 'k@k', -1);
-
-  $response = deleteJson('api/users/k@k/stories/this-is-story/like-dislikes/?email=k@k');
-  $response->dump();
-  $response->assertNoContent();
-});
-
-test('when remove non-existent like dislike data, returns 404.', function () {
+test('when remove non-existent like dislike data, returns error. (HTTP 404)', function () {
   seed();
   registerUser('Kaka', 'k@k', '00000000');
   createStory('k@k', 'Honor', 'This is Story', 'This is the body of story.');
 
   $response = deleteJson('api/users/k@k/stories/this-is-story/like-dislikes/0');
   $response->assertNotFound();
+});
+
+test('when successfully remove like dislike, returns no content. (HTTP 204)', function () {
+  seed();
+  registerUser('Kaka', 'k@k', '00000000');
+  createStory('k@k', 'Honor', 'This is Story', 'This is the body of story.');
+  likeDislikeStory('k@k', 'this-is-story', 'k@k', -1);
+
+  $response = deleteJson('api/users/k@k/stories/this-is-story/like-dislikes/?email=k@k');
+  $response->assertNoContent();
 });

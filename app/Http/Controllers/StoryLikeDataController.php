@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Exceptions\AlreadyDislikedException;
-use App\Exceptions\AlreadyLikedException;
 use App\Exceptions\InvalidLikeDataException;
 use App\Exceptions\StoryLikeDataNotFoundException;
 use App\Exceptions\StoryNotFoundException;
