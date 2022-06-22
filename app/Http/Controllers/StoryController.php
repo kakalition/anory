@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Exceptions\CategoryNotFoundException;
 use App\Exceptions\StoryNotFoundException;
 use App\Exceptions\UserNotFoundException;
+use App\Http\Requests\DestroyStoryRequest;
 use App\Http\Requests\StoreStoryRequest;
 use App\Http\Requests\UpdateStoryRequest;
 use App\Http\Resources\StoryResource;
@@ -109,7 +110,7 @@ class StoryController extends Controller
     return response(new StoryResource($story), 200);
   }
 
-  public function destroy(Request $request)
+  public function destroy(DestroyStoryRequest $request)
   {
     $formattedTitle = str_replace('-', ' ', $request->route('title'));
 

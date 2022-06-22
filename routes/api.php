@@ -41,7 +41,7 @@ Route::controller(StoryLikeDataController::class)->prefix('users/{authorEmail}/s
   Route::delete('/like-dislikes', 'destroy');
 });
 
-Route::controller(CommentController::class)->prefix('/users/{author_email}/stories/{story_title}')->group(function () {
+Route::controller(CommentController::class)->prefix('/users/{author_email}/stories/{title}')->group(function () {
   Route::get('/comments', 'index');
   Route::post('/comments', 'store');
   Route::get('/comments/{comment_id}', 'show');
@@ -49,7 +49,7 @@ Route::controller(CommentController::class)->prefix('/users/{author_email}/stori
   Route::patch('/comments/{comment_id}', 'update');
   Route::delete('/comments/{comment_id}', 'delete');
 
-  Route::get('/comments/{comment_id}', 'getLikeDislike');
-  Route::post('/comments/{comment_id}', 'createLikeDislike');
-  Route::delete('/comments/{comment_id}', 'removeLikeDislike');
+  Route::get('/comments/{comment_id}', 'show');
+  Route::post('/comments/{comment_id}', 'store');
+  Route::delete('/comments/{comment_id}', 'destroy');
 });

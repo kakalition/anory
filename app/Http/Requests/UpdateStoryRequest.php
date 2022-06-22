@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class UpdateStoryRequest extends FormRequest
 {
@@ -10,7 +11,9 @@ class UpdateStoryRequest extends FormRequest
   {
     $user = $this->user();
     if ($user == null) {
-      return false;
+      throw new HttpResponseException(
+        response('Unauthenticated.', 401)
+      );
     }
 
     return $user->email == $this->route('authorEmail');
@@ -19,9 +22,9 @@ class UpdateStoryRequest extends FormRequest
   public function rules()
   {
     return [
-      'categoryName' => 'string',
-      'title' => 'string|max:255',
-      'body' => 'string',
+      'categoryName' => 'string|nullable',
+      'title' => 'string|nullable|max:255',
+      'body' => 'string|nullable',
     ];
   }
 }

@@ -14,6 +14,8 @@
 use App\Models\Category;
 use App\Models\User;
 
+use function Pest\Laravel\deleteJson;
+use function Pest\Laravel\patchJson;
 use function Pest\Laravel\postJson;
 
 uses(Tests\TestCase::class)->in('Feature');
@@ -66,7 +68,11 @@ function loginUser($email, $password)
   return $user;
 }
 
-function createStory($email, $categoryName, $title, $body)
+function logout() {
+  postJson('logout');
+}
+
+function createStory(String $email, ?String $categoryName = null, ?String $title = null, ?String $body = null)
 {
   $story = postJson('api/users/' . $email . '/stories', [
     'categoryName' => $categoryName,
@@ -76,6 +82,24 @@ function createStory($email, $categoryName, $title, $body)
 
   return $story;
 }
+
+function updateStory(String $email, String $title, ?String $modifiedCategoryName = null, ?String $modifiedTitle = null, ?String $modifiedBody = null)
+{
+  $story = patchJson("api/users/$email/stories/$title", [
+    'categoryName' => $modifiedCategoryName,
+    'title' => $modifiedTitle,
+    'body' => $modifiedBody,
+  ]);
+
+  return $story;
+}
+
+function deleteStory(String $email, String $title)
+{
+  $response = deleteJson("api/users/$email/stories/$title");
+  return $response;
+}
+
 
 function likeDislikeStory($emailSlug, $titleSlug, $likeeEmail, $likeData)
 {
