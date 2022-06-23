@@ -1,13 +1,12 @@
 import Spacer from '../Utilities/Spacer';
 import AnnotationIcon from './Icons/AnnotationIcon';
-import '../../Stylesheets/AnoryLogo/AnoryLogo.css';
 
 export default function AnoryLogo() {
   return (
-    <div className="d-flex flex-row align-items-center justify-content-center">
-      <div id="container"><AnnotationIcon /></div>
+    <div className="flex flex-row items-center">
+      <div className="w-16 h-16 stroke-gray-900 stroke-[0.1rem]"><AnnotationIcon /></div>
       <Spacer width="1rem" />
-      <p id="logo-text">Anory</p>
+      <p className="font-raleway text-4xl font-semibold text-black">Anory</p>
     </div>
   );
 }
