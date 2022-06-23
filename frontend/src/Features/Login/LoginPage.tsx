@@ -13,12 +13,22 @@ export default function LoginPage() {
         <form>
           <FormControl>
             <FormLabel htmlFor="email">Email address</FormLabel>
-            <Input id="email" type="email" placeholder="joseph@mail.com" />
+            <Input
+              id="email"
+              type="email"
+              placeholder="joseph@mail.com"
+              focusBorderColor="#232323"
+            />
           </FormControl>
           <Spacer height="1rem" />
           <FormControl>
             <FormLabel htmlFor="password">Password</FormLabel>
-            <Input id="password" type="password" placeholder="••••••••" />
+            <Input
+              id="password"
+              type="password"
+              placeholder="••••••••"
+              focusBorderColor="#232323"
+            />
           </FormControl>
           <Spacer height="2rem" />
           <Button
