@@ -3,6 +3,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import App from './App';
+import HomePage from './Features/Home/HomePage';
 import LoginPage from './Features/Login/LoginPage';
 import RegisterPage from './Features/Register/RegisterPage';
 import './index.css';
@@ -15,6 +16,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route path="/" element={<App />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/app" element={<HomePage />} />
         </Routes>
       </BrowserRouter>
     </ChakraProvider>
