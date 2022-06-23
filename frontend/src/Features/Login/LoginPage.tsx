@@ -1,10 +1,12 @@
 import { Button, Form } from 'react-bootstrap';
+import AnoryLogo from '../Component/AnoryLogo';
 import Spacer from '../Utilities/Spacer';
+import '../../Stylesheets/LoginPage/LoginPage.css';
 
 export default function LoginPage() {
   return (
     <div
-      className="vh-100 vw-100 container-fluid d-flex align-items-center justify-content-center"
+      className="vh-100 vw-100 position-relative container-fluid d-flex flex-column align-items-center justify-content-center"
       style={{ backgroundColor: '#FAFAFA' }}
     >
       <Form
@@ -30,10 +32,6 @@ export default function LoginPage() {
         <Button
           variant="primary"
           type="submit"
-          style={{
-            paddingTop: '0.7rem',
-            paddingBottom: '0.7rem',
-          }}
         >
           Login
         </Button>
@@ -44,6 +42,9 @@ export default function LoginPage() {
           <a href="">Sign up here</a>
         </p>
       </Form>
+      <div id="logo-container">
+        <AnoryLogo />
+      </div>
     </div>
   );
 }
