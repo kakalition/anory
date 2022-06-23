@@ -1,10 +1,22 @@
 import {
   Button, FormControl, FormLabel, Input,
 } from '@chakra-ui/react';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import AnoryLogo from '../Component/AnoryLogo';
 import Spacer from '../Utilities/Spacer';
 
 export default function LoginPage() {
+  const navigator = useNavigate();
+
+  const onSignUpClickListener: React.MouseEventHandler = () => {
+    navigator('/register');
+  };
+
+  const onSignInClickListener: React.MouseEventHandler = () => {
+    console.log('implement');
+  };
+
   return (
     <div className="flex relative justify-center items-center w-screen h-screen bg-gray-50">
       <div className="p-16 w-[40%] bg-white rounded-lg">
@@ -37,6 +49,7 @@ export default function LoginPage() {
             textColor="#FFFFFF"
             _hover={{ bg: '#FF8182' }}
             className="w-full"
+            onClick={onSignInClickListener}
           >
             Sign In
           </Button>
@@ -44,7 +57,13 @@ export default function LoginPage() {
         <Spacer height="3rem" />
         <p>
           {'Don\'t have an account, yet? '}
-          <button className="text-blue-600 underline" type="button">Sign up here</button>
+          <button
+            className="text-blue-600 underline"
+            type="button"
+            onClick={onSignUpClickListener}
+          >
+            Sign up here
+          </button>
         </p>
       </div>
       <div className="absolute bottom-6">
