@@ -1,5 +1,9 @@
-import { Select } from '@chakra-ui/react';
+import {
+  Button, FormControl, FormLabel, Input, Modal, ModalBody, ModalCloseButton, ModalContent,
+  ModalFooter, ModalHeader, ModalOverlay, Select, Textarea, useDisclosure,
+} from '@chakra-ui/react';
 import { useState } from 'react';
+import AnoryPrimaryButtonComponent from '../Component/AnoryPrimaryButtonComponent';
 import SideNavBarComponent from '../Component/SideNavBarComponent';
 import StoryTileComponent from '../Component/StoryTileComponent';
 import TopBarComponent from '../Component/TopBarComponent';
@@ -50,6 +54,8 @@ const dummyDatas = [
 
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState('alls');
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   const elements = dummyDatas.map((element) => (
     <StoryTileComponent
       title={element.title}
@@ -68,7 +74,7 @@ export default function HomePage() {
       </div>
       <div className="flex relative flex-row w-full h-[92%]">
         <div className="w-[20%] h-full">
-          <SideNavBarComponent activeTab={activeTab} />
+          <SideNavBarComponent activeTab={activeTab} onFABClick={onOpen} />
         </div>
         <div className="overflow-y-scroll pt-8 pr-16 pl-4 w-[80%]">
           <div className="flex flex-row gap-2 justify-between items-center">
@@ -92,6 +98,36 @@ export default function HomePage() {
           <Spacer height="1.5rem" />
         </div>
       </div>
+
+      <Modal isOpen={isOpen} onClose={onClose} size="6xl" isCentered>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Post New Story</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <form>
+              <FormControl>
+                <FormLabel htmlFor="title">Title</FormLabel>
+                <Input id="title" type="text" />
+              </FormControl>
+              <Spacer height="1.5rem" />
+              <FormControl>
+                <FormLabel htmlFor="body">Body</FormLabel>
+                <Textarea
+                  id="body"
+                  minHeight="10rem"
+                  maxHeight="30rem"
+                />
+              </FormControl>
+            </form>
+          </ModalBody>
+          <ModalFooter>
+            <Button variant="ghost">Cancel</Button>
+            <Spacer width="2rem" />
+            <AnoryPrimaryButtonComponent text="Post" onClick={() => console.log()} paddingX="2rem" />
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </div>
   );
 }

@@ -1,13 +1,14 @@
+import React from 'react';
 import Spacer from '../Utilities/Spacer';
 import AnoryLogo from './AnoryLogo';
 import AnoryPrimaryButtonComponent from './AnoryPrimaryButtonComponent';
 import AnorySideNavButtonComponent from './AnorySideNavButtonComponent';
 
-export default function SideNavBarComponent({ activeTab }: { activeTab: string }) {
+export default function SideNavBarComponent({ activeTab, onFABClick }: { activeTab: string, onFABClick: React.MouseEventHandler }) {
   return (
     <div className="flex flex-col justify-between py-8 pr-4 pl-16 w-full h-full">
       <div className="flex flex-col gap-3 w-full">
-        <AnoryPrimaryButtonComponent text="New Post" onClick={() => console.log('implement')} />
+        <AnoryPrimaryButtonComponent text="New Post" onClick={onFABClick} />
         <Spacer height="0.75rem" />
         <AnorySideNavButtonComponent stateKey="alls" currentState={activeTab} text="All Stories" />
         <AnorySideNavButtonComponent stateKey="a" currentState={activeTab} text="Most Views" />
