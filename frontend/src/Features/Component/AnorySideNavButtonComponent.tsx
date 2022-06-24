@@ -18,7 +18,7 @@ export default function AnorySideNavButtonComponent({ stateKey, text, currentSta
   };
 
   const hoverBg = {
-    active: 'transparent',
+    active: '',
     inactive: '#FFF0F0',
   };
 

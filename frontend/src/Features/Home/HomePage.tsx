@@ -2,6 +2,7 @@ import {
   Button, Input, InputGroup, InputLeftElement,
 } from '@chakra-ui/react';
 import { useState } from 'react';
+import AnoryLogo from '../Component/AnoryLogo';
 import AnoryPrimaryButtonComponent from '../Component/AnoryPrimaryButtonComponent';
 import AnorySideNavButtonComponent from '../Component/AnorySideNavButtonComponent';
 import AnnotationIcon from '../Component/Icons/AnnotationIcon';
@@ -36,16 +37,32 @@ export default function HomePage() {
   const [activeTab, setActiveTab] = useState('alls');
 
   return (
-    <div className="w-screen h-screen bg-[#FFFCFC]">
+    <div className="flex flex-col w-screen h-screen bg-[#FFFCFC]">
       <TopBarComponent />
-      <Spacer height="3rem" />
-      <div className="flex flex-col w-full h-full">
-        <div className="flex flex-col gap-3 pr-8 pl-16 w-[20%] h-full">
-          <AnoryPrimaryButtonComponent text="New Post" onClick={() => console.log('implement')} />
-          <AnorySideNavButtonComponent stateKey="alls" currentState={activeTab} text="All Stories" />
-          <AnorySideNavButtonComponent stateKey="a" currentState={activeTab} text="Most Views" />
-          <AnorySideNavButtonComponent stateKey="b" currentState={activeTab} text="Most Likes" />
-          <AnorySideNavButtonComponent stateKey="c" currentState={activeTab} text="Most Replies" />
+      <div className="flex flex-row w-full h-full">
+        <div className="flex flex-col justify-between py-8 pr-8 pl-16 w-[20%] h-full">
+          <div className="flex flex-col gap-3 w-full">
+            <AnoryPrimaryButtonComponent text="New Post" onClick={() => console.log('implement')} />
+            <AnorySideNavButtonComponent stateKey="alls" currentState={activeTab} text="All Stories" />
+            <AnorySideNavButtonComponent stateKey="a" currentState={activeTab} text="Most Views" />
+            <AnorySideNavButtonComponent stateKey="b" currentState={activeTab} text="Most Likes" />
+            <AnorySideNavButtonComponent stateKey="c" currentState={activeTab} text="Most Replies" />
+          </div>
+          <div className="w-full">
+            <AnoryLogo />
+            <Spacer height="1rem" />
+            <div className="flex flex-row">
+              <button type="button">Terms of service</button>
+              <Spacer width="0.5rem" />
+              <button type="button">Accessibility</button>
+            </div>
+            <Spacer height="0.5rem" />
+            <div className="flex flex-row">
+              <button type="button">Privacy policy</button>
+              <Spacer width="0.5rem" />
+              <button type="button">Cookie policy</button>
+            </div>
+          </div>
         </div>
         <div className="w-[80%] h-full" />
       </div>
