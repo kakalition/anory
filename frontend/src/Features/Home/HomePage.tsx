@@ -7,8 +7,8 @@ import AnoryLogo from '../Component/AnoryLogo';
 import AnoryPrimaryButtonComponent from '../Component/AnoryPrimaryButtonComponent';
 import AnorySideNavButtonComponent from '../Component/AnorySideNavButtonComponent';
 import AnnotationIcon from '../Component/Icons/AnnotationIcon';
+import EyeIcon from '../Component/Icons/EyeIcon';
 import FilledChatAltIcon from '../Component/Icons/FilledChatAltIcon';
-import FilledChatAlt from '../Component/Icons/FilledChatAltIcon';
 import FilledHeartIcon from '../Component/Icons/FilledHeartIcon';
 import SearchIcon from '../Component/Icons/SearchIcon';
 import Spacer from '../Utilities/Spacer';
@@ -67,8 +67,96 @@ function SideNavBarComponent({ activeTab }: { activeTab: string }) {
   );
 }
 
+function StoryTileComponent({
+  title, body, totalLikes, totalComments, totalViews, uploadedAt,
+}: { title: string, body: string, totalLikes: number, totalComments: number, totalViews: number, uploadedAt: string }) {
+  return (
+    <Box width="full" bgColor="#FFFFFF" shadow="base" borderRadius="0.5rem" padding="1.5rem">
+      <p className="font-roboto text-3xl font-medium">{title}</p>
+      <Spacer height="1rem" />
+      <p className="font-roboto">{body}</p>
+      <Spacer height="1rem" />
+      <div className="flex flex-row justify-between w-full">
+        <div className="flex flex-row">
+          <div className="flex flex-row items-center">
+            <div className="w-8 h-8 fill-[#FF4033]">
+              <FilledHeartIcon />
+            </div>
+            <Spacer width="0.7rem" />
+            <p className="pt-[0.1rem] font-roboto text-lg">{totalLikes}</p>
+          </div>
+          <Spacer width="1rem" />
+          <div className="flex flex-row items-center">
+            <div className="w-8 h-8 fill-[#549DE1]">
+              <FilledChatAltIcon />
+            </div>
+            <Spacer width="0.7rem" />
+            <p className="pt-[0.1rem] font-roboto text-lg">{totalComments}</p>
+          </div>
+        </div>
+        <div className="flex flex-row items-center">
+          <div className="flex flex-row items-center">
+            <div className="w-8 h-8 stroke-gray-900 stroke-2">
+              <EyeIcon />
+            </div>
+            <Spacer width="0.7rem" />
+            <p className="pt-[0.1rem] font-roboto text-lg">{totalViews}</p>
+          </div>
+          <Spacer width="1.5rem" />
+          <p className="pt-[0.2rem]">{`Uploaded at: ${uploadedAt}`}</p>
+        </div>
+      </div>
+    </Box>
+  );
+}
+
+const dummyDatas = [
+  {
+    title: 'Weird Things',
+    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ',
+    totalLikes: 20,
+    totalComments: 12,
+    totalViews: 9,
+    uploadedAt: 'Juny 24, 2022',
+  },
+  {
+    title: 'Funky Stranger',
+    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ',
+    totalLikes: 109,
+    totalComments: 20,
+    totalViews: 11,
+    uploadedAt: 'Juny 24, 2022',
+  },
+  {
+    title: 'Horrible Creature at Night',
+    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ',
+    totalLikes: 92,
+    totalComments: 11,
+    totalViews: 27,
+    uploadedAt: 'Juny 24, 2022',
+  },
+  {
+    title: 'Magical Wands',
+    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ',
+    totalLikes: 1,
+    totalComments: 9,
+    totalViews: 22,
+    uploadedAt: 'Juny 24, 2022',
+  },
+];
+
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState('alls');
+  const elements = dummyDatas.map((element) => (
+    <StoryTileComponent
+      title={element.title}
+      body={element.body}
+      totalLikes={element.totalLikes}
+      totalComments={element.totalComments}
+      totalViews={element.totalViews}
+      uploadedAt={element.uploadedAt}
+    />
+  ));
 
   return (
     <div className="flex flex-col w-screen h-screen bg-[#FFFCFC]">
@@ -91,33 +179,9 @@ export default function HomePage() {
             </Select>
           </div>
           <Spacer height="1.5rem" />
-          <Box width="full" bgColor="#FFFFFF" shadow="base" borderRadius="0.5rem" padding="1.5rem">
-            <p className="font-roboto text-3xl font-medium">Stranger Things</p>
-            <Spacer height="1rem" />
-            <p className="font-roboto">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-              incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-              quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat
-            </p>
-            <Spacer height="1rem" />
-            <Flex>
-              <div className="flex flex-row items-center">
-                <div className="w-8 h-8 fill-[#FF4033]">
-                  <FilledHeartIcon />
-                </div>
-                <Spacer width="0.7rem" />
-                <p className="pt-[0.1rem] font-roboto text-lg">82</p>
-              </div>
-              <Spacer width='1rem' />
-              <div className="flex flex-row items-center">
-                <div className="w-8 h-8 fill-[#549DE1]">
-                  <FilledChatAltIcon />
-                </div>
-                <Spacer width="0.7rem" />
-                <p className="pt-[0.1rem] font-roboto text-lg">82</p>
-              </div>
-            </Flex>
-          </Box>
+          <div className="flex flex-col gap-2">
+            {elements}
+          </div>
         </div>
       </div>
     </div>
