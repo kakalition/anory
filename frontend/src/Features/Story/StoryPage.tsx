@@ -1,13 +1,52 @@
 import { Button, Select, Textarea } from '@chakra-ui/react';
 import { useState } from 'react';
 import AnoryPrimaryButtonComponent from '../Component/AnoryPrimaryButtonComponent';
+import CommentSectionComponent from '../Component/CommentSectionComponent';
+import CommentTileComponent from '../Component/CommentTileComponent';
+import FilledHeartIcon from '../Component/Icons/FilledHeartIcon';
 import SideNavBarComponent from '../Component/SideNavBarComponent';
 import StoryTileComponent from '../Component/StoryTileComponent';
 import TopBarComponent from '../Component/TopBarComponent';
 import Spacer from '../Utilities/Spacer';
 
+const dummyDatas = [
+  {
+    userId: 'jh31hjk132h4kj3h4jk2h4k3j1h4jkn3kj4n',
+    comment: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex...',
+    totalLikes: 82,
+    postDate: '1 hour ago',
+  },
+  {
+    userId: 'jh31hjk132h4kj3h4jk2h4k3j1h4jkn3kj4n',
+    comment: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex...',
+    totalLikes: 82,
+    postDate: '1 hour ago',
+  },
+  {
+    userId: 'jh31hjk132h4kj3h4jk2h4k3j1h4jkn3kj4n',
+    comment: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex...',
+    totalLikes: 82,
+    postDate: '1 hour ago',
+  },
+  {
+    userId: 'jh31hjk132h4kj3h4jk2h4k3j1h4jkn3kj4n',
+    comment: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex...',
+    totalLikes: 82,
+    postDate: '1 hour ago',
+  },
+];
+
 export default function StoryPage() {
   const [activeTab, setActiveTab] = useState('alls');
+
+  const elements = dummyDatas.map((element) => (
+    <CommentTileComponent
+      userId={element.userId}
+      postDate={element.postDate}
+      comment={element.comment}
+      totalLikes={element.totalLikes}
+    />
+  ));
 
   return (
     <div className="flex flex-col w-screen h-screen bg-[#FFFCFC]">
@@ -46,30 +85,11 @@ export default function StoryPage() {
             />
           </div>
           <Spacer height="2rem" />
-          <div className="flex flex-row justify-between w-full">
-            <div className="flex flex-row items-center">
-              <p className="font-roboto text-3xl text-black ">Comments</p>
-              <Spacer width="1rem" />
-              <p className="font-roboto text-3xl text-gray-500">| 34</p>
-            </div>
-            <div className="flex flex-row gap-4 items-center">
-              <Select placeholder="Sort Order" height="3rem">
-                <option value="ascending">Ascending</option>
-                <option value="descending">Descending</option>
-              </Select>
-              <Select placeholder="Sort By" height="3rem">
-                <option value="ascending">Latest</option>
-                <option value="descending">Oldest</option>
-              </Select>
-              <Button height="3rem" paddingX="3rem" variant="outline">Comment</Button>
-            </div>
+          <CommentSectionComponent />
+          <div className="flex flex-col gap-6 w-full">
+            {elements}
           </div>
           <Spacer height="2rem" />
-          <Textarea placeholder="That was amazing!" />
-          <Spacer height="1rem" />
-          <div className="flex flex-row justify-end w-full">
-            <AnoryPrimaryButtonComponent onClick={() => console.log('implements')} text="Post Comment" />
-          </div>
         </div>
       </div>
     </div>
