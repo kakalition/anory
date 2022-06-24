@@ -15,7 +15,7 @@ import Spacer from '../Utilities/Spacer';
 
 function TopBarComponent() {
   return (
-    <div className="flex flex-row justify-between items-center py-3 px-16 w-full bg-white border-b-2 border-b-gray-200">
+    <div className="flex flex-row justify-between items-center py-3 px-16 w-full h-full bg-white border-b-2 border-b-gray-200">
       <div className="w-12 h-12 stroke-gray-900 stroke-[0.08rem]">
         <AnnotationIcon />
       </div>
@@ -39,7 +39,7 @@ function TopBarComponent() {
 
 function SideNavBarComponent({ activeTab }: { activeTab: string }) {
   return (
-    <div className="flex flex-col justify-between py-8 pr-8 pl-16 w-[20%] h-full">
+    <div className="flex flex-col justify-between py-8 pr-4 pl-16 w-full h-full">
       <div className="flex flex-col gap-3 w-full">
         <AnoryPrimaryButtonComponent text="New Post" onClick={() => console.log('implement')} />
         <Spacer height="0.75rem" />
@@ -136,11 +136,19 @@ const dummyDatas = [
     uploadedAt: 'Juny 24, 2022',
   },
   {
-    title: 'Magical Wands',
+    title: 'Funky Stranger',
     body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ',
-    totalLikes: 1,
-    totalComments: 9,
-    totalViews: 22,
+    totalLikes: 109,
+    totalComments: 20,
+    totalViews: 11,
+    uploadedAt: 'Juny 24, 2022',
+  },
+  {
+    title: 'Horrible Creature at Night',
+    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ',
+    totalLikes: 92,
+    totalComments: 11,
+    totalViews: 27,
     uploadedAt: 'Juny 24, 2022',
   },
 ];
@@ -160,10 +168,14 @@ export default function HomePage() {
 
   return (
     <div className="flex flex-col w-screen h-screen bg-[#FFFCFC]">
-      <TopBarComponent />
-      <div className="flex flex-row w-full h-full">
-        <SideNavBarComponent activeTab={activeTab} />
-        <div className="pt-8 pr-16 w-[80%] h-full">
+      <div className="w-full h-[8%]">
+        <TopBarComponent />
+      </div>
+      <div className="flex relative flex-row w-full h-[92%]">
+        <div className="w-[20%] h-full">
+          <SideNavBarComponent activeTab={activeTab} />
+        </div>
+        <div className="overflow-y-scroll pt-8 pr-16 pl-4 w-[80%]">
           <div className="flex flex-row gap-2 justify-between items-center">
             <Select placeholder="Sort Order" height="3rem">
               <option value="ascending">Ascending</option>
@@ -179,9 +191,10 @@ export default function HomePage() {
             </Select>
           </div>
           <Spacer height="1.5rem" />
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-6">
             {elements}
           </div>
+          <Spacer height="1.5rem" />
         </div>
       </div>
     </div>
