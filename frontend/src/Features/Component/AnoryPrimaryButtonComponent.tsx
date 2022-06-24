@@ -10,7 +10,6 @@ export default function AnoryPrimaryButtonComponent({
       bg="#FF9899"
       textColor="#FFFFFF"
       _hover={{ bg: '#FF8182' }}
-      className="w-full"
       onClick={onClick}
     >
       {text}

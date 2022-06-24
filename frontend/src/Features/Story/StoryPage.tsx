@@ -1,5 +1,6 @@
-import { Select } from '@chakra-ui/react';
+import { Button, Select, Textarea } from '@chakra-ui/react';
 import { useState } from 'react';
+import AnoryPrimaryButtonComponent from '../Component/AnoryPrimaryButtonComponent';
 import SideNavBarComponent from '../Component/SideNavBarComponent';
 import StoryTileComponent from '../Component/StoryTileComponent';
 import TopBarComponent from '../Component/TopBarComponent';
@@ -44,7 +45,31 @@ export default function StoryPage() {
               uploadedAt="June 24, 2022"
             />
           </div>
-          <Spacer height="1.5rem" />
+          <Spacer height="2rem" />
+          <div className="flex flex-row justify-between w-full">
+            <div className="flex flex-row items-center">
+              <p className="font-roboto text-3xl text-black ">Comments</p>
+              <Spacer width="1rem" />
+              <p className="font-roboto text-3xl text-gray-500">| 34</p>
+            </div>
+            <div className="flex flex-row gap-4 items-center">
+              <Select placeholder="Sort Order" height="3rem">
+                <option value="ascending">Ascending</option>
+                <option value="descending">Descending</option>
+              </Select>
+              <Select placeholder="Sort By" height="3rem">
+                <option value="ascending">Latest</option>
+                <option value="descending">Oldest</option>
+              </Select>
+              <Button height="3rem" paddingX="3rem" variant="outline">Comment</Button>
+            </div>
+          </div>
+          <Spacer height="2rem" />
+          <Textarea placeholder="That was amazing!" />
+          <Spacer height="1rem" />
+          <div className="flex flex-row justify-end w-full">
+            <AnoryPrimaryButtonComponent onClick={() => console.log('implements')} text="Post Comment" />
+          </div>
         </div>
       </div>
     </div>
