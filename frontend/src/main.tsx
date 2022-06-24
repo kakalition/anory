@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import App from './App';
 import HomePage from './Features/Home/HomePage';
+import LandingPage from './Features/LandingPage/LandingPage';
 import LoginPage from './Features/Login/LoginPage';
 import RegisterPage from './Features/Register/RegisterPage';
 import StoryPage from './Features/Story/StoryPage';
@@ -14,7 +15,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <ChakraProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<App />} />
+          <Route path="/" element={<LandingPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/app" element={<HomePage />} />
