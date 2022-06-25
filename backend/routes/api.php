@@ -7,6 +7,7 @@ use App\Http\Controllers\StoryLikeDislikeController;
 use App\Http\Middleware\EnsureLoggedIn;
 use App\Models\StoryLikeData;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,6 +20,15 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
+Route::post('/te', function () {
+  Cache::put('test', 'This is test');
+});
+
+Route::get('/te', function () {
+  return Cache::get('test');
+});
+
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
   return $request->user();
