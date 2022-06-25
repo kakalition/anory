@@ -1,11 +1,15 @@
-/** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    './index.html',
-    './src/**/*.{ts,tsx}'
+    "./index.html",
+    "./src/**/*.{ts,tsx}"
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        'raleway': ['Raleway', 'sans-serif'],
+        'roboto': ['Roboto', 'sans-serif']
+      }
+    },
   },
   plugins: [],
 }
