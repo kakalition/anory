@@ -18,6 +18,21 @@ class StoryService
     return $stories;
   }
 
+  public function getStoriesByCategory(String $categoryName)
+  {
+    $categoryId = Category::where('name', 'ilike', $categoryName)
+      ->first()
+      ->id;
+    if (!$categoryId) {
+      throw new CategoryNotFoundException();
+    }
+
+    $stories = Story::where('category_id', $categoryId)
+      ->get();
+    
+    return $stories;
+  }
+
   public function getUserStory(String $authorEmail)
   {
     $author = User::where('email', $authorEmail)->first();

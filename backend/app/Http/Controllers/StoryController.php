@@ -28,6 +28,20 @@ class StoryController extends Controller
     return response(StoryResource::collection($stories), 200);
   }
 
+  public function indexByCategory(Request $request)
+  {
+    try {
+      $stories = $this->service
+        ->getStoriesByCategory($request->route('categoryName'));
+    } catch (CategoryNotFoundException $exception) {
+      return response('Category not found.' . 404);
+    } catch (Exception $exception) {
+      return response('Internal server error.' . 404);
+    }
+
+    return response(StoryResource::collection($stories), 200);
+  }
+
   public function userIndex(Request $request)
   {
     try {
@@ -127,6 +141,6 @@ class StoryController extends Controller
       return response($exception->getMessage(), 500);
     }
 
-    return response('' ,204);
+    return response('', 204);
   }
 }

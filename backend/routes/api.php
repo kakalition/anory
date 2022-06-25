@@ -35,7 +35,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::get('/stories', [StoryController::class, 'index']);
-Route::get('/stories/{category_name}', [StoryController::class, 'indexByCategory']);
+Route::get('/stories/{categoryName}', [StoryController::class, 'indexByCategory']);
 
 Route::controller(StoryController::class)->prefix('users/{authorEmail}')->group(function () {
   Route::get('/stories/{title}', 'show');
