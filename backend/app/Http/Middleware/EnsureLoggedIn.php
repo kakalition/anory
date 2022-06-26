@@ -10,7 +10,7 @@ class EnsureLoggedIn
   public function handle(Request $request, Closure $next)
   {
     if ($request->user() == null) {
-      return response('Unauthorized.', 401);
+      return response('Unauthorized by middleware.', 401);
     }
 
     return $next($request);

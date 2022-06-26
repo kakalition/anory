@@ -1,0 +1,22 @@
+version: '3.9'
+
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:14.3-bullseye
+    environment:
+      - POSTGRES_PASSWORD=secretsecret
+    volumes:
+      - ./db:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis_cache:
+    container_name: redis_cache
+    image: redis:7.0.2-bullseye
+    environment:
+      - REDIS_PASSWORD=secretsecret
+    volumes:
+      - ./redis_cache:/data
+    ports:
+      - "6379:6379"
