@@ -39,7 +39,7 @@ class StoryController extends Controller
       return response('Internal server error.' . 404);
     }
 
-    return response(StoryResource::collection($stories), 200);
+    return response($stories, 200);
   }
 
   public function userIndex(Request $request)

@@ -13,9 +13,15 @@ class Story extends Model
     'author_id',
     'category_id',
     'views',
+    'likes',
     'title',
     'body'
   ];
+
+  function category()
+  {
+    return $this->hasOne(Category::class, 'story_id', 'id');;
+  }
 
   function categoryName()
   {

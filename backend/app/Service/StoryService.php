@@ -8,9 +8,17 @@ use App\Exceptions\UserNotFoundException;
 use App\Models\Category;
 use App\Models\Story;
 use App\Models\User;
+use Illuminate\Support\Facades\Cache;
 
 class StoryService
 {
+  private $cacheService;
+
+  public function __construct(StoryCacheService $cacheService)
+  {
+    $this->cacheService = $cacheService;
+  }
+
   public function getAllStories()
   {
     $stories = Story::all();
@@ -20,17 +28,28 @@ class StoryService
 
   public function getStoriesByCategory(String $categoryName)
   {
+    $data = ['source' => 'Cache'];
+
     $categoryId = Category::where('name', 'ilike', $categoryName)
       ->first()
       ->id;
+
     if (!$categoryId) {
       throw new CategoryNotFoundException();
     }
 
-    $stories = Story::where('category_id', $categoryId)
-      ->get();
-    
-    return $stories;
+    $stories = Cache::remember(
+      'stories_' . $categoryId,
+      now()->addSeconds(2),
+      function () use (&$data, $categoryId) {
+        $data['source'] = 'DB';
+        return Story::where('category_id', $categoryId)->get();
+      }
+    );
+
+    $data['data'] = $stories;
+
+    return $data;
   }
 
   public function getUserStory(String $authorEmail)
@@ -62,6 +81,7 @@ class StoryService
       'author_id' => $author->id,
       'category_id' => $category->id,
       'views' => 0,
+      'likes' => 0,
       'title' => $title,
       'body' => $body,
     ]);

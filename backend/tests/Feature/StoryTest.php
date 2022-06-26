@@ -65,7 +65,7 @@ test('when get all stories, should returns all stories. (HTTP 200)', function ()
 
 test('when get user story (already have stories), returns an array of its own stories. (HTTP 200)', function () {
   seed();
-  $te = registerUser('Kaka', 'k@k', '00000000');
+  registerUser('Kaka', 'k@k', '00000000');
   createStory('k@k', 'Honor', 'This is Story', 'This is the body of story.');
 
   $response = getJson('api/users/k@k/stories');
