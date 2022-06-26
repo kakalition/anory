@@ -9,6 +9,12 @@ class Comment extends Model
 {
   use HasFactory;
 
+  protected $fillable = [
+    'story_id',
+    'commentee_id',
+    'comment'
+  ];
+
   public function likes()
   {
     return $this->morphToMany(LikeData::class, 'likeable');

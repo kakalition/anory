@@ -64,15 +64,18 @@ Route::controller(StoryLikeDataController::class)->prefix('users/{authorEmail}/s
   });
 });
 
-Route::controller(CommentController::class)->prefix('/users/{author_email}/stories/{title}')->group(function () {
-  Route::get('/comments', 'index');
-  Route::post('/comments', 'store');
-  Route::get('/comments/{comment_id}', 'show');
-  Route::put('/comments/{comment_id}', 'update');
-  Route::patch('/comments/{comment_id}', 'update');
-  Route::delete('/comments/{comment_id}', 'delete');
+Route::controller(CommentController::class)
+  ->prefix('/users/{author_email}/stories/{title}')
+  ->middleware(EnsureLoggedIn::class)
+  ->group(function () {
+    Route::get('/comments', 'index');
+    Route::post('/comments', 'store');
+    Route::get('/comments/{comment_id}', 'show');
+    Route::put('/comments/{comment_id}', 'update');
+    Route::patch('/comments/{comment_id}', 'update');
+    Route::delete('/comments/{comment_id}', 'delete');
 
-  Route::get('/comments/{comment_id}', 'show');
-  Route::post('/comments/{comment_id}', 'store');
-  Route::delete('/comments/{comment_id}', 'destroy');
-});
+    Route::get('/comments/{comment_id}', 'show');
+    Route::post('/comments/{comment_id}', 'store');
+    Route::delete('/comments/{comment_id}', 'destroy');
+  });
