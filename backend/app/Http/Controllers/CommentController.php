@@ -9,6 +9,7 @@ use App\Http\Requests\UpdateCommentRequest;
 use App\Models\Comment;
 use App\Services\Comment\CreateComment;
 use App\Services\Comment\ReadComments;
+use App\Services\Comment\UpdateComment;
 use App\Services\Story\FindStory;
 use Exception;
 use Illuminate\Http\Request;
@@ -65,24 +66,31 @@ class CommentController extends Controller
   {
   }
 
-  public function like(Request $request)
+  public function update(Request $request, FindStory $findStory, UpdateComment $updateComment)
   {
-  }
+    try {
+      $story = $findStory->handle([
+        'author_email' => $request->route('author_email'),
+        'title' => RouteHelper::formatSlug($request->route('title')),
+      ]);
 
-  public function unlike(Request $request)
-  {
-  }
+      $comment = $updateComment->handle([
+        'story_id' => $story->id,
+        'commentee_id' => $request->user()->id,
+        'comment' => $request->input('comment')
+      ]);
 
-  public function dislike(Request $request)
-  {
-  }
+    } catch (UnprocessableEntityHttpException $exception) {
+      return response($exception->getMessage(), 422);
+    } catch (UserNotFoundException $exception) {
+      return response('User not found.', 404);
+    } catch (StoryNotFoundException $exception) {
+      return response('Story not found.', 404);
+    } catch (Exception $exception) {
+      return response($exception->getMessage(), 500);
+    }
 
-  public function undislike(Request $request)
-  {
-  }
-
-  public function update(UpdateCommentRequest $request, Comment $comment)
-  {
+    return response($comment, 200);
   }
 
   public function destroy(Comment $comment)
