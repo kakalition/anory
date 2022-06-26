@@ -6,5 +6,23 @@ use Illuminate\Http\Request;
 
 class LikeDataController extends Controller
 {
-    //
+  public function index()
+  {
+  }
+
+  public function store()
+  {
+  }
+
+  public function update()
+  {
+  }
+
+  public function show()
+  {
+  }
+
+  public function destroy()
+  {
+  }
 }

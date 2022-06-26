@@ -30,6 +30,11 @@ class Story extends Model
       ->name;
   }
 
+  public function comments()
+  {
+    return $this->hasMany(Comment::class, 'story_id', 'id');
+  }
+
   function likes()
   {
     return $this
