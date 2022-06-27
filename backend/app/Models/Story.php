@@ -18,6 +18,10 @@ class Story extends Model
     'body'
   ];
 
+  public function likeData() {
+    return $this->morphMany(LikeData::class, 'likeable');
+  }
+
   function category()
   {
     return $this->hasOne(Category::class, 'story_id', 'id');;

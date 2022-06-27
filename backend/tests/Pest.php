@@ -68,7 +68,8 @@ function loginUser($email, $password)
   return $user;
 }
 
-function logout() {
+function logout()
+{
   postJson('logout');
 }
 
@@ -107,6 +108,16 @@ function likeDislikeStory($emailSlug, $titleSlug, $likeeEmail, $likeData)
     'email' => $likeeEmail,
     'likeData' => $likeData
   ]);
+}
+
+function commentStory($storyId, $comment)
+{
+  return postJson("api/stories/$storyId/comments", ['comment' => $comment]);
+}
+
+function likeDislikeComment($commentId, $status)
+{
+  return postJson("api/comments/$commentId/likedata", ['status' => $status]);
 }
 
 function findUserId($userEmail)

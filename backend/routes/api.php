@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\LikeDataController;
 use App\Http\Controllers\StoryController;
 use App\Http\Controllers\StoryLikeDataController;
 use App\Http\Controllers\StoryLikeDislikeController;
@@ -47,17 +48,9 @@ Route::controller(StoryController::class)->prefix('users/{authorEmail}')->group(
   });
 });
 
-Route::controller(StoryLikeDataController::class)->prefix('users/{authorEmail}/stories/{title}')->group(function () {
-  Route::get('/like-dislikes', 'show');
-  Route::middleware(EnsureLoggedIn::class)->group(function () {
-    Route::post('/like-dislikes', 'store');
-    Route::delete('/like-dislikes', 'destroy');
-  });
-});
-
 Route::controller(CommentController::class)
-  ->prefix('/stories/{story_id}')
   ->middleware(EnsureLoggedIn::class)
+  ->prefix('/stories/{story_id}')
   ->group(function () {
     Route::get('/comments', 'indexByUser');
     Route::post('/comments', 'store');
@@ -69,4 +62,20 @@ Route::controller(CommentController::class)
     Route::put('/comments/{comment}', 'update');
     Route::patch('/comments/{comment}', 'update');
     Route::delete('/comments/{comment}', 'destroy');
+  });
+
+Route::controller(LikeDataController::class)
+  ->middleware(EnsureLoggedIn::class)
+  ->prefix('/comments/{comment}')
+  ->group(function () {
+    Route::get('/likedata', 'index');
+    Route::post('/likedata', 'store');
+  });
+
+Route::controller(LikeDataController::class)
+  ->middleware(EnsureLoggedIn::class)
+  ->group(function () {
+    Route::get('/likedata/{likedata}', 'show');
+    Route::post('/likedata/{likedata}', 'store');
+    Route::delete('/likedata/{likedata}', 'destroy');
   });
