@@ -64,18 +64,15 @@ Route::controller(CommentController::class)
     Route::delete('/comments/{comment}', 'destroy');
   });
 
-Route::controller(LikeDataController::class)
-  ->middleware(EnsureLoggedIn::class)
-  ->prefix('/comments/{comment}')
-  ->group(function () {
-    Route::get('/likedata', 'index');
-    Route::post('/likedata', 'store');
-  });
+Route::get('/comments/{comment/likedata', [LikeDataController::class, 'indexByComment'])
+  ->middleware(EnsureLoggedIn::class);
+
+Route::get('/stories/{story/likedata', [LikeDataController::class, 'indexByStory'])
+  ->middleware(EnsureLoggedIn::class);
 
 Route::controller(LikeDataController::class)
   ->middleware(EnsureLoggedIn::class)
   ->group(function () {
-    Route::get('/likedata/{likedata}', 'show');
-    Route::post('/likedata/{likedata}', 'store');
+    Route::post('/likedata', 'store');
     Route::delete('/likedata/{likedata}', 'destroy');
   });
