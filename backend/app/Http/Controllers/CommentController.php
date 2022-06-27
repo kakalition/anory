@@ -9,7 +9,6 @@ use App\Models\Comment;
 use App\Services\Comment\CreateComment;
 use App\Services\Comment\ReadComments;
 use App\Services\Comment\UpdateComment;
-use App\Services\Story\FindStory;
 use Exception;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
@@ -30,7 +29,7 @@ class CommentController extends Controller
     return response($comments);
   }
 
-  public function store(Request $request, FindStory $findStory, CreateComment $createComment)
+  public function store(Request $request, CreateComment $createComment)
   {
     try {
       $comment = $createComment->handle([
@@ -64,7 +63,7 @@ class CommentController extends Controller
       ]);
     } catch (CommentNotFoundException $exception) {
       return response('Comment not found', 404);
-    } catch (Throwable $exception) {
+    } catch (Exception $exception) {
       return response($exception->getMessage(), 500);
     }
 

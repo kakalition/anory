@@ -19,6 +19,17 @@ test('when get comments, should returns correct comments data. (HTTP 200)', func
   $response->assertOk();
 });
 
+test('when post comment with invalid payload, should return error. (HTTP 422)', function () {
+  seed();
+  registerUser('Kaka', 'k@k', '00000000');
+  $story = createStory('k@k', 'Honor', 'This is Story', 'This is the body of story.');
+
+  $response = postJson('api/stories/' . $story['id'] . '/comments', ['comment' => null]);
+  $response->dump();
+  $response->assertUnprocessable();
+});
+
+
 test('when post comment, should return submitted comment. (HTTP 201)', function () {
   seed();
   registerUser('Kaka', 'k@k', '00000000');
@@ -45,7 +56,6 @@ test('when update comment on non-existent comment, should return error. (HTTP 40
   $story = createStory('k@k', 'Honor', 'This is Story', 'This is the body of story.');
 
   $responseTwo = patchJson('api/comments/0', ['comment' => 'This is my updated comment.']);
-  $responseTwo->dump();
   $responseTwo->assertNotFound();
 });
 
