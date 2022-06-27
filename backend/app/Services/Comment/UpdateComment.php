@@ -11,8 +11,7 @@ class UpdateComment extends BaseService
   protected function rules()
   {
     return [
-      'story_id' => 'required|integer',
-      'commentee_id' => 'required|integer',
+      'comment_id' => 'required|integer',
       'comment' => 'required|string'
     ];
   }
@@ -21,15 +20,13 @@ class UpdateComment extends BaseService
   {
     $validatedData = $this->getValidatedData($data);
 
-    $comment = Comment::where('story_id', $data['story_id'])
-      ->where('commentee_id', $data['commentee_id'])
-      ->first();
-    
+    $comment = Comment::find($validatedData['comment_id']);
+
     if (!$comment) {
       throw new CommentNotFoundException();
     }
 
-    $comment->comment = $data['comment'];
+    $comment->comment = $validatedData['comment'];
     $comment->save();
 
     return $comment;

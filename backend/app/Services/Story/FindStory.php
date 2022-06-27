@@ -11,16 +11,9 @@ class FindStory
 {
   public function handle(array $data)
   {
-    $user = User::where('email', $data['author_email'])->first();
-
-    if (!$user) {
-      throw new UserNotFoundException();
-    }
-
-    $story = Story::where('author_id', $user->id)
-      ->where('title', 'ilike', $data['title'])
+    $story = Story::where('id', $data['story_id'])
       ->first();
-    
+
     if (!$story) {
       throw new StoryNotFoundException();
     }
