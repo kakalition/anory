@@ -6,7 +6,7 @@ use App\Exceptions\InvalidLikeDataException;
 use App\Exceptions\StoryLikeDataNotFoundException;
 use App\Exceptions\StoryNotFoundException;
 use App\Exceptions\UserNotFoundException;
-use App\Service\StoryLikeDataService;
+use App\Services\StoryLikeDataService;
 use Exception;
 use Illuminate\Http\Request;
 

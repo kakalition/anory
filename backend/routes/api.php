@@ -23,15 +23,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/te', function () {
-  Cache::put('test', 'This is test');
-});
-
-Route::get('/te', function () {
-  return Cache::get('test');
-});
-
-
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
   return $request->user();
 });
@@ -64,15 +55,18 @@ Route::controller(StoryLikeDataController::class)->prefix('users/{authorEmail}/s
   });
 });
 
-Route::controller(CommentController::class)->prefix('/users/{author_email}/stories/{title}')->group(function () {
-  Route::get('/comments', 'index');
-  Route::post('/comments', 'store');
-  Route::get('/comments/{comment_id}', 'show');
-  Route::put('/comments/{comment_id}', 'update');
-  Route::patch('/comments/{comment_id}', 'update');
-  Route::delete('/comments/{comment_id}', 'delete');
+Route::controller(CommentController::class)
+  ->prefix('/stories/{story_id}')
+  ->middleware(EnsureLoggedIn::class)
+  ->group(function () {
+    Route::get('/comments', 'indexByUser');
+    Route::post('/comments', 'store');
+  });
 
-  Route::get('/comments/{comment_id}', 'show');
-  Route::post('/comments/{comment_id}', 'store');
-  Route::delete('/comments/{comment_id}', 'destroy');
-});
+Route::controller(CommentController::class)
+  ->middleware(EnsureLoggedIn::class)
+  ->group(function () {
+    Route::put('/comments/{comment}', 'update');
+    Route::patch('/comments/{comment}', 'update');
+    Route::delete('/comments/{comment}', 'destroy');
+  });

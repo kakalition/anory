@@ -9,7 +9,7 @@ use App\Http\Requests\DestroyStoryRequest;
 use App\Http\Requests\StoreStoryRequest;
 use App\Http\Requests\UpdateStoryRequest;
 use App\Http\Resources\StoryResource;
-use App\Service\StoryService;
+use App\Services\StoryService;
 use Exception;
 use Illuminate\Http\Request;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\Services;
 
 use App\Exceptions\CategoryNotFoundException;
 use App\Exceptions\StoryNotFoundException;
@@ -12,11 +12,8 @@ use Illuminate\Support\Facades\Cache;
 
 class StoryService
 {
-  private $cacheService;
-
-  public function __construct(StoryCacheService $cacheService)
+  public function __construct()
   {
-    $this->cacheService = $cacheService;
   }
 
   public function getAllStories()
