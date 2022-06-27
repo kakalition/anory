@@ -12,7 +12,6 @@ use App\Services\Comment\UpdateComment;
 use Exception;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
-use Throwable;
 
 class CommentController extends Controller
 {
@@ -63,9 +62,12 @@ class CommentController extends Controller
       ]);
     } catch (CommentNotFoundException $exception) {
       return response('Comment not found', 404);
+    } catch (UnprocessableEntityHttpException $exception) {
+      return response($exception->getMessage(), 422);
     } catch (Exception $exception) {
       return response($exception->getMessage(), 500);
     }
+
 
     return response($comment, 200);
   }
