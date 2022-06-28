@@ -9,21 +9,16 @@ use App\Http\Requests\DestroyStoryRequest;
 use App\Http\Requests\StoreStoryRequest;
 use App\Http\Requests\UpdateStoryRequest;
 use App\Http\Resources\StoryResource;
+use App\Services\Story\CreateNewStory;
 use App\Services\Story\GetStoriesByCategory;
 use App\Services\Story\GetUserStories;
 use App\Services\StoryService;
 use Exception;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class StoryController extends Controller
 {
-  private $service;
-
-  public function __construct(StoryService $service)
-  {
-    $this->service = $service;
-  }
-
   public function index()
   {
     $stories = $this->service->getAllStories();
@@ -54,21 +49,17 @@ class StoryController extends Controller
     return response(StoryResource::collection($stories), 200);
   }
 
-  public function store(StoreStoryRequest $request)
+  public function store(Request $request, CreateNewStory $createNewStory)
   {
-    $validated = $request->validated();
-
     try {
-      $story = $this->service->createNewStory(
-        $request->user()->id,
-        $validated['categoryName'],
-        $validated['title'],
-        $validated['body']
-      );
-    } catch (UserNotFoundException $exception) {
-      return response('User not found.', 404);
-    } catch (CategoryNotFoundException $exception) {
-      return response('Category not found.', 404);
+      $story = $createNewStory->handle([
+        'author_id' => $request->user()->id,
+        'category_id' => $request->input('categoryName'),
+        'title' => $request->input('title'),
+        'body' => $request->input('body'),
+      ]);
+    } catch (UnprocessableEntityHttpException $exception) {
+      return response($exception->getMessage(), 422);
     } catch (Exception $exception) {
       return response($exception->getMessage(), 500);
     }

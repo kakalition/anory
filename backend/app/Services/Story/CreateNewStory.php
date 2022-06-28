@@ -1,0 +1,29 @@
+<?php
+
+namespace App\Services\Story;
+
+use App\Models\Story;
+use App\Services\BaseService;
+
+class CreateNewStory extends BaseService
+{
+  protected function rules(array $data): array
+  {
+    return [
+      'author_id' => 'required|integer',
+      'category_id' => 'required|integer',
+      'title' => 'required|string|max:255',
+      'body' => 'required|string',
+    ];
+  }
+
+  public function handle(array $data)
+  {
+    $validatedData = $this->getValidatedData($data);
+    $validatedData['views'] = 0;
+    $validatedData['likes'] = 0;
+
+    $story = Story::create($validatedData);
+    return $story;
+  }
+}

@@ -26,7 +26,7 @@ class StoryService
   public function createNewStory(int $id, String $categoryName, String $title, String $body)
   {
     $category = Category::where('name', 'ilike', "%$categoryName%")->first();
-    if (!$category) {
+    if (!$category) {;
       throw new CategoryNotFoundException();
     }
 
