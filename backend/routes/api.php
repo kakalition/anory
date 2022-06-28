@@ -28,8 +28,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
   return $request->user();
 });
 
-Route::get('/users', function () {
-  return User::all();
+// For testing purpose
+Route::get('/user', function (Request $request) {
+  return response($request->user(), 200);
 });
 
 Route::get('/stories', function () {
@@ -64,15 +65,12 @@ Route::controller(CommentController::class)
     Route::delete('/comments/{comment}', 'destroy');
   });
 
-Route::get('/comments/{comment/likedata', [LikeDataController::class, 'indexByComment'])
-  ->middleware(EnsureLoggedIn::class);
-
-Route::get('/stories/{story/likedata', [LikeDataController::class, 'indexByStory'])
-  ->middleware(EnsureLoggedIn::class);
-
 Route::controller(LikeDataController::class)
   ->middleware(EnsureLoggedIn::class)
   ->group(function () {
-    Route::post('/likedata', 'store');
+    Route::get('/stories/{story}/likedata', 'indexByStory');
+    Route::get('/comments/{comment}/likedata', 'indexByComment');
+    Route::post('/stories/{story}/likedata', 'store');
+    Route::post('/comments/{comment}/likedata', 'store');
     Route::delete('/likedata/{likedata}', 'destroy');
   });

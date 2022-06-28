@@ -9,14 +9,11 @@ use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 abstract class BaseService
 {
-  protected function rules()
-  {
-    return [];
-  }
+  abstract protected function rules(array $data): array;
 
   protected function getValidatedData(array $data)
   {
-    $validator = Validator::make($data, $this->rules());
+    $validator = Validator::make($data, $this->rules($data));
 
     if ($validator->fails()) {
       throw new UnprocessableEntityHttpException(

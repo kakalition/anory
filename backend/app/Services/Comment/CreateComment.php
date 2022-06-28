@@ -7,7 +7,7 @@ use App\Services\BaseService;
 
 class CreateComment extends BaseService
 {
-  protected function rules()
+  protected function rules($data): array
   {
     return [
       'story_id' => 'required|integer',

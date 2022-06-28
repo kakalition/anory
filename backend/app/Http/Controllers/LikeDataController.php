@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Comment;
+use App\Models\LikeData;
 use App\Services\LikeData\CreateLikeData;
 use Exception;
 use Illuminate\Http\Request;
@@ -9,8 +11,9 @@ use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class LikeDataController extends Controller
 {
-  public function index()
+  public function indexByComment(Request $request, Comment $comment)
   {
+    return response($comment->likeData()->get(), 200);
   }
 
   public function store(Request $request, CreateLikeData $createLikeData)
@@ -34,15 +37,10 @@ class LikeDataController extends Controller
     return response($likedata, 201);
   }
 
-  public function update()
+  public function destroy(LikeData $likedata)
   {
-  }
+    $likedata->delete();
 
-  public function show()
-  {
-  }
-
-  public function destroy()
-  {
+    return response($likedata, 204);
   }
 }

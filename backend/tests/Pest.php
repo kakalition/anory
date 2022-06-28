@@ -15,6 +15,7 @@ use App\Models\Category;
 use App\Models\User;
 
 use function Pest\Laravel\deleteJson;
+use function Pest\Laravel\getJson;
 use function Pest\Laravel\patchJson;
 use function Pest\Laravel\postJson;
 
@@ -56,6 +57,10 @@ function registerUser($name, $email, $password)
   ]);
 
   return $user;
+}
+
+function getUser() {
+  return getJson('api/user');
 }
 
 function loginUser($email, $password)
