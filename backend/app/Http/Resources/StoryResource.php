@@ -14,8 +14,8 @@ class StoryResource extends JsonResource
       'author_id' => $this->author_id,
       'category' => $this->categoryName(),
       'views' => $this->views,
-      'likes' => $this->likes(),
-      'dislikes' => $this->dislikes(),
+      'likes' => $this->likeData()->where('status', 1)->count(),
+      'dislikes' => $this->likeData()->where('status', -1)->count(),
       'title' => $this->title,
       'body' => $this->body,
       'created_at' => $this->created_at

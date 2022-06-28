@@ -15,6 +15,7 @@ use App\Models\Category;
 use App\Models\User;
 
 use function Pest\Laravel\deleteJson;
+use function Pest\Laravel\getJson;
 use function Pest\Laravel\patchJson;
 use function Pest\Laravel\postJson;
 
@@ -58,6 +59,10 @@ function registerUser($name, $email, $password)
   return $user;
 }
 
+function getUser() {
+  return getJson('api/user');
+}
+
 function loginUser($email, $password)
 {
   $user = postJson('login', [
@@ -68,13 +73,14 @@ function loginUser($email, $password)
   return $user;
 }
 
-function logout() {
+function logout()
+{
   postJson('logout');
 }
 
-function createStory(String $email, ?String $categoryName = null, ?String $title = null, ?String $body = null)
+function createStory(?String $categoryName = null, ?String $title = null, ?String $body = null)
 {
-  $story = postJson('api/users/' . $email . '/stories', [
+  $story = postJson('api/stories', [
     'categoryName' => $categoryName,
     'title' => $title,
     'body' => $body,
@@ -100,13 +106,19 @@ function deleteStory(String $email, String $title)
   return $response;
 }
 
-
-function likeDislikeStory($emailSlug, $titleSlug, $likeeEmail, $likeData)
+function commentStory($storyId, $comment)
 {
-  return postJson('api/users/' . $emailSlug . '/stories/' . $titleSlug . '/like-dislikes', [
-    'email' => $likeeEmail,
-    'likeData' => $likeData
-  ]);
+  return postJson("api/stories/$storyId/comments", ['comment' => $comment]);
+}
+
+function likeDislikeStory($storyId, $status)
+{
+  return postJson("api/stories/$storyId/likedata", ['status' => $status]);
+}
+
+function likeDislikeComment($commentId, $status)
+{
+  return postJson("api/comments/$commentId/likedata", ['status' => $status]);
 }
 
 function findUserId($userEmail)

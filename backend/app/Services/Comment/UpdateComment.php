@@ -8,7 +8,7 @@ use App\Services\BaseService;
 
 class UpdateComment extends BaseService
 {
-  protected function rules()
+  protected function rules($data)
   {
     return [
       'comment_id' => 'required|integer',

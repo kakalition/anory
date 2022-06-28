@@ -15,8 +15,8 @@ class Comment extends Model
     'comment'
   ];
 
-  public function likes()
+  public function likeData()
   {
-    return $this->morphToMany(LikeData::class, 'likeable');
+    return $this->morphMany(LikeData::class, 'likeable');
   }
 }

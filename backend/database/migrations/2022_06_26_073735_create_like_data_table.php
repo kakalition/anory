@@ -15,7 +15,10 @@ return new class extends Migration
   {
     Schema::create('like_data', function (Blueprint $table) {
       $table->id();
-      $table->string('email');
+      $table->foreignId('likee_id')
+        ->references('id')
+        ->on('users')
+        ->cascadeOnDelete();
       $table->integer('status');
       $table->bigInteger('likeable_id');
       $table->string('likeable_type');
