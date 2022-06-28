@@ -3,14 +3,10 @@
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\LikeDataController;
 use App\Http\Controllers\StoryController;
-use App\Http\Controllers\StoryLikeDataController;
-use App\Http\Controllers\StoryLikeDislikeController;
 use App\Http\Middleware\EnsureLoggedIn;
 use App\Models\Story;
-use App\Models\StoryLikeData;
-use App\Models\User;
+use GuzzleHttp\Middleware;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -38,16 +34,16 @@ Route::get('/stories', function () {
 });
 Route::get('/stories/{categoryName}', [StoryController::class, 'indexByCategory']);
 
-Route::controller(StoryController::class)->prefix('users/{authorEmail}')->group(function () {
-  Route::get('/stories/{title}', 'show');
-  Route::middleware(EnsureLoggedIn::class)->group(function () {
+Route::controller(StoryController::class)
+  ->middleware(EnsureLoggedIn::class)
+  ->group(function () {
+    Route::get('/stories/{title}', 'show');
     Route::get('/stories', 'userIndex');
     Route::post('/stories', 'store');
     Route::put('/stories/{title}', 'update');
     Route::patch('/stories/{title}', 'update');
     Route::delete('/stories/{title}', 'destroy');
   });
-});
 
 Route::controller(CommentController::class)
   ->middleware(EnsureLoggedIn::class)

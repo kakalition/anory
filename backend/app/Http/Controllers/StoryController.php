@@ -62,7 +62,7 @@ class StoryController extends Controller
 
     try {
       $story = $this->service->createNewStory(
-        $request->route('authorEmail'),
+        $request->user()->id,
         $validated['categoryName'],
         $validated['title'],
         $validated['body']

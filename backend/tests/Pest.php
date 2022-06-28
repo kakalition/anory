@@ -78,9 +78,9 @@ function logout()
   postJson('logout');
 }
 
-function createStory(String $email, ?String $categoryName = null, ?String $title = null, ?String $body = null)
+function createStory(?String $categoryName = null, ?String $title = null, ?String $body = null)
 {
-  $story = postJson('api/users/' . $email . '/stories', [
+  $story = postJson('api/stories', [
     'categoryName' => $categoryName,
     'title' => $title,
     'body' => $body,
@@ -106,18 +106,14 @@ function deleteStory(String $email, String $title)
   return $response;
 }
 
-
-function likeDislikeStory($emailSlug, $titleSlug, $likeeEmail, $likeData)
-{
-  return postJson('api/users/' . $emailSlug . '/stories/' . $titleSlug . '/like-dislikes', [
-    'email' => $likeeEmail,
-    'likeData' => $likeData
-  ]);
-}
-
 function commentStory($storyId, $comment)
 {
   return postJson("api/stories/$storyId/comments", ['comment' => $comment]);
+}
+
+function likeDislikeStory($storyId, $status)
+{
+  return postJson("api/stories/$storyId/likedata", ['status' => $status]);
 }
 
 function likeDislikeComment($commentId, $status)

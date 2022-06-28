@@ -9,7 +9,7 @@ class StoreStoryRequest extends FormRequest
 {
   public function authorize()
   {
-    return $this->user()->email == $this->route('authorEmail');
+    return true;
   }
 
   public function rules()

@@ -38,20 +38,4 @@ class Story extends Model
   {
     return $this->hasMany(Comment::class, 'story_id', 'id');
   }
-
-  function likes()
-  {
-    return $this
-      ->hasMany(StoryLikeData::class, 'story_id')
-      ->where('status', 1)
-      ->count();
-  }
-
-  function dislikes()
-  {
-    return $this
-      ->hasMany(StoryLikeData::class, 'story_id')
-      ->where('status', -1)
-      ->count();
-  }
 }
