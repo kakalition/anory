@@ -23,25 +23,6 @@ class StoryService
     return $stories;
   }
 
-  public function createNewStory(int $id, String $categoryName, String $title, String $body)
-  {
-    $category = Category::where('name', 'ilike', "%$categoryName%")->first();
-    if (!$category) {;
-      throw new CategoryNotFoundException();
-    }
-
-    $story = Story::create([
-      'author_id' => $id,
-      'category_id' => $category->id,
-      'views' => 0,
-      'likes' => 0,
-      'title' => $title,
-      'body' => $body,
-    ]);
-
-    return $story;
-  }
-
   public function getStory($authorEmail, $title)
   {
     $author = User::where('email', $authorEmail)

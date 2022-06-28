@@ -9,9 +9,11 @@ use App\Http\Requests\DestroyStoryRequest;
 use App\Http\Requests\StoreStoryRequest;
 use App\Http\Requests\UpdateStoryRequest;
 use App\Http\Resources\StoryResource;
+use App\Models\Story;
 use App\Services\Story\CreateNewStory;
 use App\Services\Story\GetStoriesByCategory;
 use App\Services\Story\GetUserStories;
+use App\Services\Story\UpdateStory;
 use App\Services\StoryService;
 use Exception;
 use Illuminate\Http\Request;
@@ -67,45 +69,21 @@ class StoryController extends Controller
     return response(new StoryResource($story), 201);
   }
 
-  public function show(Request $request)
+  public function show(Request $request, Story $story)
   {
-    $formattedTitle = str_replace('-', ' ', $request->route('title'));
-
-    try {
-      $story = $this->service->getStory(
-        $request->route('authorEmail'),
-        $formattedTitle
-      );
-    } catch (UserNotFoundException $exception) {
-      return response('User not found.', 404);
-    } catch (StoryNotFoundException $exception) {
-      return response('Story not found.', 404);
-    } catch (Exception $exception) {
-      return response($exception->getMessage(), 500);
-    }
-
     return response(new StoryResource($story), 200);
   }
 
-  public function update(UpdateStoryRequest $request)
+  public function update(Request $request, Story $story, UpdateStory $updateStory)
   {
-    $validated = $request->validated();
-    $formattedTitle = str_replace('-', ' ', $request->route('title'));
-
     try {
-      $story = $this->service->updateStory(
-        $request->route('authorEmail'),
-        $formattedTitle,
-        $validated['categoryName'] ?? null,
-        $validated['title'] ?? null,
-        $validated['body'] ?? null,
-      );
-    } catch (UserNotFoundException $exception) {
-      return response('User not found.', 404);
-    } catch (StoryNotFoundException $exception) {
-      return response('Story not found.', 404);
-    } catch (CategoryNotFoundException $exception) {
-      return response('Category not found.', 404);
+      $story = $updateStory->handle($story, [
+        'modified_category_id' => $request->input('modified_category_id') ?? null,
+        'modified_title' => $request->input('modified_title') ?? null,
+        'modified_body' => $request->input('modified_body') ?? null,
+      ]);
+    } catch (UnprocessableEntityHttpException $exception) {
+      return response($exception->getMessage(), 422);
     } catch (Exception $exception) {
       return response($exception->getMessage(), 500);
     }
