@@ -29,20 +29,16 @@ Route::get('/user', function (Request $request) {
   return response($request->user(), 200);
 });
 
-Route::get('/stories', function () {
-  return Story::all();
-});
-Route::get('/stories/{categoryName}', [StoryController::class, 'indexByCategory']);
-
 Route::controller(StoryController::class)
   ->middleware(EnsureLoggedIn::class)
   ->group(function () {
-    Route::get('/stories/{title}', 'show');
     Route::get('/stories', 'userIndex');
+    Route::get('/stories/{categoryName}', 'indexByCategory');
     Route::post('/stories', 'store');
-    Route::put('/stories/{title}', 'update');
-    Route::patch('/stories/{title}', 'update');
-    Route::delete('/stories/{title}', 'destroy');
+    Route::get('/stories/{story}', 'show');
+    Route::put('/stories/{story}', 'update');
+    Route::patch('/stories/{story}', 'update');
+    Route::delete('/stories/{story}', 'destroy');
   });
 
 Route::controller(CommentController::class)

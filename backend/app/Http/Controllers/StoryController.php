@@ -9,6 +9,7 @@ use App\Http\Requests\DestroyStoryRequest;
 use App\Http\Requests\StoreStoryRequest;
 use App\Http\Requests\UpdateStoryRequest;
 use App\Http\Resources\StoryResource;
+use App\Services\Story\GetUserStories;
 use App\Services\StoryService;
 use Exception;
 use Illuminate\Http\Request;
@@ -42,13 +43,10 @@ class StoryController extends Controller
     return response($stories, 200);
   }
 
-  public function userIndex(Request $request)
+  public function userIndex(Request $request, GetUserStories $getUserStories)
   {
     try {
-      $stories = $this->service
-        ->getUserStory($request->route('authorEmail'));
-    } catch (UserNotFoundException $exception) {
-      return response('User not found.', 404);
+      $stories = $getUserStories->handle($request->user()->id);
     } catch (Exception $exception) {
       return response($exception->getMessage(), 500);
     }
