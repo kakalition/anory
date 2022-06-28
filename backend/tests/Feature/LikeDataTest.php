@@ -1,10 +1,8 @@
 <?php
 
-use App\Models\Comment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use function Pest\Laravel\deleteJson;
-use function Pest\Laravel\getJson;
 use function Pest\Laravel\seed;
 
 uses(RefreshDatabase::class);
