@@ -9,6 +9,7 @@ use App\Http\Requests\DestroyStoryRequest;
 use App\Http\Requests\StoreStoryRequest;
 use App\Http\Requests\UpdateStoryRequest;
 use App\Http\Resources\StoryResource;
+use App\Services\Story\GetStoriesByCategory;
 use App\Services\Story\GetUserStories;
 use App\Services\StoryService;
 use Exception;
@@ -29,11 +30,10 @@ class StoryController extends Controller
     return response(StoryResource::collection($stories), 200);
   }
 
-  public function indexByCategory(Request $request)
+  public function indexByCategory(Request $request, GetStoriesByCategory $getStoriesByCategory)
   {
     try {
-      $stories = $this->service
-        ->getStoriesByCategory($request->route('categoryName'));
+      $stories = $getStoriesByCategory->handle($request->route('categoryName'));
     } catch (CategoryNotFoundException $exception) {
       return response('Category not found.' . 404);
     } catch (Exception $exception) {
