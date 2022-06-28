@@ -2,18 +2,25 @@
 
 namespace App\Services;
 
-use Exception;
-use Illuminate\Contracts\Validation\Factory;
+use App\Exceptions\ForbiddenException;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 abstract class BaseService
 {
-  abstract protected function rules(array $data): array;
+  abstract protected function validationRules(array $data): array;
+  abstract protected function authorizationRules(int $userId, Model $model): bool;
+
+  protected function authorize($userId, $model) {
+    if (!$this->authorizationRules($userId, $model)) {
+      throw new ForbiddenException();
+    }
+  }
 
   protected function getValidatedData(array $data)
   {
-    $validator = Validator::make($data, $this->rules($data));
+    $validator = Validator::make($data, $this->validationRules($data));
 
     if ($validator->fails()) {
       throw new UnprocessableEntityHttpException(

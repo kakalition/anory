@@ -4,6 +4,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\LikeDataController;
 use App\Http\Controllers\StoryController;
 use App\Http\Middleware\EnsureLoggedIn;
+use App\Models\Category;
 use App\Models\Story;
 use GuzzleHttp\Middleware;
 use Illuminate\Http\Request;
@@ -29,11 +30,17 @@ Route::get('/user', function (Request $request) {
   return response($request->user(), 200);
 });
 
+// For testing purpose
+Route::get('/categories', function (Request $request) {
+  return response(Category::all(), 200);
+});
+
 Route::controller(StoryController::class)
   ->middleware(EnsureLoggedIn::class)
   ->group(function () {
-    Route::get('/stories', 'userIndex');
-    Route::get('/stories/{categoryName}', 'indexByCategory');
+    Route::get('/stories', 'index');
+    Route::get('/users/{user}/stories', 'userIndex');
+    Route::get('/stories/categories/{categoryName}', 'indexByCategory');
     Route::post('/stories', 'store');
     Route::get('/stories/{story}', 'show');
     Route::put('/stories/{story}', 'update');

@@ -17,14 +17,14 @@ use App\Services\Story\UpdateStory;
 use App\Services\StoryService;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Validation\UnauthorizedException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class StoryController extends Controller
 {
   public function index()
   {
-    $stories = $this->service->getAllStories();
-    return response(StoryResource::collection($stories), 200);
+    return response(StoryResource::collection(Story::all()), 200);
   }
 
   public function indexByCategory(Request $request, GetStoriesByCategory $getStoriesByCategory)
@@ -43,12 +43,14 @@ class StoryController extends Controller
   public function userIndex(Request $request, GetUserStories $getUserStories)
   {
     try {
-      $stories = $getUserStories->handle($request->user()->id);
+      $stories = $getUserStories->handle(
+        $request->route('user')
+      );
     } catch (Exception $exception) {
       return response($exception->getMessage(), 500);
     }
 
-    return response(StoryResource::collection($stories), 200);
+    return response($stories, 200);
   }
 
   public function store(Request $request, CreateNewStory $createNewStory)
@@ -56,7 +58,7 @@ class StoryController extends Controller
     try {
       $story = $createNewStory->handle([
         'author_id' => $request->user()->id,
-        'category_id' => $request->input('categoryName'),
+        'category_id' => $request->input('categoryId'),
         'title' => $request->input('title'),
         'body' => $request->input('body'),
       ]);
@@ -71,19 +73,24 @@ class StoryController extends Controller
 
   public function show(Request $request, Story $story)
   {
+    $story->increment('views');
+    $story->save();
+
     return response(new StoryResource($story), 200);
   }
 
   public function update(Request $request, Story $story, UpdateStory $updateStory)
   {
     try {
-      $story = $updateStory->handle($story, [
+      $story = $updateStory->handle($story, $request->user()->id, [
         'modified_category_id' => $request->input('modified_category_id') ?? null,
         'modified_title' => $request->input('modified_title') ?? null,
         'modified_body' => $request->input('modified_body') ?? null,
       ]);
     } catch (UnprocessableEntityHttpException $exception) {
       return response($exception->getMessage(), 422);
+    } catch (UnauthorizedException $exception) {
+      return response($exception->getMessage(), 403);
     } catch (Exception $exception) {
       return response($exception->getMessage(), 500);
     }
@@ -91,22 +98,9 @@ class StoryController extends Controller
     return response(new StoryResource($story), 200);
   }
 
-  public function destroy(DestroyStoryRequest $request)
+  public function destroy(Request $request, Story $story)
   {
-    $formattedTitle = str_replace('-', ' ', $request->route('title'));
-
-    try {
-      $result = $this->service->deleteStory(
-        $request->route('authorEmail'),
-        $formattedTitle,
-      );
-    } catch (UserNotFoundException $exception) {
-      return response('User not found.', 404);
-    } catch (StoryNotFoundException $exception) {
-      return response('Story not found.', 404);
-    } catch (Exception $exception) {
-      return response($exception->getMessage(), 500);
-    }
+    $story->delete();
 
     return response('', 204);
   }

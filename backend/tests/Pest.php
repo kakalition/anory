@@ -78,10 +78,10 @@ function logout()
   postJson('logout');
 }
 
-function createStory(?String $categoryName = null, ?String $title = null, ?String $body = null)
+function createStory(?int $categoryId = null, ?String $title = null, ?String $body = null)
 {
   $story = postJson('api/stories', [
-    'categoryName' => $categoryName,
+    'categoryId' => $categoryId,
     'title' => $title,
     'body' => $body,
   ]);
@@ -89,20 +89,20 @@ function createStory(?String $categoryName = null, ?String $title = null, ?Strin
   return $story;
 }
 
-function updateStory(String $email, String $title, ?String $modifiedCategoryName = null, ?String $modifiedTitle = null, ?String $modifiedBody = null)
+function updateStory(int $storyId, ?int $modifiedCategoryId = null, ?String $modifiedTitle = null, ?String $modifiedBody = null)
 {
-  $story = patchJson("api/users/$email/stories/$title", [
-    'categoryName' => $modifiedCategoryName,
-    'title' => $modifiedTitle,
-    'body' => $modifiedBody,
+  $story = patchJson("api/stories/$storyId", [
+    'modified_category_id' => $modifiedCategoryId,
+    'modified_title' => $modifiedTitle,
+    'modified_body' => $modifiedBody,
   ]);
 
   return $story;
 }
 
-function deleteStory(String $email, String $title)
+function deleteStory(int $storyId)
 {
-  $response = deleteJson("api/users/$email/stories/$title");
+  $response = deleteJson("api/stories/$storyId");
   return $response;
 }
 

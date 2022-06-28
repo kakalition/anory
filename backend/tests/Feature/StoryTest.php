@@ -18,37 +18,37 @@ test('when create story with invalid data, returns error. (HTTP 422)', function 
   seed();
   registerUser('Kaka', 'k@k', '00000000');
 
-  $response = createStory('k@k', 'Honor', 'This is Story', null);
+  $categories = getJson('api/categories');
+  $firstCategoryId = $categories[0]['id'];
+
+  $response = createStory($firstCategoryId, 'This is Story', null);
   $response->assertUnprocessable();
-});
-
-test('when create story on another user URI, returns error. (HTTP 403)', function () {
-  seed();
-  registerUser('Kaka', 'k@k', '00000000');
-
-  $response = createStory('j@j', 'Honor', 'This is Story', null);
-  $response->assertForbidden();
 });
 
 test('when create story (not logged in), returns error. (HTTP 401)', function () {
   seed();
 
-  $response = createStory('k@k', 'Honor', 'This is Story', null);
+  $categories = getJson('api/categories');
+  $firstCategoryId = $categories[0]['id'];
+
+  $response = createStory($firstCategoryId, 'This is Story', null);
   $response->assertUnauthorized();
 });
 
 test('when create story, should return created story (HTTP 201).', function () {
   seed();
   registerUser('Kaka', 'k@k', '00000000');
+  $categories = getJson('api/categories');
+  $firstCategoryId = $categories[0]['id'];
 
-  $response = createStory('k@k', 'Honor', 'This is Story', 'This is the body of story.');
+  $response = createStory($firstCategoryId, 'This is Story', 'This is the body of story.');
   $response->assertCreated();
   $response->assertJson(
     fn (AssertableJson $json) =>
     $json->where('title', 'This is Story')
       ->where('body', 'This is the body of story.')
       ->where('author_id', findUserId('k@k'))
-      ->where('category', 'Honor')
+      ->where('category', $categories[0]['name'])
       ->etc()
   );
 });
@@ -58,6 +58,8 @@ test('when create story, should return created story (HTTP 201).', function () {
  ********/
 
 test('when get all stories, should returns all stories. (HTTP 200)', function () {
+  registerUser('Kaka', 'k@k', '00000000');
+
   $response = getJson('api/stories');
   $response->assertOk();
   $response->assertJsonCount(0);
@@ -66,30 +68,33 @@ test('when get all stories, should returns all stories. (HTTP 200)', function ()
 test('when get user story (already have stories), returns an array of its own stories. (HTTP 200)', function () {
   seed();
   registerUser('Kaka', 'k@k', '00000000');
-  createStory('k@k', 'Honor', 'This is Story', 'This is the body of story.');
+  $categories = getJson('api/categories');
+  $firstCategoryId = $categories[0]['id'];
+  $user = getJson('api/user');
+  createStory($firstCategoryId, 'This is Story', 'This is the body of story.');
 
-  $response = getJson('api/users/k@k/stories');
+  $response = getJson('api/users/' . $user['id'] . '/stories');
   $response->assertOk();
   $response->assertJsonCount(1);
-
-  $response = getJson('api/users/k@k/stories/this-is-story');
-  $response->assertOk();
 });
 
 test('when get story, returns story with incremented total views. (HTTP 200)', function () {
   seed();
   registerUser('Kaka', 'k@k', '00000000');
-  createStory('k@k', 'Honor', 'This is Story', 'This is the body of story.');
+  $categories = getJson('api/categories');
+  $firstCategoryId = $categories[0]['id'];
+  $story = createStory($firstCategoryId, 'This is Story', 'This is the body of story.');
 
-  $responseOne = getJson('api/users/k@k/stories/this-is-story');
+  $responseOne = getJson('api/stories/' . $story['id']);
+  $responseOne->dump();
   $responseOne->assertOk();
   $responseOne->assertJson([
     'views' => 1
   ]);
 
-  getJson('api/users/k@k/stories/this-is-story');
-  getJson('api/users/k@k/stories/this-is-story');
-  $responseTwo = getJson('api/users/k@k/stories/this-is-story');
+  getJson('api/stories/' . $story['id']);
+  getJson('api/stories/' . $story['id']);
+  $responseTwo = getJson('api/stories/' . $story['id']);
   $responseTwo->assertOk();
   $responseTwo->assertJson([
     'views' => 4
@@ -103,11 +108,17 @@ test('when get story, returns story with incremented total views. (HTTP 200)', f
 test('when update story of another user, returns error. (HTTP 403)', function () {
   seed();
   registerUser('Kaka', 'k@k', '00000000');
-  createStory('k@k', 'Honor', 'This is Story', 'This is the body of story.');
+
+  $categories = getJson('api/categories');
+  $firstCategoryId = $categories[0]['id'];
+  $secondCategoryId = $categories[1]['id'];
+  $story = createStory($firstCategoryId, 'This is Story', 'This is the body of story.');
+
   logout();
   registerUser('Jojo', 'j@j', '00000000');
 
-  $response = updateStory('k@k', 'this-is-story', 'Education', 'Updated Title');
+  $response = updateStory($story['id'], $secondCategoryId, 'Updated Title');
+  $response->dump();
   $response->assertForbidden();
 });
 
@@ -122,7 +133,7 @@ test('when update a non-existent story, returns error. (HTTP 404)', function () 
 test('when successfully update story, returns the correct data. (HTTP 200)', function () {
   seed();
   registerUser('Kaka', 'k@k', '00000000');
-  createStory('k@k', 'Honor', 'This is Story', 'This is the body of story.');
+  createStory(1, 'This is Story', 'This is the body of story.');
 
   $response = updateStory('k@k', 'this-is-story', 'Education', 'Updated Title');
   $response->assertOk();
@@ -148,7 +159,7 @@ test('when delete non-existent story, returns error. (HTTP 404)', function () {
 test('when delete story of another user, returns error. (HTTP 403)', function () {
   seed();
   registerUser('Kaka', 'k@k', '00000000');
-  createStory('k@k', 'Honor', 'This is Story', 'This is the body of story.');
+  createStory(1, 'This is Story', 'This is the body of story.');
 
   $response = deleteStory('j@j', 'this-is-story');
   $response->assertForbidden();
@@ -157,7 +168,7 @@ test('when delete story of another user, returns error. (HTTP 403)', function ()
 test('when delete story (not logged in), returns error. (HTTP 401)', function () {
   seed();
   registerUser('Kaka', 'k@k', '00000000');
-  createStory('k@k', 'Honor', 'This is Story', 'This is the body of story.');
+  createStory(1, 'This is Story', 'This is the body of story.');
   logout();
 
   $response = deleteStory('k@k', 'this-is-story');
@@ -167,7 +178,7 @@ test('when delete story (not logged in), returns error. (HTTP 401)', function ()
 test('when successfully delete story, returns no content. (HTTP 204)', function () {
   seed();
   registerUser('Kaka', 'k@k', '00000000');
-  createStory('k@k', 'Honor', 'This is Story', 'This is the body of story.');
+  createStory(1, 'This is Story', 'This is the body of story.');
 
   $response = deleteStory('k@k', 'this-is-story');
   $response->assertNoContent();
