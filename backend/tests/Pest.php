@@ -59,8 +59,14 @@ function registerUser($name, $email, $password)
   return $user;
 }
 
-function getUser() {
+function getUser()
+{
   return getJson('api/user');
+}
+
+function getCategories()
+{
+  return getJson('api/categories');
 }
 
 function loginUser($email, $password)
