@@ -23,64 +23,6 @@ class StoryService
     return $stories;
   }
 
-  public function getStoriesByCategory(String $categoryName)
-  {
-    $data = ['source' => 'Cache'];
-
-    $categoryId = Category::where('name', 'ilike', $categoryName)
-      ->first()
-      ->id;
-
-    if (!$categoryId) {
-      throw new CategoryNotFoundException();
-    }
-
-    $stories = Cache::remember(
-      'stories_' . $categoryId,
-      now()->addSeconds(2),
-      function () use (&$data, $categoryId) {
-        $data['source'] = 'DB';
-        return Story::where('category_id', $categoryId)->get();
-      }
-    );
-
-    $data['data'] = $stories;
-
-    return $data;
-  }
-
-  public function getUserStory(String $authorEmail)
-  {
-    $author = User::where('email', $authorEmail)->first();
-    if (!$author) {
-      throw new UserNotFoundException();
-    }
-
-    $stories = Story::where('author_id', $author->id)
-      ->get();
-
-    return $stories;
-  }
-
-  public function createNewStory(int $id, String $categoryName, String $title, String $body)
-  {
-    $category = Category::where('name', 'ilike', "%$categoryName%")->first();
-    if (!$category) {
-      throw new CategoryNotFoundException();
-    }
-
-    $story = Story::create([
-      'author_id' => $id,
-      'category_id' => $category->id,
-      'views' => 0,
-      'likes' => 0,
-      'title' => $title,
-      'body' => $body,
-    ]);
-
-    return $story;
-  }
-
   public function getStory($authorEmail, $title)
   {
     $author = User::where('email', $authorEmail)
