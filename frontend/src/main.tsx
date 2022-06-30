@@ -2,13 +2,14 @@ import { ChakraProvider } from '@chakra-ui/react';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import App from './App';
 import HomePage from './Features/Home/HomePage';
 import LandingPage from './Features/LandingPage/LandingPage';
 import LoginPage from './Features/Login/LoginPage';
 import RegisterPage from './Features/Register/RegisterPage';
 import StoryPage from './Features/Story/StoryPage';
 import './index.css';
+
+export default API_BASE_ENDPOINT = 'http://localhost:8000';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
