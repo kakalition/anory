@@ -4,10 +4,11 @@ namespace App\Services\Story;
 
 use App\Models\Story;
 use App\Services\BaseService;
+use App\Services\BaseServiceValidation;
 
-class CreateNewStory extends BaseService
+class CreateNewStory extends BaseServiceValidation
 {
-  protected function rules(array $data): array
+  protected function validationRules(array $data): array
   {
     return [
       'author_id' => 'required|integer',

@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Category;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -86,7 +87,6 @@ test('when get story, returns story with incremented total views. (HTTP 200)', f
   $story = createStory($firstCategoryId, 'This is Story', 'This is the body of story.');
 
   $responseOne = getJson('api/stories/' . $story['id']);
-  $responseOne->dump();
   $responseOne->assertOk();
   $responseOne->assertJson([
     'views' => 1
@@ -117,8 +117,7 @@ test('when update story of another user, returns error. (HTTP 403)', function ()
   logout();
   registerUser('Jojo', 'j@j', '00000000');
 
-  $response = updateStory($story['id'], $secondCategoryId, 'Updated Title');
-  $response->dump();
+  $response = updateStory($story['id'], $secondCategoryId, 'Updated Title', null);
   $response->assertForbidden();
 });
 
@@ -126,19 +125,27 @@ test('when update a non-existent story, returns error. (HTTP 404)', function () 
   seed();
   registerUser('Kaka', 'k@k', '00000000');
 
-  $response = updateStory('k@k', 'this-is-story', null, 'Updated Title');
+  $categories = getJson('api/categories');
+  $firstCategoryId = $categories[0]['id'];
+  $secondCategoryId = $categories[1]['id'];
+  createStory($firstCategoryId, 'This is Story', 'This is the body of story.');
+
+  $response = updateStory(0, $secondCategoryId, 'Updated Title', null);
   $response->assertNotFound();
 });
 
 test('when successfully update story, returns the correct data. (HTTP 200)', function () {
   seed();
   registerUser('Kaka', 'k@k', '00000000');
-  createStory(1, 'This is Story', 'This is the body of story.');
+  $categories = getJson('api/categories');
+  $firstCategoryId = $categories[0]['id'];
+  $secondCategoryId = $categories[1]['id'];
+  $story = createStory($firstCategoryId, 'This is Story', 'This is the body of story.');
 
-  $response = updateStory('k@k', 'this-is-story', 'Education', 'Updated Title');
+  $response = updateStory($story['id'], $secondCategoryId, 'Updated Title', null);
   $response->assertOk();
   $response->assertJson([
-    'category' => 'Education',
+    'category' => Category::find($secondCategoryId)->name,
     'title' => 'Updated Title',
     'body' => 'This is the body of story.'
   ]);
@@ -152,14 +159,16 @@ test('when delete non-existent story, returns error. (HTTP 404)', function () {
   seed();
   registerUser('Kaka', 'k@k', '00000000');
 
-  $response = deleteStory('k@k', 'this-is-story');
+  $response = deleteStory(0);
   $response->assertNotFound();
 });
 
 test('when delete story of another user, returns error. (HTTP 403)', function () {
   seed();
   registerUser('Kaka', 'k@k', '00000000');
-  createStory(1, 'This is Story', 'This is the body of story.');
+  $categories = getJson('api/categories');
+  $firstCategoryId = $categories[0]['id'];
+  $story = createStory($firstCategoryId, 'This is Story', 'This is the body of story.');
 
   $response = deleteStory('j@j', 'this-is-story');
   $response->assertForbidden();
@@ -168,10 +177,12 @@ test('when delete story of another user, returns error. (HTTP 403)', function ()
 test('when delete story (not logged in), returns error. (HTTP 401)', function () {
   seed();
   registerUser('Kaka', 'k@k', '00000000');
-  createStory(1, 'This is Story', 'This is the body of story.');
+  $categories = getJson('api/categories');
+  $firstCategoryId = $categories[0]['id'];
+  $story = createStory($firstCategoryId, 'This is Story', 'This is the body of story.');
   logout();
 
-  $response = deleteStory('k@k', 'this-is-story');
+  $response = deleteStory($story['id']);
   $response->assertUnauthorized();
 });
 

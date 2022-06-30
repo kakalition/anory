@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\CategoryNotFoundException;
+use App\Exceptions\ForbiddenException;
 use App\Exceptions\StoryNotFoundException;
 use App\Exceptions\UserNotFoundException;
 use App\Http\Requests\DestroyStoryRequest;
@@ -82,7 +83,7 @@ class StoryController extends Controller
   public function update(Request $request, Story $story, UpdateStory $updateStory)
   {
     try {
-      $story = $updateStory->handle($story, $request->user()->id, [
+      $story = $updateStory->handle(auth()->user(), $story, [
         'modified_category_id' => $request->input('modified_category_id') ?? null,
         'modified_title' => $request->input('modified_title') ?? null,
         'modified_body' => $request->input('modified_body') ?? null,
@@ -91,6 +92,8 @@ class StoryController extends Controller
       return response($exception->getMessage(), 422);
     } catch (UnauthorizedException $exception) {
       return response($exception->getMessage(), 403);
+    } catch (ForbiddenException $exception) {
+      return response('You are forbidden to access this functionality!', 403);
     } catch (Exception $exception) {
       return response($exception->getMessage(), 500);
     }

@@ -4,15 +4,17 @@ namespace App\Services\Story;
 
 use App\Exceptions\ForbiddenException;
 use App\Models\Story;
+use App\Models\User;
 use App\Services\BaseService;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\UnauthorizedException;
 
 class UpdateStory extends BaseService
 {
 
-  protected function authorizationRules($userId, $model): bool
+  protected function authorizationRules(User $user, Model $model): bool
   {
-    return $userId == $model->author_id;
+    return $user->id == $model->author_id;
   }
 
   protected function validationRules(array $data): array
@@ -25,9 +27,9 @@ class UpdateStory extends BaseService
     ];
   }
 
-  public function handle(Story $story, int $requesterId, array $data)
+  public function handle(User $user, Story $story, array $data)
   {
-    $this->authorize($requesterId, $story);
+    $this->authorize($user, $story);
 
     $validatedData = $this->getValidatedData($data);
 
