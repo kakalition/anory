@@ -8,6 +8,10 @@ uses(RefreshDatabase::class);
  * CREATE *
  **********/
 
+ test('when create categories (not admin), should returns error. (HTTP 403)', function() {
+ 
+ });
+
 /********
  * READ *
  ********/
