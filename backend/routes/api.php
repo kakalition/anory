@@ -1,12 +1,11 @@
 <?php
 
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\LikeDataController;
 use App\Http\Controllers\StoryController;
 use App\Http\Middleware\EnsureLoggedIn;
 use App\Models\Category;
-use App\Models\Story;
-use GuzzleHttp\Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -26,14 +25,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 // For testing purpose
-Route::get('/user', function (Request $request) {
-  return response($request->user(), 200);
-});
-
-// For testing purpose
-Route::get('/categories', function (Request $request) {
-  return response(Category::all(), 200);
-});
+Route::get('/user', fn (Request $request) => response($request->user(), 200));
 
 Route::controller(StoryController::class)
   ->middleware(EnsureLoggedIn::class)
@@ -50,15 +42,9 @@ Route::controller(StoryController::class)
 
 Route::controller(CommentController::class)
   ->middleware(EnsureLoggedIn::class)
-  ->prefix('/stories/{story_id}')
   ->group(function () {
-    Route::get('/comments', 'indexByUser');
-    Route::post('/comments', 'store');
-  });
-
-Route::controller(CommentController::class)
-  ->middleware(EnsureLoggedIn::class)
-  ->group(function () {
+    Route::get('/stories/{story_id}/comments', 'indexByUser');
+    Route::post('/stories/{story_id}/comments', 'store');
     Route::put('/comments/{comment}', 'update');
     Route::patch('/comments/{comment}', 'update');
     Route::delete('/comments/{comment}', 'destroy');
@@ -73,3 +59,7 @@ Route::controller(LikeDataController::class)
     Route::post('/comments/{comment}/likedata', 'store');
     Route::delete('/likedata/{likedata}', 'destroy');
   });
+
+Route::apiResource('/categories', CategoryController::class)
+  ->except('show')
+  ->middleware(EnsureLoggedIn::class);

@@ -4,9 +4,7 @@ use App\Models\Category;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-use function Pest\Laravel\deleteJson;
 use function Pest\Laravel\getJson;
-use function Pest\Laravel\putJson;
 use function Pest\Laravel\seed;
 
 uses(RefreshDatabase::class);

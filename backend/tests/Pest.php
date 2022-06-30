@@ -18,6 +18,7 @@ use function Pest\Laravel\deleteJson;
 use function Pest\Laravel\getJson;
 use function Pest\Laravel\patchJson;
 use function Pest\Laravel\postJson;
+use function Pest\Laravel\putJson;
 
 uses(Tests\TestCase::class)->in('Feature');
 
@@ -59,8 +60,14 @@ function registerUser($name, $email, $password)
   return $user;
 }
 
-function getUser() {
+function getUser()
+{
   return getJson('api/user');
+}
+
+function getCategories()
+{
+  return getJson('api/categories');
 }
 
 function loginUser($email, $password)
@@ -119,6 +126,21 @@ function likeDislikeStory($storyId, $status)
 function likeDislikeComment($commentId, $status)
 {
   return postJson("api/comments/$commentId/likedata", ['status' => $status]);
+}
+
+function createCategory(?String $categoryName)
+{
+  return postJson('api/categories', ['name' => $categoryName]);
+}
+
+function updateCategory(int $categoryId, ?String $categoryName = null)
+{
+  return putJson("api/categories/$categoryId", ['name' => $categoryName]);
+}
+
+function deleteCategory(int $categoryId)
+{
+  return deleteJson("api/categories/$categoryId");
 }
 
 function findUserId($userEmail)
