@@ -61,4 +61,5 @@ Route::controller(LikeDataController::class)
   });
 
 Route::apiResource('/categories', CategoryController::class)
+  ->except('show')
   ->middleware(EnsureLoggedIn::class);

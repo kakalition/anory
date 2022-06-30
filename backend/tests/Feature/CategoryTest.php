@@ -18,6 +18,13 @@ test('when create categories with invalid data, should returns error. (HTTP 422)
   $response->assertUnprocessable();
 });
 
+test('when create categories with duplicated name, should returns error. (HTTP 422)', function () {
+  seed(AdminSeeder::class);
+  loginUser('admin@anory.com', '00000000');
+  createCategory('Adventure');
+  $response = createCategory('Adventure');
+  $response->assertUnprocessable();
+});
 
 test('when create categories (not admin), should returns error. (HTTP 403)', function () {
   registerUser('Kaka', 'k@k', '00000000');
@@ -53,6 +60,59 @@ test('when get all categories, should returns correct data. (HTTP 200)', functio
  * UPDATE *
  **********/
 
+test('when update category with invalid data, should returns error. (HTTP 422)', function () {
+  seed(AdminSeeder::class);
+  loginUser('admin@anory.com', '00000000');
+  $category = createCategory('Adventure');
+  $category->assertCreated();
+
+  $response = updateCategory($category['id'], 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
+  $response->assertUnprocessable();
+});
+
+test('when update category with existing name, should returns error. (HTTP 422)', function () {
+  seed(AdminSeeder::class);
+  loginUser('admin@anory.com', '00000000');
+  createCategory('Fun and Game');
+  $category = createCategory('Adventure');
+  $category->assertCreated();
+
+  $response = updateCategory($category['id'], 'Fun and Game');
+  $response->assertUnprocessable();
+});
+
+test('when update category (not admin), should returns error. (HTTP 403)', function () {
+  seed(AdminSeeder::class);
+  loginUser('admin@anory.com', '00000000');
+  $category = createCategory('Adventure');
+  $category->assertCreated();
+  logout();
+
+  registerUser('Kaka', 'k@k', '00000000');
+  $response = updateCategory($category['id'], ' Fun Adventure');
+  $response->assertForbidden();
+});
+
+test('when successfully update category (as admin), should returns updated category data. (HTTP 201)', function () {
+  seed(AdminSeeder::class);
+  loginUser('admin@anory.com', '00000000');
+  $category = createCategory('Adventure');
+
+  $response = updateCategory($category['id'], 'Fun Adventure');
+  $response->assertOk();
+  $response->assertJson(['name' => 'Fun Adventure']);
+});
+
 /**********
  * DELETE *
  **********/
+
+test('when successfully delete category, should returns no content. (HTTP 204)', function () {
+  seed(AdminSeeder::class);
+  loginUser('admin@anory.com', '00000000');
+  $category = createCategory('Adventure');
+  $category->assertCreated();
+
+  $response = deleteCategory($category['id']);
+  $response->assertNoContent();
+});
