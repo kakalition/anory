@@ -81,6 +81,14 @@ test('when update category with existing name, should returns error. (HTTP 422)'
   $response->assertUnprocessable();
 });
 
+test('when update non-existing category, should returns error. (HTTP 404)', function() {
+  seed(AdminSeeder::class);
+  loginUser('admin@anory.com', '00000000');
+
+  $response = updateCategory(0, 'Fun and Game');
+  $response->assertNotFound();
+});
+
 test('when update category (not admin), should returns error. (HTTP 403)', function () {
   seed(AdminSeeder::class);
   loginUser('admin@anory.com', '00000000');
@@ -107,7 +115,27 @@ test('when successfully update category (as admin), should returns updated categ
  * DELETE *
  **********/
 
-test('when successfully delete category, should returns no content. (HTTP 204)', function () {
+test('when delete non-existing category, should returns error. (HTTP 404)', function () {
+  seed(AdminSeeder::class);
+  loginUser('admin@anory.com', '00000000');
+
+  $response = deleteCategory(0);
+  $response->assertNotFound();
+});
+
+test('when delete category (not admin), should returns error. (HTTP 403)', function () {
+  seed(AdminSeeder::class);
+  loginUser('admin@anory.com', '00000000');
+  $category = createCategory('Adventure');
+  $category->assertCreated();
+  logout();
+
+  registerUser('Kaka', 'k@k', '00000000');
+  $response = deleteCategory($category['id']);
+  $response->assertForbidden();
+});
+
+test('when delete category (as admin), should returns no content. (HTTP 204)', function () {
   seed(AdminSeeder::class);
   loginUser('admin@anory.com', '00000000');
   $category = createCategory('Adventure');

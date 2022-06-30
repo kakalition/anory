@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\ForbiddenException;
 use App\Models\Category;
+use App\Services\Category\DeleteCategory;
 use App\Services\Category\CreateCategory;
 use App\Services\Category\GetAllCategories;
 use App\Services\Category\UpdateCategory;
-use App\Services\Comment\UpdateComment;
 use Exception;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
@@ -59,8 +59,16 @@ class CategoryController extends Controller
     return response($category, 200);
   }
 
-  public function destroy(Category $category)
+  public function destroy(Category $category, DeleteCategory $deleteCategory)
   {
-    //
+    try {
+      $deleteCategory->handle(auth()->user(), $category);
+    } catch (ForbiddenException $exception) {
+      return response('You are forbidden to use this functionality!', 403);
+    } catch (Exception $exception) {
+      return response($exception->getMessage(), 500);
+    }
+
+    return response('', 204);
   }
 }
