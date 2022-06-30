@@ -13,7 +13,7 @@ abstract class BaseService
   abstract protected function validationRules(array $data): array;
   abstract protected function authorizationRules(User $user, Model $model): bool;
 
-  protected function authorize(User $user, Model $model)
+  protected function authorize(User $user, ?Model $model = null)
   {
     if (!$this->authorizationRules($user, $model)) {
       throw new ForbiddenException();

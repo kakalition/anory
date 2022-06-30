@@ -127,6 +127,11 @@ function likeDislikeComment($commentId, $status)
   return postJson("api/comments/$commentId/likedata", ['status' => $status]);
 }
 
+function createCategory(?String $categoryName)
+{
+  return postJson('api/categories', ['name' => $categoryName]);
+}
+
 function findUserId($userEmail)
 {
   $id = User::where('email', $userEmail)
