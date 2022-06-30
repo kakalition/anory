@@ -166,11 +166,15 @@ test('when delete non-existent story, returns error. (HTTP 404)', function () {
 test('when delete story of another user, returns error. (HTTP 403)', function () {
   seed();
   registerUser('Kaka', 'k@k', '00000000');
+
   $categories = getJson('api/categories');
   $firstCategoryId = $categories[0]['id'];
   $story = createStory($firstCategoryId, 'This is Story', 'This is the body of story.');
 
-  $response = deleteStory('j@j', 'this-is-story');
+  logout();
+  registerUser('Jojo', 'j@j', '00000000');
+
+  $response = deleteStory($story['id']);
   $response->assertForbidden();
 });
 
@@ -189,8 +193,10 @@ test('when delete story (not logged in), returns error. (HTTP 401)', function ()
 test('when successfully delete story, returns no content. (HTTP 204)', function () {
   seed();
   registerUser('Kaka', 'k@k', '00000000');
-  createStory(1, 'This is Story', 'This is the body of story.');
+  $categories = getJson('api/categories');
+  $firstCategoryId = $categories[0]['id'];
+  $story = createStory($firstCategoryId, 'This is Story', 'This is the body of story.');
 
-  $response = deleteStory('k@k', 'this-is-story');
+  $response = deleteStory($story['id']);
   $response->assertNoContent();
 });

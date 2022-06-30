@@ -3,15 +3,16 @@
 namespace App\Services;
 
 use App\Exceptions\ForbiddenException;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 
 abstract class BaseServiceAuthorization
 {
-  abstract protected function authorizationRules(int $userId, ?Model $model): bool;
+  abstract protected function authorizationRules(User $user, ?Model $model): bool;
 
-  protected function authorize(int $userId, ?Model $model)
+  protected function authorize(User $user, ?Model $model)
   {
-    if (!$this->authorizationRules($userId, $model)) {
+    if (!$this->authorizationRules($user, $model)) {
       throw new ForbiddenException();
     }
   }

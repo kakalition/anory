@@ -4,21 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\CategoryNotFoundException;
 use App\Exceptions\ForbiddenException;
-use App\Exceptions\StoryNotFoundException;
-use App\Exceptions\UserNotFoundException;
-use App\Http\Requests\DestroyStoryRequest;
-use App\Http\Requests\StoreStoryRequest;
-use App\Http\Requests\UpdateStoryRequest;
 use App\Http\Resources\StoryResource;
 use App\Models\Story;
 use App\Services\Story\CreateNewStory;
+use App\Services\Story\DeleteStory;
 use App\Services\Story\GetStoriesByCategory;
 use App\Services\Story\GetUserStories;
 use App\Services\Story\UpdateStory;
-use App\Services\StoryService;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Validation\UnauthorizedException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class StoryController extends Controller
@@ -90,8 +84,6 @@ class StoryController extends Controller
       ]);
     } catch (UnprocessableEntityHttpException $exception) {
       return response($exception->getMessage(), 422);
-    } catch (UnauthorizedException $exception) {
-      return response($exception->getMessage(), 403);
     } catch (ForbiddenException $exception) {
       return response('You are forbidden to access this functionality!', 403);
     } catch (Exception $exception) {
@@ -101,9 +93,15 @@ class StoryController extends Controller
     return response(new StoryResource($story), 200);
   }
 
-  public function destroy(Request $request, Story $story)
+  public function destroy(Story $story, DeleteStory $deleteStory)
   {
-    $story->delete();
+    try {
+      $deleteStory->handle(auth()->user(), $story);
+    } catch (ForbiddenException $exception) {
+      return response('You are forbidden to access this functionality!', 403);
+    } catch (Exception $exception) {
+      return response($exception->getMessage(), 500);
+    }
 
     return response('', 204);
   }
