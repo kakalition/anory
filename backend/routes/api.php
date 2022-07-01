@@ -5,7 +5,6 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\LikeDataController;
 use App\Http\Controllers\StoryController;
 use App\Http\Middleware\EnsureLoggedIn;
-use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 

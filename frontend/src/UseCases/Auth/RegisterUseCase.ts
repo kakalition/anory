@@ -1,11 +1,31 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
+import { API_BASE_URL } from '../../env';
+
+type Payload = {
+  name: string,
+  email: string,
+  password: string
+};
 
 export default class RegisterUseCase {
-  static handle(name: string, email: string, password: string) {
-    return axios({
-      url: `${import.meta.env.VITE_API_URL}/register`,
-      method: 'POST',
-      data: { name, email, password },
-    });
+  static handle(
+    payload: Payload,
+    onFulfilled: (response: AxiosResponse) => void,
+    onFailed: (error: any) => void,
+  ) {
+    axios({ url: `${API_BASE_URL}/sanctum/csrf-cookie`, method: 'GET' })
+      .then(() => {
+        axios({
+          url: `${API_BASE_URL}/register`,
+          method: 'POST',
+          data: {
+            name: payload.name,
+            email: payload.email,
+            password: payload.password,
+            password_confirmation: payload.password,
+          },
+        }).then(onFulfilled)
+          .catch(onFailed);
+      });
   }
 }
