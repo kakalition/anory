@@ -1,4 +1,3 @@
-import { Box } from '@chakra-ui/react';
 import Spacer from '../Utilities/Spacer';
 import EyeIcon from './Icons/EyeIcon';
 import FilledChatAltIcon from './Icons/FilledChatAltIcon';
@@ -17,7 +16,7 @@ export default function StoryTileComponent({
   title, body, totalLikes, totalComments, totalViews, uploadedAt,
 }: Params) {
   return (
-    <Box width="full" bgColor="#FFFFFF" shadow="base" borderRadius="0.5rem" padding="1.5rem">
+    <button type="button" className="p-[1.5rem] w-full text-left bg-white rounded-lg drop-shadow-sm hover:drop-shadow-md transition duration-75 select-none">
       <p className="font-roboto text-3xl font-medium">{title}</p>
       <Spacer height="1rem" />
       <p className="font-roboto">{body}</p>
@@ -52,6 +51,6 @@ export default function StoryTileComponent({
           <p className="pt-[0.2rem]">{`Uploaded at: ${uploadedAt}`}</p>
         </div>
       </div>
-    </Box>
+    </button>
   );
 }
