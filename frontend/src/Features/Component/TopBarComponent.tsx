@@ -1,10 +1,25 @@
 import {
   Button, Input, InputGroup, InputLeftElement,
 } from '@chakra-ui/react';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import LogoutUseCase from '../../UseCases/Auth/LogoutUseCase';
 import AnnotationIcon from './Icons/AnnotationIcon';
 import SearchIcon from './Icons/SearchIcon';
 
 export default function TopBarComponent() {
+  const navigator = useNavigate();
+  const onLogoutClick: React.MouseEventHandler = () => {
+    LogoutUseCase.handle(
+      (response) => {
+        if (response.status === 204) {
+          navigator('/login');
+        }
+      },
+      (error) => console.error(error.response.data),
+    );
+  };
+
   return (
     <div className="flex flex-row justify-between items-center py-3 px-16 w-full h-full bg-white border-b-2 border-b-gray-200">
       <div className="w-12 h-12 stroke-gray-900 stroke-[0.08rem]">
@@ -23,7 +38,7 @@ export default function TopBarComponent() {
           focusBorderColor="#232323"
         />
       </InputGroup>
-      <Button variant="outline">Logout</Button>
+      <Button variant="outline" onClick={onLogoutClick}>Logout</Button>
     </div>
   );
 }
