@@ -1,11 +1,13 @@
 import axios from 'axios';
 
-export default function RegisterUseCase(name: string, email: string, password: string) {
-  const { API_ENDPOINT } = import.meta.env.API_ENDPOINT;
+export default class RegisterUseCase {
+  API_ENDPOINT = import.meta.env.VITE_API_ENDPOINT;
 
-  return axios({
-    url: `${API_ENDPOINT}/register`,
-    method: 'POST',
-    data: { name, email, password },
-  });
+  handle(name: string, email: string, password: string) {
+    return axios({
+      url: `${this.API_ENDPOINT}/register`,
+      method: 'POST',
+      data: { name, email, password },
+    });
+  }
 }

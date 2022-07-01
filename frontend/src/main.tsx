@@ -9,8 +9,6 @@ import RegisterPage from './Features/Register/RegisterPage';
 import StoryPage from './Features/Story/StoryPage';
 import './index.css';
 
-export default API_BASE_ENDPOINT = 'http://localhost:8000';
-
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ChakraProvider>

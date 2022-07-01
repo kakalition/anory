@@ -3,6 +3,7 @@ import {
 } from '@chakra-ui/react';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import RegisterUseCase from '../../UseCases/Auth/RegisterUseCase';
 import AnoryLogo from '../Component/AnoryLogo';
 import Spacer from '../Utilities/Spacer';
 
@@ -14,7 +15,8 @@ export default function RegisterPage() {
   };
 
   const onRegisterClickListener: React.MouseEventHandler = () => {
-    console.log('implement');
+    const registerUseCase = new RegisterUseCase();
+    registerUseCase.handle('Kaka', 'k@k', '00000000');
   };
 
   return (
