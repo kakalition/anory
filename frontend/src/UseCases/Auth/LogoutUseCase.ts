@@ -6,8 +6,11 @@ export default class LogoutUseCase {
     onFulfilled: ((response: AxiosResponse) => void) | null = null,
     onFailed: ((error: any) => void) | null = null,
   ) {
-    axios({ url: `${API_BASE_URL}/logout`, method: 'POST' })
-      .then(onFulfilled)
-      .catch(onFailed);
+    axios({ url: `${API_BASE_URL}/sanctum/csrf-cookie`, method: 'GET' })
+      .then(() => {
+        axios({ url: `${API_BASE_URL}/logout`, method: 'POST' })
+          .then(onFulfilled)
+          .catch(onFailed);
+      });
   }
 }

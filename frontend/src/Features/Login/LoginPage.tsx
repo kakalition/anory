@@ -3,6 +3,7 @@ import {
 } from '@chakra-ui/react';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import LoginUseCase from '../../UseCases/Auth/LoginUseCase';
 import AnoryLogo from '../Component/AnoryLogo';
 import Spacer from '../Utilities/Spacer';
 
@@ -14,7 +15,20 @@ export default function LoginPage() {
   };
 
   const onSignInClickListener: React.MouseEventHandler = () => {
-    console.log('implement');
+    const formData = new FormData(document.getElementById('login-form') as HTMLFormElement);
+
+    LoginUseCase.handle(
+      {
+        email: formData.get('email')?.toString(),
+        password: formData.get('password')?.toString(),
+      },
+      (response) => {
+        if (response.status === 200) {
+          navigator('/app');
+        }
+      },
+      (error) => console.error(error),
+    );
   };
 
   return (
@@ -22,12 +36,13 @@ export default function LoginPage() {
       <div className="p-16 w-[40%] bg-white rounded-lg">
         <h1 className="font-raleway text-5xl font-semibold text-black">Welcome Back!</h1>
         <Spacer height="3rem" />
-        <form>
+        <form id="login-form">
           <FormControl>
             <FormLabel htmlFor="email">Email address</FormLabel>
             <Input
               id="email"
               type="email"
+              name="email"
               placeholder="joseph@mail.com"
               focusBorderColor="#232323"
             />
@@ -38,6 +53,7 @@ export default function LoginPage() {
             <Input
               id="password"
               type="password"
+              name="password"
               placeholder="••••••••"
               focusBorderColor="#232323"
             />
