@@ -2,9 +2,10 @@ import {
   Button, FormControl, FormLabel, Input, Modal, ModalBody, ModalCloseButton, ModalContent,
   ModalFooter, ModalHeader, ModalOverlay, Select, Textarea, useDisclosure,
 } from '@chakra-ui/react';
-import axios from 'axios';
-import { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import _ from 'lodash';
 import GetCategoriesUseCase from '../../UseCases/Category/GetCategoriesUseCase';
+import CreateStoryUseCase from '../../UseCases/Story/CreateStoryUseCase';
 import GetStoriesUseCase from '../../UseCases/Story/GetStoriesUseCase';
 import AnoryPrimaryButtonComponent from '../Component/AnoryPrimaryButtonComponent';
 import SideNavBarComponent from '../Component/SideNavBarComponent';
@@ -12,54 +13,23 @@ import StoryTileComponent from '../Component/StoryTileComponent';
 import TopBarComponent from '../Component/TopBarComponent';
 import Spacer from '../Utilities/Spacer';
 
-const dummyDatas = [
-  {
-    title: 'Weird Things',
-    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ',
-    totalLikes: 20,
-    totalComments: 12,
-    totalViews: 9,
-    uploadedAt: 'Juny 24, 2022',
-  },
-  {
-    title: 'Funky Stranger',
-    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ',
-    totalLikes: 109,
-    totalComments: 20,
-    totalViews: 11,
-    uploadedAt: 'Juny 24, 2022',
-  },
-  {
-    title: 'Horrible Creature at Night',
-    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ',
-    totalLikes: 92,
-    totalComments: 11,
-    totalViews: 27,
-    uploadedAt: 'Juny 24, 2022',
-  },
-  {
-    title: 'Funky Stranger',
-    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ',
-    totalLikes: 109,
-    totalComments: 20,
-    totalViews: 11,
-    uploadedAt: 'Juny 24, 2022',
-  },
-  {
-    title: 'Horrible Creature at Night',
-    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ',
-    totalLikes: 92,
-    totalComments: 11,
-    totalViews: 27,
-    uploadedAt: 'Juny 24, 2022',
-  },
-];
-
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState('alls');
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [storyData, setStoryData] = useState(null);
+  const [storyData, setStoryData] = useState<any[]>([]);
   const [availableCategories, setAvailableCategories] = useState<any[]>([]);
+
+  const onSubmitStoryClick: React.MouseEventHandler = () => {
+    CreateStoryUseCase.handle(
+      {
+        categoryId: parseInt((document.getElementById('categories') as HTMLSelectElement).value, 10),
+        title: (document.getElementById('title') as HTMLInputElement).value,
+        body: (document.getElementById('body') as HTMLTextAreaElement).value,
+      },
+      (response) => console.log('success'),
+      (error) => console.error(error.response),
+    );
+  };
 
   useEffect(() => {
     GetCategoriesUseCase.handle((response) => setAvailableCategories(response.data));
@@ -67,7 +37,10 @@ export default function HomePage() {
     GetStoriesUseCase.handle(
       10,
       null,
-      (response) => setStoryData(response.data),
+      (response) => {
+        setStoryData(response.data);
+        console.log(response.data);
+      },
       (error) => console.error(error.response.data),
     );
   }, []);
@@ -76,16 +49,16 @@ export default function HomePage() {
     (element) => <option key={element.id} value={element.id}>{element.name}</option>,
   ), [availableCategories]);
 
-  const elements = dummyDatas.map((element) => (
+  const elements = useMemo(() => storyData.map((element) => (
     <StoryTileComponent
       title={element.title}
-      body={element.body}
-      totalLikes={element.totalLikes}
-      totalComments={element.totalComments}
-      totalViews={element.totalViews}
-      uploadedAt={element.uploadedAt}
+      body={_.truncate(element.body)}
+      totalLikes={element.likes}
+      totalComments={element.comments_count}
+      totalViews={element.views}
+      uploadedAt={(new Date(element.created_at)).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
     />
-  ));
+  )), [storyData]);
 
   return (
     <div className="flex flex-col w-screen h-screen bg-[#FFFCFC]">
@@ -151,7 +124,7 @@ export default function HomePage() {
           <ModalFooter>
             <Button variant="ghost">Cancel</Button>
             <Spacer width="2rem" />
-            <AnoryPrimaryButtonComponent text="Post" onClick={() => console.log()} paddingX="2rem" />
+            <AnoryPrimaryButtonComponent text="Post" onClick={onSubmitStoryClick} paddingX="2rem" />
           </ModalFooter>
         </ModalContent>
       </Modal>

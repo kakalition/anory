@@ -18,8 +18,23 @@ class Story extends Model
     'body'
   ];
 
-  public function likeData() {
+  public function likeData()
+  {
     return $this->morphMany(LikeData::class, 'likeable');
+  }
+
+  function categoryName()
+  {
+    return Category::where('id', $this->category_id)
+      ->first()
+      ->name;
+  }
+
+  function totalComments()
+  {
+    return $this
+      ->hasMany(Comment::class, 'story_id', 'id')
+      ->count();
   }
 
   public function comments()

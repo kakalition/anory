@@ -23,7 +23,7 @@ class StoryController extends Controller
     try {
       $stories = $getStories->handle(
         $request->query('count'),
-        $request->query('query') ?? '',
+        $request->query('query'),
       );
     } catch (Exception $exception) {
       return response($exception->getMessage(), 500);

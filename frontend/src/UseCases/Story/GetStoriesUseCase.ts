@@ -9,7 +9,11 @@ export default class GetStoriesUseCase {
     onFailed: ((error: any) => void) | null = null,
   ) {
     axios({
-      url: `${API_BASE_URL}/api/stories?count=${count}&query=${query}`,
+      url: `${API_BASE_URL}/api/stories`,
+      params: {
+        count,
+        query,
+      },
       method: 'GET',
     }).then(onFulfilled)
       .catch(onFailed);

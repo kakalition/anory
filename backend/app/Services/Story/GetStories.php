@@ -3,16 +3,19 @@
 namespace App\Services\Story;
 
 use App\Models\Story;
+use Illuminate\Support\Facades\DB;
 
 class GetStories
 {
-  public function handle(int $count, string $rawQuery)
+  public function handle(int $count, ?string $rawQuery)
   {
-    $query = str_replace('-', ' ', $rawQuery);
-    $stories = Story::where('title', 'ilike', $query)
-      ->limit($count)
-      ->get();
+    $query = str_replace('-', ' ', $rawQuery ?? '');
+    $stories = Story::limit(5);
 
-    return $stories;
+    if ($query != '') {
+      $stories->where('title', 'ilike', $query);
+    }
+
+    return $stories->get();
   }
 }
