@@ -2,7 +2,9 @@ import {
   Button, FormControl, FormLabel, Input, Modal, ModalBody, ModalCloseButton, ModalContent,
   ModalFooter, ModalHeader, ModalOverlay, Select, Textarea, useDisclosure,
 } from '@chakra-ui/react';
-import { useState } from 'react';
+import axios from 'axios';
+import { useState, useEffect } from 'react';
+import GetStoriesUseCase from '../../UseCases/Story/GetStoriesUseCase';
 import AnoryPrimaryButtonComponent from '../Component/AnoryPrimaryButtonComponent';
 import SideNavBarComponent from '../Component/SideNavBarComponent';
 import StoryTileComponent from '../Component/StoryTileComponent';
@@ -55,6 +57,16 @@ const dummyDatas = [
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState('alls');
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [storyData, setStoryData] = useState(null);
+
+  useEffect(() => {
+    GetStoriesUseCase.handle(
+      10,
+      null,
+      (response) => setStoryData(response.data),
+      (error) => console.error(error.response.data),
+    );
+  }, []);
 
   const elements = dummyDatas.map((element) => (
     <StoryTileComponent
