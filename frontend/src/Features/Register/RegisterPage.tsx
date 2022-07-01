@@ -15,8 +15,7 @@ export default function RegisterPage() {
   };
 
   const onRegisterClickListener: React.MouseEventHandler = () => {
-    const registerUseCase = new RegisterUseCase();
-    registerUseCase.handle('Kaka', 'k@k', '00000000');
+    RegisterUseCase.handle('Kaka', 'k@k', '00000000');
   };
 
   return (
