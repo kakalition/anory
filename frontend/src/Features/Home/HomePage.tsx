@@ -51,6 +51,8 @@ export default function HomePage() {
 
   const elements = useMemo(() => storyData.map((element) => (
     <StoryTileComponent
+      key={element.id}
+      id={element.id}
       title={element.title}
       body={_.truncate(element.body)}
       totalLikes={element.likes}

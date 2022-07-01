@@ -1,9 +1,11 @@
+import { useNavigate } from 'react-router-dom';
 import Spacer from '../Utilities/Spacer';
 import EyeIcon from './Icons/EyeIcon';
 import FilledChatAltIcon from './Icons/FilledChatAltIcon';
 import FilledHeartIcon from './Icons/FilledHeartIcon';
 
 type Params = {
+  id: number,
   title: string,
   body: string,
   totalLikes: number,
@@ -13,10 +15,16 @@ type Params = {
 };
 
 export default function StoryTileComponent({
-  title, body, totalLikes, totalComments, totalViews, uploadedAt,
+  id, title, body, totalLikes, totalComments, totalViews, uploadedAt,
 }: Params) {
+  const navigator = useNavigate();
+
   return (
-    <button type="button" className="p-[1.5rem] w-full text-left bg-white rounded-lg drop-shadow-sm hover:drop-shadow-md transition duration-75 select-none">
+    <button
+      type="button"
+      className="p-[1.5rem] w-full text-left bg-white rounded-lg drop-shadow-sm hover:drop-shadow-md transition duration-75 select-none"
+      onClick={() => navigator(`/story/${id}`)}
+    >
       <p className="font-roboto text-3xl font-medium">{title}</p>
       <Spacer height="1rem" />
       <p className="font-roboto">{body}</p>

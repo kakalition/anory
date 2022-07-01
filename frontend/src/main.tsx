@@ -34,7 +34,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route path="/login" element={<LoginPage />} />
           <Route path="/logout" element={<Logout />} />
           <Route path="/app" element={<HomePage />} />
-          <Route path="/story" element={<StoryPage />} />
+          <Route path="/story" element={<StoryPage />}>
+            <Route path=":id" element={<StoryPage />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </ChakraProvider>

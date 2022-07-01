@@ -1,5 +1,8 @@
 import { Button, Select, Textarea } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import GetStoriesUseCase from '../../UseCases/Story/GetStoriesUseCase';
+import GetStoryUseCase from '../../UseCases/Story/GetStoryUseCase';
 import AnoryPrimaryButtonComponent from '../Component/AnoryPrimaryButtonComponent';
 import CommentSectionComponent from '../Component/CommentSectionComponent';
 import CommentTileComponent from '../Component/CommentTileComponent';
@@ -37,7 +40,21 @@ const dummyDatas = [
 ];
 
 export default function StoryPage() {
+  const params = useParams();
   const [activeTab, setActiveTab] = useState('alls');
+  const [storyData, setStoryData] = useState<any>({});
+
+  useEffect(() => {
+    if (params.id === undefined) {
+      return;
+    }
+
+    GetStoryUseCase.handle(
+      parseInt(params.id, 10),
+      (response) => setStoryData(response.data),
+      (error) => console.error(error.response.data),
+    );
+  }, []);
 
   const elements = dummyDatas.map((element) => (
     <CommentTileComponent
@@ -60,28 +77,13 @@ export default function StoryPage() {
         <div className="overflow-y-scroll pt-8 pr-16 pl-4 w-[80%]">
           <div className="flex flex-col gap-6">
             <StoryTileComponent
-              title="Lorem Ipsum"
-              body="
-              Sed ut perspiciatis unde omnis iste natus error sit voluptatem
-              accusantium doloremque laudantium, totam rem aperiam, eaque
-              ipsa quae ab illo inventore veritatis et quasi architecto beatae
-              vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia
-              voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur
-              magni dolores eos qui ratione voluptatem sequi nesciunt.
-              Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet,
-              consectetur, adipisci velit, sed quia non numquam eius modi tempora
-              incidunt ut labore et dolore magnam aliquam quaerat voluptatem.
-              Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis
-              suscipit laboriosam, nisi ut aliquid ex ea commodi
-              consequatur? Quis autem vel eum iure reprehenderit qui
-              in ea voluptate velit esse quam nihil molestiae
-              consequatur, vel illum qui dolorem eum fugiat quo
-              voluptas nulla pariatur?
-              "
-              totalLikes={29}
-              totalComments={21}
-              totalViews={109}
-              uploadedAt="June 24, 2022"
+              id={storyData.id}
+              title={storyData.title}
+              body={storyData.body}
+              totalLikes={storyData.likes}
+              totalComments={storyData.commentsCount}
+              totalViews={storyData.views}
+              uploadedAt={(new Date(storyData.created_at)).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
             />
           </div>
           <Spacer height="2rem" />
