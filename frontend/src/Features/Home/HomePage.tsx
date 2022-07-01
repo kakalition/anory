@@ -3,7 +3,8 @@ import {
   ModalFooter, ModalHeader, ModalOverlay, Select, Textarea, useDisclosure,
 } from '@chakra-ui/react';
 import axios from 'axios';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import GetCategoriesUseCase from '../../UseCases/Category/GetCategoriesUseCase';
 import GetStoriesUseCase from '../../UseCases/Story/GetStoriesUseCase';
 import AnoryPrimaryButtonComponent from '../Component/AnoryPrimaryButtonComponent';
 import SideNavBarComponent from '../Component/SideNavBarComponent';
@@ -58,8 +59,11 @@ export default function HomePage() {
   const [activeTab, setActiveTab] = useState('alls');
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [storyData, setStoryData] = useState(null);
+  const [availableCategories, setAvailableCategories] = useState<any[]>([]);
 
   useEffect(() => {
+    GetCategoriesUseCase.handle((response) => setAvailableCategories(response.data));
+
     GetStoriesUseCase.handle(
       10,
       null,
@@ -67,6 +71,10 @@ export default function HomePage() {
       (error) => console.error(error.response.data),
     );
   }, []);
+
+  const categoriesElement = useMemo(() => availableCategories.map(
+    (element) => <option key={element.id} value={element.id}>{element.name}</option>,
+  ), [availableCategories]);
 
   const elements = dummyDatas.map((element) => (
     <StoryTileComponent
@@ -121,6 +129,13 @@ export default function HomePage() {
               <FormControl>
                 <FormLabel htmlFor="title">Title</FormLabel>
                 <Input id="title" type="text" />
+              </FormControl>
+              <Spacer height="1.5rem" />
+              <FormControl>
+                <FormLabel htmlFor="categories">Categories</FormLabel>
+                <Select id="categories" placeholder="Select category">
+                  {categoriesElement}
+                </Select>
               </FormControl>
               <Spacer height="1.5rem" />
               <FormControl>
