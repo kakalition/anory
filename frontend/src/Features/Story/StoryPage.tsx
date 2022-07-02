@@ -1,5 +1,6 @@
 import { Skeleton, SkeletonText } from '@chakra-ui/react';
-import { useEffect, useMemo, useState } from 'react';
+import { comment } from 'postcss';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import GetCommentsUseCase from '../../UseCases/Comment/GetCommentsUseCase';
 import GetStoryUseCase from '../../UseCases/Story/GetStoryUseCase';
@@ -9,12 +10,37 @@ import SideNavBarComponent from '../Component/SideNavBarComponent';
 import StoryTileComponent from '../Component/StoryTileComponent';
 import TopBarComponent from '../Component/TopBarComponent';
 import Spacer from '../Utilities/Spacer';
+import CommentSkeletonComponent from './Components/CommentSkeletonComponent';
 
 export default function StoryPage() {
   const params = useParams();
   const [activeTab, setActiveTab] = useState('alls');
   const [storyData, setStoryData] = useState<any>({});
   const [commentsData, setCommentsData] = useState<any[] | null>(null);
+
+  const onInitialCommentCallback = () => {
+    if (commentsData !== null) {
+      const temporary = [...commentsData];
+      temporary?.unshift(null);
+      setCommentsData(temporary);
+    }
+  };
+
+  const onSuccessfullCommentCallback = (commentData: any) => {
+    if (commentsData !== null) {
+      const temporary = [...commentsData];
+      temporary?.splice(0, 1, commentData);
+      setCommentsData(temporary);
+    }
+  };
+
+  const onFailedCommentCallback = () => {
+    if (commentsData !== null) {
+      const temporary = [...commentsData];
+      temporary?.shift();
+      setCommentsData(temporary);
+    }
+  };
 
   useEffect(() => {
     if (params.id === undefined) {
@@ -65,42 +91,30 @@ export default function StoryPage() {
   }, [storyData]);
 
   const elements = useMemo(() => {
+    console.log('applied');
     if (commentsData === null) {
       return (
         <>
-          <div className="p-[1.5rem] w-full bg-white rounded-md shadow-sm">
-            <Skeleton height="1rem" />
-            <Spacer height="1rem" />
-            <SkeletonText noOfLines={2} />
-            <Spacer height="1rem" />
-            <SkeletonText noOfLines={1} />
-          </div>
-          <div className="p-[1.5rem] w-full bg-white rounded-md shadow-sm">
-            <Skeleton height="1rem" />
-            <Spacer height="1rem" />
-            <SkeletonText noOfLines={2} />
-            <Spacer height="1rem" />
-            <SkeletonText noOfLines={1} />
-          </div>
-          <div className="p-[1.5rem] w-full bg-white rounded-md shadow-sm">
-            <Skeleton height="1rem" />
-            <Spacer height="1rem" />
-            <SkeletonText noOfLines={2} />
-            <Spacer height="1rem" />
-            <SkeletonText noOfLines={1} />
-          </div>
+          <CommentSkeletonComponent />
+          <CommentSkeletonComponent />
+          <CommentSkeletonComponent />
         </>
       );
     }
 
-    return commentsData?.map((element: any) => (
-      <CommentTileComponent
-        userId="x"
-        postDate={element.created_at}
-        comment={element.comment}
-        totalLikes={-1}
-      />
-    ));
+    return commentsData?.map((element: any) => {
+      if (element === null) {
+        return <CommentSkeletonComponent />;
+      }
+      return (
+        <CommentTileComponent
+          userId="x"
+          postDate={element.created_at}
+          comment={element.comment}
+          totalLikes={-1}
+        />
+      );
+    });
   }, [commentsData]);
 
   return (
@@ -117,7 +131,13 @@ export default function StoryPage() {
             {storyTile}
           </div>
           <Spacer height="2rem" />
-          <CommentSectionComponent storyId={storyData.id} commentsCount={storyData.comments_count}/>
+          <CommentSectionComponent
+            storyId={storyData.id}
+            commentsCount={storyData.comments_count}
+            onInitialCommentCallback={onInitialCommentCallback}
+            onSuccessfullCommentCallback={onSuccessfullCommentCallback}
+            onFailedCommentCallback={onFailedCommentCallback}
+          />
           <div className="flex flex-col gap-6 w-full">
             {elements}
           </div>

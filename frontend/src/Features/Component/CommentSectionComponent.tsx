@@ -8,18 +8,30 @@ import AnoryPrimaryButtonComponent from './AnoryPrimaryButtonComponent';
 
 type Params = {
   storyId: number,
-  commentsCount: number | null
+  commentsCount: number | null,
+  onInitialCommentCallback: () => void,
+  onSuccessfullCommentCallback: (data: any) => void,
+  onFailedCommentCallback: () => void,
 };
 
 export default function CommentSectionComponent(params: Params) {
-  const { storyId, commentsCount } = params;
+  const {
+    onInitialCommentCallback, onSuccessfullCommentCallback, onFailedCommentCallback,
+    storyId, commentsCount,
+  } = params;
 
   const onPostCommentClick: React.MouseEventHandler = () => {
+    onInitialCommentCallback();
     PostCommentUseCase.handle(
       {
         storyId,
         comment: (document.getElementById('comment') as HTMLTextAreaElement).value,
       },
+      (response) => {
+        onSuccessfullCommentCallback(response.data);
+        (document.getElementById('comment') as HTMLTextAreaElement).value = '';
+      },
+      (error) => onFailedCommentCallback(),
     );
   };
 
