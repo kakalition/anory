@@ -36,7 +36,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/logout" element={<Logout />} />
-          <Route path="/app" element={<HomePage />} />
+          <Route path="/app" element={<AuthenticationWrapper><HomePage /></AuthenticationWrapper>} />
           <Route path="/story" element={<AuthenticationWrapper><StoryPage /></AuthenticationWrapper>}>
             <Route path=":id" element={<AuthenticationWrapper><StoryPage /></AuthenticationWrapper>} />
           </Route>
