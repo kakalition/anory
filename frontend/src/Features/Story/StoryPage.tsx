@@ -1,4 +1,4 @@
-import { Skeleton, SkeletonText } from '@chakra-ui/react';
+import { Skeleton, SkeletonText, useToast } from '@chakra-ui/react';
 import { comment } from 'postcss';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
@@ -14,6 +14,7 @@ import CommentSkeletonComponent from './Components/CommentSkeletonComponent';
 
 export default function StoryPage() {
   const params = useParams();
+  const toast = useToast();
   const [activeTab, setActiveTab] = useState('alls');
   const [storyData, setStoryData] = useState<any>({});
   const [commentsData, setCommentsData] = useState<any[] | null>(null);
@@ -31,14 +32,29 @@ export default function StoryPage() {
       const temporary = [...commentsData];
       temporary?.splice(0, 1, commentData);
       setCommentsData(temporary);
+
+      toast({
+        containerStyle: { width: '100%' },
+        title: 'Post Comment Successfull!',
+        status: 'success',
+        duration: 2000,
+      });
     }
   };
 
-  const onFailedCommentCallback = () => {
+  const onFailedCommentCallback = (message: any) => {
     if (commentsData !== null) {
       const temporary = [...commentsData];
       temporary?.shift();
       setCommentsData(temporary);
+
+      toast({
+        containerStyle: { width: '100%' },
+        title: 'Post Comment Failed!',
+        description: message,
+        status: 'error',
+        duration: 2000,
+      });
     }
   };
 

@@ -11,7 +11,7 @@ type Params = {
   commentsCount: number | null,
   onInitialCommentCallback: () => void,
   onSuccessfullCommentCallback: (data: any) => void,
-  onFailedCommentCallback: () => void,
+  onFailedCommentCallback: (message: any) => void,
 };
 
 export default function CommentSectionComponent(params: Params) {
@@ -31,7 +31,7 @@ export default function CommentSectionComponent(params: Params) {
         onSuccessfullCommentCallback(response.data);
         (document.getElementById('comment') as HTMLTextAreaElement).value = '';
       },
-      (error) => onFailedCommentCallback(),
+      (error) => onFailedCommentCallback(error.response.data.comment[0]),
     );
   };
 
