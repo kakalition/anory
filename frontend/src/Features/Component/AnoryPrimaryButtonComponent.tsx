@@ -2,7 +2,7 @@ import { Button } from '@chakra-ui/react';
 import React from 'react';
 
 export default function AnoryPrimaryButtonComponent({
-  text, onClick, paddingX = '',
+  text, onClick, paddingX = '1rem',
 }: { text: string, onClick: React.MouseEventHandler, paddingX?: string }) {
   return (
     <Button
