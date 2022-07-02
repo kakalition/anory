@@ -14,7 +14,7 @@ export default function StoryPage() {
   const params = useParams();
   const [activeTab, setActiveTab] = useState('alls');
   const [storyData, setStoryData] = useState<any>({});
-  const [commentsData, setCommentsData] = useState<any>([]);
+  const [commentsData, setCommentsData] = useState<any[] | null>(null);
 
   useEffect(() => {
     if (params.id === undefined) {
@@ -40,7 +40,7 @@ export default function StoryPage() {
   const storyTile = useMemo(() => {
     if (storyData.id === undefined) {
       return (
-        <div className="p-[1.5rem] w-full text-left bg-white rounded-lg drop-shadow-sm">
+        <div className="p-[1.5rem] w-full bg-white rounded-lg drop-shadow-sm">
           <Skeleton height="2rem" />
           <Spacer height="1rem" />
           <SkeletonText noOfLines={4} />
@@ -64,14 +64,44 @@ export default function StoryPage() {
     );
   }, [storyData]);
 
-  const elements = useMemo(() => commentsData.map((element: any) => (
-    <CommentTileComponent
-      userId="x"
-      postDate={element.created_at}
-      comment={element.comment}
-      totalLikes={-1}
-    />
-  )), [commentsData]);
+  const elements = useMemo(() => {
+    if (commentsData === null) {
+      return (
+        <>
+          <div className="p-[1.5rem] w-full bg-white rounded-md shadow-sm">
+            <Skeleton height="1rem" />
+            <Spacer height="1rem" />
+            <SkeletonText noOfLines={2} />
+            <Spacer height="1rem" />
+            <SkeletonText noOfLines={1} />
+          </div>
+          <div className="p-[1.5rem] w-full bg-white rounded-md shadow-sm">
+            <Skeleton height="1rem" />
+            <Spacer height="1rem" />
+            <SkeletonText noOfLines={2} />
+            <Spacer height="1rem" />
+            <SkeletonText noOfLines={1} />
+          </div>
+          <div className="p-[1.5rem] w-full bg-white rounded-md shadow-sm">
+            <Skeleton height="1rem" />
+            <Spacer height="1rem" />
+            <SkeletonText noOfLines={2} />
+            <Spacer height="1rem" />
+            <SkeletonText noOfLines={1} />
+          </div>
+        </>
+      );
+    }
+
+    return commentsData?.map((element: any) => (
+      <CommentTileComponent
+        userId="x"
+        postDate={element.created_at}
+        comment={element.comment}
+        totalLikes={-1}
+      />
+    ));
+  }, [commentsData]);
 
   return (
     <div className="flex flex-col w-screen h-screen bg-[#FFFCFC]">
@@ -87,7 +117,7 @@ export default function StoryPage() {
             {storyTile}
           </div>
           <Spacer height="2rem" />
-          <CommentSectionComponent storyId={storyData.id} />
+          <CommentSectionComponent storyId={storyData.id} commentsCount={storyData.comments_count}/>
           <div className="flex flex-col gap-6 w-full">
             {elements}
           </div>

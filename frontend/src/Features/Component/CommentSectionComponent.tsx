@@ -1,14 +1,18 @@
-import { Divider, Select, Textarea } from '@chakra-ui/react';
+import {
+  Divider, Select, Skeleton, Textarea,
+} from '@chakra-ui/react';
+import { useMemo } from 'react';
 import PostCommentUseCase from '../../UseCases/Comment/PostCommentUseCase';
 import Spacer from '../Utilities/Spacer';
 import AnoryPrimaryButtonComponent from './AnoryPrimaryButtonComponent';
 
 type Params = {
-  storyId: number
+  storyId: number,
+  commentsCount: number | null
 };
 
 export default function CommentSectionComponent(params: Params) {
-  const { storyId } = params;
+  const { storyId, commentsCount } = params;
 
   const onPostCommentClick: React.MouseEventHandler = () => {
     PostCommentUseCase.handle(
@@ -19,13 +23,25 @@ export default function CommentSectionComponent(params: Params) {
     );
   };
 
+  const commentsCountElement = useMemo(() => {
+    if (commentsCount === undefined) {
+      return <Skeleton height="50%" width="3rem" />;
+    }
+
+    return (
+      <p className="font-roboto text-3xl text-gray-500">
+        {`| ${commentsCount}`}
+      </p>
+    );
+  }, [commentsCount]);
+
   return (
     <div>
       <div className="flex flex-row justify-between w-full">
         <div className="flex flex-row items-center">
           <p className="font-roboto text-3xl text-black ">Comments</p>
           <Spacer width="1rem" />
-          <p className="font-roboto text-3xl text-gray-500">| 34</p>
+          {commentsCountElement}
         </div>
         <div className="flex flex-row gap-4 items-center w-1/4">
           <Select placeholder="Sort Order" height="3rem">
