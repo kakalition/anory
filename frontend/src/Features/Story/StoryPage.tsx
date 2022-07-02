@@ -20,48 +20,42 @@ export default function StoryPage() {
   const [commentsData, setCommentsData] = useState<any[] | null>(null);
 
   const onInitialCommentCallback = () => {
-    if (commentsData !== null) {
-      const temporary = [...commentsData];
-      temporary?.unshift(null);
-      setCommentsData(temporary);
-    }
+    if (commentsData === null) return;
+    const temporary = [...commentsData];
+    temporary?.unshift(null);
+    setCommentsData(temporary);
   };
 
   const onSuccessfullCommentCallback = (commentData: any) => {
-    if (commentsData !== null) {
-      const temporary = [...commentsData];
-      temporary?.splice(0, 1, commentData);
-      setCommentsData(temporary);
+    if (commentsData === null) return;
+    const temporary = [...commentsData.filter((value) => value !== null)];
+    temporary.unshift(commentData);
+    setCommentsData(temporary);
 
-      toast({
-        containerStyle: { width: '100%' },
-        title: 'Post Comment Successfull!',
-        status: 'success',
-        duration: 2000,
-      });
-    }
+    toast({
+      containerStyle: { width: '100%' },
+      title: 'Post Comment Successfull!',
+      status: 'success',
+      duration: 2000,
+    });
   };
 
   const onFailedCommentCallback = (message: any) => {
-    if (commentsData !== null) {
-      const temporary = [...commentsData];
-      temporary?.shift();
-      setCommentsData(temporary);
+    if (commentsData === null) return;
+    const temporary = [...commentsData.filter((value) => value !== null)];
+    setCommentsData(temporary);
 
-      toast({
-        containerStyle: { width: '100%' },
-        title: 'Post Comment Failed!',
-        description: message,
-        status: 'error',
-        duration: 2000,
-      });
-    }
+    toast({
+      containerStyle: { width: '100%' },
+      title: 'Post Comment Failed!',
+      description: message,
+      status: 'error',
+      duration: 2000,
+    });
   };
 
   useEffect(() => {
-    if (params.id === undefined) {
-      return;
-    }
+    if (params.id === undefined) return;
 
     GetStoryUseCase.handle(
       parseInt(params.id, 10),
