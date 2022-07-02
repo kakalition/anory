@@ -51,7 +51,10 @@ export default function StoryPage() {
 
     GetStoryUseCase.handle(
       parseInt(params.id, 10),
-      (response) => setStoryData(response.data),
+      (response) => {
+        console.log(response.data);
+        setStoryData(response.data);
+      },
       (error) => console.error(error.response.data),
     );
   }, []);
@@ -78,10 +81,11 @@ export default function StoryPage() {
           <div className="flex flex-col gap-6">
             <StoryTileComponent
               id={storyData.id}
+              variant="detail"
               title={storyData.title}
               body={storyData.body}
               totalLikes={storyData.likes}
-              totalComments={storyData.commentsCount}
+              totalComments={storyData.comments_count}
               totalViews={storyData.views}
               uploadedAt={(new Date(storyData.created_at)).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
             />

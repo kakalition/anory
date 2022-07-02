@@ -6,6 +6,7 @@ import FilledHeartIcon from './Icons/FilledHeartIcon';
 
 type Params = {
   id: number,
+  variant: 'tile' | 'detail',
   title: string,
   body: string,
   totalLikes: number,
@@ -15,14 +16,15 @@ type Params = {
 };
 
 export default function StoryTileComponent({
-  id, title, body, totalLikes, totalComments, totalViews, uploadedAt,
+  id, variant, title, body, totalLikes, totalComments, totalViews, uploadedAt,
 }: Params) {
   const navigator = useNavigate();
 
   return (
     <button
       type="button"
-      className="p-[1.5rem] w-full text-left bg-white rounded-lg drop-shadow-sm hover:drop-shadow-md transition duration-75 select-none"
+      className={`p-[1.5rem] w-full text-left bg-white rounded-lg drop-shadow-sm 
+      transition duration-75 select-none ${variant === 'tile' ? 'hover:drop-shadow-md ' : null}`}
       onClick={() => navigator(`/story/${id}`)}
     >
       <p className="font-roboto text-3xl font-medium">{title}</p>
