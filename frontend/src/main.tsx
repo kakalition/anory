@@ -5,6 +5,7 @@ import ReactDOM from 'react-dom/client';
 import {
   BrowserRouter, Route, Routes, useNavigate,
 } from 'react-router-dom';
+import AuthenticationWrapper from './Features/AuthenticationWrapper';
 import HomePage from './Features/Home/HomePage';
 import LandingPage from './Features/LandingPage/LandingPage';
 import LoginPage from './Features/Login/LoginPage';
@@ -36,8 +37,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route path="/login" element={<LoginPage />} />
           <Route path="/logout" element={<Logout />} />
           <Route path="/app" element={<HomePage />} />
-          <Route path="/story" element={<StoryPage />}>
-            <Route path=":id" element={<StoryPage />} />
+          <Route path="/story" element={<AuthenticationWrapper><StoryPage /></AuthenticationWrapper>}>
+            <Route path=":id" element={<AuthenticationWrapper><StoryPage /></AuthenticationWrapper>} />
           </Route>
         </Routes>
       </BrowserRouter>

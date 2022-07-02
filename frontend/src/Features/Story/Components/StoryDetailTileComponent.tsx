@@ -1,3 +1,5 @@
+import { useContext, useEffect, useMemo } from 'react';
+import { AuthContext } from '../../AuthenticationWrapper';
 import EyeIcon from '../../Component/Icons/EyeIcon';
 import OutlinedHeartIcon from '../../Component/Icons/OutlinedHeartIcon';
 import Spacer from '../../Utilities/Spacer';
@@ -12,9 +14,17 @@ type Params = {
 };
 
 export default function StoryDetailTileComponent(params: Params) {
+  const user = useContext<any>(AuthContext);
+
   const {
     id, title, body, likeData, totalViews, uploadedAt,
   } = params;
+
+  const isLikedByMe = useMemo(() => {
+    const isAny = likeData.filter((value) => value.likee_id === user.id);
+    if (isAny) return true;
+    return false;
+  }, [likeData]);
 
   return (
     <div className="p-[1.5rem] w-full bg-white rounded-lg drop-shadow-sm ">
@@ -25,9 +35,9 @@ export default function StoryDetailTileComponent(params: Params) {
       <div className="flex flex-row justify-between w-full">
         <div className="flex flex-row">
           <div className="flex flex-row items-center">
-            <div className="w-8 h-8 stroke-[#FF4033] stroke-2">
+            <button type="button" className={`w-8 h-8 ${isLikedByMe ? 'stroke-[#FF4033] stroke-2' : 'fill-[#FF4033]'}`}>
               <OutlinedHeartIcon />
-            </div>
+            </button>
             <Spacer width="0.7rem" />
             <p className="pt-[0.1rem] font-roboto text-lg">{likeData.length}</p>
           </div>

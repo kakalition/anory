@@ -1,8 +1,9 @@
 import { Skeleton, SkeletonText, useToast } from '@chakra-ui/react';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import GetCommentsUseCase from '../../UseCases/Comment/GetCommentsUseCase';
 import GetStoryUseCase from '../../UseCases/Story/GetStoryUseCase';
+import { AuthContext } from '../AuthenticationWrapper';
 import CommentSectionComponent from '../Component/CommentSectionComponent';
 import CommentTileComponent from '../Component/CommentTileComponent';
 import SideNavBarComponent from '../Component/SideNavBarComponent';
@@ -17,7 +18,7 @@ export default function StoryPage() {
   const toast = useToast();
   const [activeTab, setActiveTab] = useState('alls');
   const [storyData, setStoryData] = useState<any>({});
-  const [commentsData, setCommentsData] = useState<any[] | null>(null);
+  const [commentsData, setCommentsData] = useState<any[] | null>([]);
 
   const onInitialCommentCallback = () => {
     if (commentsData === null) return;
@@ -102,7 +103,6 @@ export default function StoryPage() {
   }, [storyData]);
 
   const elements = useMemo(() => {
-    console.log('applied');
     if (commentsData === null) {
       return (
         <>
