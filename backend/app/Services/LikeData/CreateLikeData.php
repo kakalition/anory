@@ -4,12 +4,12 @@ namespace App\Services\LikeData;
 
 use App\Models\LikeData;
 use App\Rules\LikeStatusRule;
-use App\Services\BaseService;
+use App\Services\BaseServiceValidation;
 use Illuminate\Validation\Rule;
 
-class CreateLikeData extends BaseService
+class CreateLikeData extends BaseServiceValidation
 {
-  protected function rules(array $data): array
+  protected function validationRules(array $data): array
   {
     return [
       'likee_id' => ['required', 'integer', Rule::unique('like_data')->where(function ($query) use ($data) {

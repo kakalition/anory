@@ -3,6 +3,7 @@ import { AuthContext } from '../../AuthenticationWrapper';
 import EyeIcon from '../../Component/Icons/EyeIcon';
 import OutlinedHeartIcon from '../../Component/Icons/OutlinedHeartIcon';
 import Spacer from '../../Utilities/Spacer';
+import LikeStoryUseCase from '../../../UseCases/LikeData/LikeStoryUseCase';
 
 type Params = {
   id: number,
@@ -22,9 +23,20 @@ export default function StoryDetailTileComponent(params: Params) {
 
   const isLikedByMe = useMemo(() => {
     const isAny = likeData.filter((value) => value.likee_id === user.id);
-    if (isAny) return true;
+    if (isAny.length !== 0) return true;
     return false;
   }, [likeData]);
+
+  // Create Dislike
+
+  const onHeartClick: React.MouseEventHandler = () => {
+    LikeStoryUseCase.handle(
+      { story_id: id, status: 1 },
+      (response) => console.log(response.data),
+    );
+  };
+
+  useEffect(() => console.log(isLikedByMe), [isLikedByMe]);
 
   return (
     <div className="p-[1.5rem] w-full bg-white rounded-lg drop-shadow-sm ">
@@ -35,7 +47,11 @@ export default function StoryDetailTileComponent(params: Params) {
       <div className="flex flex-row justify-between w-full">
         <div className="flex flex-row">
           <div className="flex flex-row items-center">
-            <button type="button" className={`w-8 h-8 ${isLikedByMe ? 'stroke-[#FF4033] stroke-2' : 'fill-[#FF4033]'}`}>
+            <button
+              type="button"
+              className={`w-8 h-8 ${isLikedByMe ? 'fill-[#FF4033]' : 'stroke-[#FF4033] stroke-2'}`}
+              onClick={onHeartClick}
+            >
               <OutlinedHeartIcon />
             </button>
             <Spacer width="0.7rem" />
