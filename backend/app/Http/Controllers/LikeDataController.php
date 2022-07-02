@@ -24,7 +24,6 @@ class LikeDataController extends Controller
     try {
       $likedata = $createLikeData->handle([
         'likee_id' => $request->user()->id,
-        'status' => $request->input('status'),
         'likeable_id' => $likeable_id,
         'likeable_type' => $likeable_type
       ]);

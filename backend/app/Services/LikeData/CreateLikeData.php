@@ -14,9 +14,9 @@ class CreateLikeData extends BaseServiceValidation
     return [
       'likee_id' => ['required', 'integer', Rule::unique('like_data')->where(function ($query) use ($data) {
         return $query->where('likee_id', $data['likee_id'])
-          ->where('likeable_id', $data['likeable_id']);
+          ->where('likeable_id', $data['likeable_id'])
+          ->where('likeable_type', $data['likeable_type']);
       })],
-      'status' => ['required', 'integer', new LikeStatusRule()],
       'likeable_id' => 'required|integer',
       'likeable_type' => 'required|string',
     ];

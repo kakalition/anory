@@ -19,7 +19,6 @@ return new class extends Migration
         ->references('id')
         ->on('users')
         ->cascadeOnDelete();
-      $table->integer('status');
       $table->bigInteger('likeable_id');
       $table->string('likeable_type');
       $table->timestamps();

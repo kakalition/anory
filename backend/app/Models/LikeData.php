@@ -13,7 +13,6 @@ class LikeData extends Model
 
   protected $fillable = [
     'likee_id',
-    'status',
     'likeable_id',
     'likeable_type'
   ];
