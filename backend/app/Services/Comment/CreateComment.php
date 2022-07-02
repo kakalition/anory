@@ -4,10 +4,11 @@ namespace App\Services\Comment;
 
 use App\Models\Comment;
 use App\Services\BaseService;
+use App\Services\BaseServiceValidation;
 
-class CreateComment extends BaseService
+class CreateComment extends BaseServiceValidation
 {
-  protected function rules($data): array
+  protected function validationRules($data): array
   {
     return [
       'story_id' => 'required|integer',

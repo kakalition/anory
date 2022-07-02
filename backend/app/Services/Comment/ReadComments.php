@@ -11,9 +11,10 @@ class ReadComments
 {
   public function handle(array $data)
   {
-    $story = Story::where('id', $data['story_id'])
+    $story = Story::find($data['story_id'])
       ->first()
       ->comments()
+      ->orderBy('created_at', 'desc')
       ->get();
 
     return $story;

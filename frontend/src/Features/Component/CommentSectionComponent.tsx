@@ -1,10 +1,24 @@
-import {
-  Divider, Select, Textarea,
-} from '@chakra-ui/react';
+import { Divider, Select, Textarea } from '@chakra-ui/react';
+import PostCommentUseCase from '../../UseCases/Comment/PostCommentUseCase';
 import Spacer from '../Utilities/Spacer';
 import AnoryPrimaryButtonComponent from './AnoryPrimaryButtonComponent';
 
-export default function CommentSectionComponent() {
+type Params = {
+  storyId: number
+};
+
+export default function CommentSectionComponent(params: Params) {
+  const { storyId } = params;
+
+  const onPostCommentClick: React.MouseEventHandler = () => {
+    PostCommentUseCase.handle(
+      {
+        storyId,
+        comment: (document.getElementById('comment') as HTMLTextAreaElement).value,
+      },
+    );
+  };
+
   return (
     <div>
       <div className="flex flex-row justify-between w-full">
@@ -26,10 +40,10 @@ export default function CommentSectionComponent() {
       </div>
       <Spacer height="2rem" />
       <div>
-        <Textarea placeholder="That was amazing!" minHeight="10rem" />
+        <Textarea id="comment" placeholder="That was amazing!" minHeight="10rem" />
         <Spacer height="1rem" />
         <div className="flex flex-row justify-end w-full">
-          <AnoryPrimaryButtonComponent onClick={() => console.log('implements')} text="Post Comment" />
+          <AnoryPrimaryButtonComponent onClick={onPostCommentClick} text="Post Comment" />
         </div>
         <Spacer height="2rem" />
         <Divider opacity="0.2" />
