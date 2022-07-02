@@ -22,6 +22,8 @@ function Logout() {
     LogoutUseCase.handle();
     navigator('/');
   }, []);
+
+  return <div />;
 }
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

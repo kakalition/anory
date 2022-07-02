@@ -1,12 +1,10 @@
-import { Button, Select, Textarea } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import GetStoriesUseCase from '../../UseCases/Story/GetStoriesUseCase';
+import GetCommentsUseCase from '../../UseCases/Comment/GetCommentsUseCase';
+import GetCommentUseCase from '../../UseCases/Comment/GetCommentsUseCase';
 import GetStoryUseCase from '../../UseCases/Story/GetStoryUseCase';
-import AnoryPrimaryButtonComponent from '../Component/AnoryPrimaryButtonComponent';
 import CommentSectionComponent from '../Component/CommentSectionComponent';
 import CommentTileComponent from '../Component/CommentTileComponent';
-import FilledHeartIcon from '../Component/Icons/FilledHeartIcon';
 import SideNavBarComponent from '../Component/SideNavBarComponent';
 import StoryTileComponent from '../Component/StoryTileComponent';
 import TopBarComponent from '../Component/TopBarComponent';
@@ -43,6 +41,7 @@ export default function StoryPage() {
   const params = useParams();
   const [activeTab, setActiveTab] = useState('alls');
   const [storyData, setStoryData] = useState<any>({});
+  const [commentsData, setCommentsData] = useState<any>([]);
 
   useEffect(() => {
     if (params.id === undefined) {
@@ -51,22 +50,27 @@ export default function StoryPage() {
 
     GetStoryUseCase.handle(
       parseInt(params.id, 10),
-      (response) => {
-        console.log(response.data);
-        setStoryData(response.data);
-      },
+      (response) => setStoryData(response.data),
+      (error) => console.error(error.response.data),
+    );
+
+    GetCommentsUseCase.handle(
+      parseInt(params.id, 10),
+      (response) => setCommentsData(response.data),
       (error) => console.error(error.response.data),
     );
   }, []);
 
-  const elements = dummyDatas.map((element) => (
-    <CommentTileComponent
-      userId={element.userId}
-      postDate={element.postDate}
-      comment={element.comment}
-      totalLikes={element.totalLikes}
-    />
-  ));
+  const elements = useMemo(() => {
+    commentsData.map((element: any) => (
+      <CommentTileComponent
+        userId={element.userId}
+        postDate={element.postDate}
+        comment={element.comment}
+        totalLikes={element.totalLikes}
+      />
+    ));
+  }, [commentsData]);
 
   return (
     <div className="flex flex-col w-screen h-screen bg-[#FFFCFC]">
