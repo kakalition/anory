@@ -1,5 +1,4 @@
 import { Skeleton, SkeletonText, useToast } from '@chakra-ui/react';
-import { comment } from 'postcss';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import GetCommentsUseCase from '../../UseCases/Comment/GetCommentsUseCase';
@@ -11,6 +10,7 @@ import StoryTileComponent from '../Component/StoryTileComponent';
 import TopBarComponent from '../Component/TopBarComponent';
 import Spacer from '../Utilities/Spacer';
 import CommentSkeletonComponent from './Components/CommentSkeletonComponent';
+import StoryDetailTileComponent from './Components/StoryDetailTileComponent';
 
 export default function StoryPage() {
   const params = useParams();
@@ -59,7 +59,10 @@ export default function StoryPage() {
 
     GetStoryUseCase.handle(
       parseInt(params.id, 10),
-      (response) => setStoryData(response.data),
+      (response) => {
+        console.log(response.data);
+        setStoryData(response.data);
+      },
       (error) => console.error(error.response.data),
     );
 
@@ -87,13 +90,11 @@ export default function StoryPage() {
     }
 
     return (
-      <StoryTileComponent
+      <StoryDetailTileComponent
         id={storyData.id}
-        variant="detail"
         title={storyData.title}
         body={storyData.body}
-        totalLikes={storyData.likes}
-        totalComments={storyData.comments_count}
+        likeData={storyData.likes}
         totalViews={storyData.views}
         uploadedAt={(new Date(storyData.created_at)).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
       />
