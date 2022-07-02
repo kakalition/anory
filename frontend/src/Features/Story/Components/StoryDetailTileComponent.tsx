@@ -1,9 +1,10 @@
-import { useContext, useEffect, useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 import { AuthContext } from '../../AuthenticationWrapper';
 import EyeIcon from '../../Component/Icons/EyeIcon';
 import OutlinedHeartIcon from '../../Component/Icons/OutlinedHeartIcon';
 import Spacer from '../../Utilities/Spacer';
 import LikeStoryUseCase from '../../../UseCases/LikeData/LikeStoryUseCase';
+import DeleteLikeDataUseCase from '../../../UseCases/LikeData/DeleteLikeDataUseCase';
 
 type Params = {
   id: number,
@@ -21,22 +22,20 @@ export default function StoryDetailTileComponent(params: Params) {
     id, title, body, likeData, totalViews, uploadedAt,
   } = params;
 
-  const isLikedByMe = useMemo(() => {
-    const isAny = likeData.filter((value) => value.likee_id === user.id);
-    if (isAny.length !== 0) return true;
-    return false;
-  }, [likeData]);
-
   // Create Dislike
+  const likeByMe = useMemo(() => likeData.find((value) => value.likee_id === user.id), [likeData]);
 
   const onHeartClick: React.MouseEventHandler = () => {
-    LikeStoryUseCase.handle(
-      { story_id: id, status: 1 },
-      (response) => console.log(response.data),
-    );
+    if (likeByMe === undefined) {
+      LikeStoryUseCase.handle(
+        { story_id: id, status: 1 },
+        (response) => console.log(response.data),
+      );
+    } else {
+      console.log(likeByMe);
+      DeleteLikeDataUseCase.handle(likeByMe.id);
+    }
   };
-
-  useEffect(() => console.log(isLikedByMe), [isLikedByMe]);
 
   return (
     <div className="p-[1.5rem] w-full bg-white rounded-lg drop-shadow-sm ">
@@ -49,7 +48,7 @@ export default function StoryDetailTileComponent(params: Params) {
           <div className="flex flex-row items-center">
             <button
               type="button"
-              className={`w-8 h-8 ${isLikedByMe ? 'fill-[#FF4033]' : 'stroke-[#FF4033] stroke-2'}`}
+              className={`w-8 h-8 ${likeByMe !== undefined ? 'fill-[#FF4033]' : 'stroke-[#FF4033] stroke-2'}`}
               onClick={onHeartClick}
             >
               <OutlinedHeartIcon />
