@@ -1,8 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { Skeleton, SkeletonText } from '@chakra-ui/react';
+import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import GetCommentsUseCase from '../../UseCases/Comment/GetCommentsUseCase';
-import GetCommentUseCase from '../../UseCases/Comment/GetCommentsUseCase';
-import PostCommentUseCase from '../../UseCases/Comment/PostCommentUseCase';
 import GetStoryUseCase from '../../UseCases/Story/GetStoryUseCase';
 import CommentSectionComponent from '../Component/CommentSectionComponent';
 import CommentTileComponent from '../Component/CommentTileComponent';
@@ -38,6 +37,33 @@ export default function StoryPage() {
     );
   }, []);
 
+  const storyTile = useMemo(() => {
+    if (storyData.id === undefined) {
+      return (
+        <div className="p-[1.5rem] w-full text-left bg-white rounded-lg drop-shadow-sm">
+          <Skeleton height="2rem" />
+          <Spacer height="1rem" />
+          <SkeletonText noOfLines={4} />
+          <Spacer height="1rem" />
+          <SkeletonText noOfLines={1} />
+        </div>
+      );
+    }
+
+    return (
+      <StoryTileComponent
+        id={storyData.id}
+        variant="detail"
+        title={storyData.title}
+        body={storyData.body}
+        totalLikes={storyData.likes}
+        totalComments={storyData.comments_count}
+        totalViews={storyData.views}
+        uploadedAt={(new Date(storyData.created_at)).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
+      />
+    );
+  }, [storyData]);
+
   const elements = useMemo(() => commentsData.map((element: any) => (
     <CommentTileComponent
       userId="x"
@@ -58,16 +84,7 @@ export default function StoryPage() {
         </div>
         <div className="overflow-y-scroll pt-8 pr-16 pl-4 w-[80%]">
           <div className="flex flex-col gap-6">
-            <StoryTileComponent
-              id={storyData.id}
-              variant="detail"
-              title={storyData.title}
-              body={storyData.body}
-              totalLikes={storyData.likes}
-              totalComments={storyData.comments_count}
-              totalViews={storyData.views}
-              uploadedAt={(new Date(storyData.created_at)).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
-            />
+            {storyTile}
           </div>
           <Spacer height="2rem" />
           <CommentSectionComponent storyId={storyData.id} />
