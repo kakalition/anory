@@ -9,9 +9,8 @@ pipeline {
     }
     stage('Test') {
       steps {
-        sh "cd backend"
-        sh "composer install"
-        sh "./vendor/bin/pest"
+        sh "cd backend && composer install"
+        sh "cd backend && ./vendor/bin/pest"
         echo 'Testing...'
       }
     }
