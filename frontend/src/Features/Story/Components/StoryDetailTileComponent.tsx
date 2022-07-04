@@ -5,8 +5,8 @@ import { AuthContext } from '../../AuthenticationWrapper';
 import EyeIcon from '../../Component/Icons/EyeIcon';
 import OutlinedHeartIcon from '../../Component/Icons/OutlinedHeartIcon';
 import Spacer from '../../Utilities/Spacer';
-import LikeStoryUseCase from '../../../UseCases/LikeData/LikeStoryUseCase';
 import DeleteLikeDataUseCase from '../../../UseCases/LikeData/DeleteLikeDataUseCase';
+import LikeUseCase from '../../../UseCases/LikeData/LikeUseCase';
 
 type Params = {
   id: number,
@@ -42,8 +42,8 @@ export default function StoryDetailTileComponent(params: Params) {
     setLikeByMeData({});
     setTotalLike(totalLike + 1);
 
-    LikeStoryUseCase.handle(
-      { story_id: id },
+    LikeUseCase.handle(
+      { id, type: 'stories' },
       (response) => setLikeByMeData(response.data),
       () => {
         showFailedToast('Failed to like this story.');

@@ -130,10 +130,11 @@ export default function StoryPage() {
       }
       return (
         <CommentTileComponent
+          id={element.id}
           userId="x"
           postDate={element.created_at}
           comment={element.comment}
-          totalLikes={-1}
+          likeData={element.likeData}
         />
       );
     });

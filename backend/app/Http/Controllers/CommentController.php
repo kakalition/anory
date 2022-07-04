@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Exceptions\CommentNotFoundException;
 use App\Exceptions\StoryNotFoundException;
 use App\Exceptions\UserNotFoundException;
+use App\Http\Resources\CommentResource;
 use App\Models\Comment;
 use App\Services\Comment\CreateComment;
 use App\Services\Comment\ReadComments;
@@ -25,7 +26,7 @@ class CommentController extends Controller
       return response($exception->getMessage(), 500);
     }
 
-    return response($comments);
+    return response(CommentResource::collection($comments));
   }
 
   public function store(Request $request, CreateComment $createComment)
@@ -46,7 +47,7 @@ class CommentController extends Controller
       return response($exception->getMessage(), 500);
     }
 
-    return response($comment, 201);
+    return response(new CommentResource($comment), 201);
   }
 
   public function show(Comment $comment)
