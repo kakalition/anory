@@ -1,4 +1,6 @@
-import { useContext, useMemo } from 'react';
+import { useContext, useMemo, useState } from 'react';
+import { useToast } from '@chakra-ui/react';
+import _ from 'lodash';
 import { AuthContext } from '../../AuthenticationWrapper';
 import EyeIcon from '../../Component/Icons/EyeIcon';
 import OutlinedHeartIcon from '../../Component/Icons/OutlinedHeartIcon';
@@ -16,25 +18,62 @@ type Params = {
 };
 
 export default function StoryDetailTileComponent(params: Params) {
-  const user = useContext<any>(AuthContext);
-
   const {
     id, title, body, likeData, totalViews, uploadedAt,
   } = params;
 
-  // Create Dislike
-  const likeByMe = useMemo(() => likeData.find((value) => value.likee_id === user.id), [likeData]);
+  const toast = useToast();
+  const user = useContext<any>(AuthContext);
+  const [totalLike, setTotalLike] = useState(likeData.length);
+  const [likeByMeData, setLikeByMeData] = useState<any>(
+    likeData.find((value) => value.likee_id === user.id),
+  );
+
+  const showFailedToast = (toastTitle: String) => {
+    toast({
+      title: toastTitle,
+      containerStyle: { width: '100%' },
+      duration: 2000,
+      status: 'error',
+    });
+  };
+
+  const likeStoryAction = () => {
+    setLikeByMeData({});
+    setTotalLike(totalLike + 1);
+
+    LikeStoryUseCase.handle(
+      { story_id: id },
+      (response) => setLikeByMeData(response.data),
+      () => {
+        showFailedToast('Failed to like this story.');
+        setLikeByMeData(null);
+        setTotalLike(totalLike - 1);
+      },
+    );
+  };
+
+  const dislikeStoryAction = (likeId: any) => {
+    const temporaryLikeData = likeByMeData;
+    setLikeByMeData(null);
+    setTotalLike(totalLike - 1);
+
+    DeleteLikeDataUseCase.handle(
+      likeId,
+      null,
+      () => {
+        showFailedToast('Failed to dislike this story.');
+        setLikeByMeData(temporaryLikeData);
+        setTotalLike(totalLike + 1);
+      },
+    );
+  };
 
   const onHeartClick: React.MouseEventHandler = () => {
-    if (likeByMe === undefined) {
-      LikeStoryUseCase.handle(
-        { story_id: id, status: 1 },
-        (response) => console.log(response.data),
-      );
-    } else {
-      console.log(likeByMe);
-      DeleteLikeDataUseCase.handle(likeByMe.id);
-    }
+    const isAlreadyLike = !_.isEmpty(likeByMeData);
+
+    if (!isAlreadyLike) likeStoryAction();
+    else dislikeStoryAction(likeByMeData.id);
   };
 
   return (
@@ -48,13 +87,13 @@ export default function StoryDetailTileComponent(params: Params) {
           <div className="flex flex-row items-center">
             <button
               type="button"
-              className={`w-8 h-8 ${likeByMe !== undefined ? 'fill-[#FF4033]' : 'stroke-[#FF4033] stroke-2'}`}
+              className={`w-8 h-8 ${_.isEmpty(likeByMeData) ? 'stroke-[#FF4033] stroke-2 fill-transparent' : 'fill-[#FF4033]'}`}
               onClick={onHeartClick}
             >
               <OutlinedHeartIcon />
             </button>
             <Spacer width="0.7rem" />
-            <p className="pt-[0.1rem] font-roboto text-lg">{likeData.length}</p>
+            <p className="pt-[0.1rem] font-roboto text-lg">{totalLike}</p>
           </div>
           <Spacer width="1rem" />
         </div>

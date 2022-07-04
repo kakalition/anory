@@ -3,7 +3,6 @@ import { API_BASE_URL } from '../../env';
 
 type Payload = {
   story_id: number
-  status: 1 | -1
 };
 
 export default class LikeStoryUseCase {
@@ -15,9 +14,6 @@ export default class LikeStoryUseCase {
     axios({
       url: `${API_BASE_URL}/api/stories/${payload.story_id}/likedata`,
       method: 'POST',
-      data: {
-        status: payload.status,
-      },
     }).then(onFulfilled)
       .catch(onFailed);
   }
