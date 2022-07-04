@@ -1,52 +1,137 @@
-import { Button, Select, Textarea } from '@chakra-ui/react';
-import { useState } from 'react';
-import AnoryPrimaryButtonComponent from '../Component/AnoryPrimaryButtonComponent';
+import { Skeleton, SkeletonText, useToast } from '@chakra-ui/react';
+import React, {
+  useContext, useEffect, useMemo, useState,
+} from 'react';
+import { useParams } from 'react-router-dom';
+import GetCommentsUseCase from '../../UseCases/Comment/GetCommentsUseCase';
+import GetStoryUseCase from '../../UseCases/Story/GetStoryUseCase';
+import { AuthContext } from '../AuthenticationWrapper';
 import CommentSectionComponent from '../Component/CommentSectionComponent';
 import CommentTileComponent from '../Component/CommentTileComponent';
-import FilledHeartIcon from '../Component/Icons/FilledHeartIcon';
 import SideNavBarComponent from '../Component/SideNavBarComponent';
+import StorySkeletonComponent from '../Component/StorySkeletonComponent';
 import StoryTileComponent from '../Component/StoryTileComponent';
 import TopBarComponent from '../Component/TopBarComponent';
 import Spacer from '../Utilities/Spacer';
-
-const dummyDatas = [
-  {
-    userId: 'jh31hjk132h4kj3h4jk2h4k3j1h4jkn3kj4n',
-    comment: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex...',
-    totalLikes: 82,
-    postDate: '1 hour ago',
-  },
-  {
-    userId: 'jh31hjk132h4kj3h4jk2h4k3j1h4jkn3kj4n',
-    comment: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex...',
-    totalLikes: 82,
-    postDate: '1 hour ago',
-  },
-  {
-    userId: 'jh31hjk132h4kj3h4jk2h4k3j1h4jkn3kj4n',
-    comment: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex...',
-    totalLikes: 82,
-    postDate: '1 hour ago',
-  },
-  {
-    userId: 'jh31hjk132h4kj3h4jk2h4k3j1h4jkn3kj4n',
-    comment: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex...',
-    totalLikes: 82,
-    postDate: '1 hour ago',
-  },
-];
+import CommentSkeletonComponent from './Components/CommentSkeletonComponent';
+import StoryDetailTileComponent from './Components/StoryDetailTileComponent';
 
 export default function StoryPage() {
+  const params = useParams();
+  const toast = useToast();
   const [activeTab, setActiveTab] = useState('alls');
+  const [storyData, setStoryData] = useState<any>({});
+  const [commentsData, setCommentsData] = useState<any[] | null>(null);
 
-  const elements = dummyDatas.map((element) => (
-    <CommentTileComponent
-      userId={element.userId}
-      postDate={element.postDate}
-      comment={element.comment}
-      totalLikes={element.totalLikes}
-    />
-  ));
+  const onInitialCommentCallback = () => {
+    if (commentsData === null) return;
+    const temporary = [...commentsData];
+    temporary?.unshift(null);
+    setCommentsData(temporary);
+  };
+
+  const onSuccessfullCommentCallback = (commentData: any) => {
+    if (commentsData === null) return;
+    const temporary = [...commentsData.filter((value) => value !== null)];
+    temporary.unshift(commentData);
+    setCommentsData(temporary);
+
+    toast({
+      containerStyle: { width: '100%' },
+      title: 'Post Comment Successfull!',
+      status: 'success',
+      duration: 2000,
+    });
+  };
+
+  const onFailedCommentCallback = (message: any) => {
+    if (commentsData === null) return;
+    const temporary = [...commentsData.filter((value) => value !== null)];
+    setCommentsData(temporary);
+
+    toast({
+      containerStyle: { width: '100%' },
+      title: 'Post Comment Failed!',
+      description: message,
+      status: 'error',
+      duration: 2000,
+    });
+  };
+
+  const fetchStoryAction = () => {
+    if (params.id === undefined) return;
+
+    GetStoryUseCase.handle(
+      parseInt(params.id, 10),
+      (response) => {
+        console.log(response.data);
+        setStoryData(response.data);
+      },
+      (error) => console.error(error.response.data),
+    );
+  };
+
+  const fetchCommentsAction = () => {
+    if (params.id === undefined) return;
+
+    GetCommentsUseCase.handle(
+      parseInt(params.id, 10),
+      (response) => {
+        setCommentsData(response.data);
+        console.log(response.data);
+      },
+      (error) => console.error(error.response.data),
+    );
+  };
+
+  useEffect(() => {
+    fetchStoryAction();
+    fetchCommentsAction();
+  }, []);
+
+  const storyTile = useMemo(() => {
+    if (storyData.id === undefined) {
+      return <StorySkeletonComponent />;
+    }
+
+    return (
+      <StoryDetailTileComponent
+        id={storyData.id}
+        title={storyData.title}
+        body={storyData.body}
+        likeData={storyData.likes}
+        totalViews={storyData.views}
+        uploadedAt={(new Date(storyData.created_at)).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
+      />
+    );
+  }, [storyData]);
+
+  const commentsElement = useMemo(() => {
+    if (commentsData === null) {
+      return (
+        <>
+          <CommentSkeletonComponent />
+          <CommentSkeletonComponent />
+          <CommentSkeletonComponent />
+        </>
+      );
+    }
+
+    return commentsData?.map((element: any) => {
+      if (element === null) {
+        return <CommentSkeletonComponent />;
+      }
+      return (
+        <CommentTileComponent
+          id={element.id}
+          userId="x"
+          postDate={element.created_at}
+          comment={element.comment}
+          likeData={element.likeData}
+        />
+      );
+    });
+  }, [commentsData]);
 
   return (
     <div className="flex flex-col w-screen h-screen bg-[#FFFCFC]">
@@ -59,35 +144,18 @@ export default function StoryPage() {
         </div>
         <div className="overflow-y-scroll pt-8 pr-16 pl-4 w-[80%]">
           <div className="flex flex-col gap-6">
-            <StoryTileComponent
-              title="Lorem Ipsum"
-              body="
-              Sed ut perspiciatis unde omnis iste natus error sit voluptatem
-              accusantium doloremque laudantium, totam rem aperiam, eaque
-              ipsa quae ab illo inventore veritatis et quasi architecto beatae
-              vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia
-              voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur
-              magni dolores eos qui ratione voluptatem sequi nesciunt.
-              Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet,
-              consectetur, adipisci velit, sed quia non numquam eius modi tempora
-              incidunt ut labore et dolore magnam aliquam quaerat voluptatem.
-              Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis
-              suscipit laboriosam, nisi ut aliquid ex ea commodi
-              consequatur? Quis autem vel eum iure reprehenderit qui
-              in ea voluptate velit esse quam nihil molestiae
-              consequatur, vel illum qui dolorem eum fugiat quo
-              voluptas nulla pariatur?
-              "
-              totalLikes={29}
-              totalComments={21}
-              totalViews={109}
-              uploadedAt="June 24, 2022"
-            />
+            {storyTile}
           </div>
           <Spacer height="2rem" />
-          <CommentSectionComponent />
+          <CommentSectionComponent
+            storyId={storyData.id}
+            commentsCount={commentsData?.length}
+            onInitialCommentCallback={onInitialCommentCallback}
+            onSuccessfullCommentCallback={onSuccessfullCommentCallback}
+            onFailedCommentCallback={onFailedCommentCallback}
+          />
           <div className="flex flex-col gap-6 w-full">
-            {elements}
+            {commentsElement}
           </div>
           <Spacer height="2rem" />
         </div>

@@ -5,6 +5,7 @@ namespace App\Services\Story;
 use App\Models\Story;
 use App\Services\BaseService;
 use App\Services\BaseServiceValidation;
+use Illuminate\Support\Facades\Log;
 
 class CreateNewStory extends BaseServiceValidation
 {
@@ -22,7 +23,6 @@ class CreateNewStory extends BaseServiceValidation
   {
     $validatedData = $this->getValidatedData($data);
     $validatedData['views'] = 0;
-    $validatedData['likes'] = 0;
 
     $story = Story::create($validatedData);
     return $story;

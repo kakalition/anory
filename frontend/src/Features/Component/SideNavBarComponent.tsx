@@ -19,15 +19,15 @@ export default function SideNavBarComponent({ activeTab, onFABClick }: { activeT
         <AnoryLogo />
         <Spacer height="1rem" />
         <div className="flex flex-row">
-          <button type="button">Terms of service</button>
-          <Spacer width="0.5rem" />
-          <button type="button">Accessibility</button>
+          <button type="button" className="text-left">Terms of service</button>
+          <Spacer width="0.3rem" />
+          <button type="button" className="text-left">Accessibility</button>
         </div>
-        <Spacer height="0.5rem" />
+        <Spacer height="0.3rem" />
         <div className="flex flex-row">
-          <button type="button">Privacy policy</button>
-          <Spacer width="0.5rem" />
-          <button type="button">Cookie policy</button>
+          <button type="button" className="text-left">Privacy policy</button>
+          <Spacer width="0.3rem" />
+          <button type="button" className="text-left">Cookie policy</button>
         </div>
       </div>
     </div>

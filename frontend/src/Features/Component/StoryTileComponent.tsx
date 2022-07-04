@@ -1,10 +1,12 @@
-import { Box } from '@chakra-ui/react';
+import { useNavigate } from 'react-router-dom';
 import Spacer from '../Utilities/Spacer';
 import EyeIcon from './Icons/EyeIcon';
 import FilledChatAltIcon from './Icons/FilledChatAltIcon';
 import FilledHeartIcon from './Icons/FilledHeartIcon';
 
 type Params = {
+  id: number,
+  variant: 'tile' | 'detail',
   title: string,
   body: string,
   totalLikes: number,
@@ -14,10 +16,17 @@ type Params = {
 };
 
 export default function StoryTileComponent({
-  title, body, totalLikes, totalComments, totalViews, uploadedAt,
+  id, variant, title, body, totalLikes, totalComments, totalViews, uploadedAt,
 }: Params) {
+  const navigator = useNavigate();
+
   return (
-    <Box width="full" bgColor="#FFFFFF" shadow="base" borderRadius="0.5rem" padding="1.5rem">
+    <button
+      type="button"
+      className={`p-[1.5rem] w-full text-left bg-white rounded-lg drop-shadow-sm 
+      transition duration-75 select-none ${variant === 'tile' ? 'hover:drop-shadow-md ' : null}`}
+      onClick={() => navigator(`/story/${id}`)}
+    >
       <p className="font-roboto text-3xl font-medium">{title}</p>
       <Spacer height="1rem" />
       <p className="font-roboto">{body}</p>
@@ -52,6 +61,6 @@ export default function StoryTileComponent({
           <p className="pt-[0.2rem]">{`Uploaded at: ${uploadedAt}`}</p>
         </div>
       </div>
-    </Box>
+    </button>
   );
 }

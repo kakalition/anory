@@ -1,71 +1,94 @@
 import {
   Button, FormControl, FormLabel, Input, Modal, ModalBody, ModalCloseButton, ModalContent,
-  ModalFooter, ModalHeader, ModalOverlay, Select, Textarea, useDisclosure,
+  ModalFooter, ModalHeader, ModalOverlay, Select, Textarea, useDisclosure, useToast,
 } from '@chakra-ui/react';
-import { useState } from 'react';
+import _ from 'lodash';
+import React, { useState, useEffect, useMemo } from 'react';
+import GetCategoriesUseCase from '../../UseCases/Category/GetCategoriesUseCase';
+import CreateStoryUseCase from '../../UseCases/Story/CreateStoryUseCase';
+import GetStoriesUseCase from '../../UseCases/Story/GetStoriesUseCase';
 import AnoryPrimaryButtonComponent from '../Component/AnoryPrimaryButtonComponent';
 import SideNavBarComponent from '../Component/SideNavBarComponent';
+import StorySkeletonComponent from '../Component/StorySkeletonComponent';
 import StoryTileComponent from '../Component/StoryTileComponent';
 import TopBarComponent from '../Component/TopBarComponent';
 import Spacer from '../Utilities/Spacer';
 
-const dummyDatas = [
-  {
-    title: 'Weird Things',
-    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ',
-    totalLikes: 20,
-    totalComments: 12,
-    totalViews: 9,
-    uploadedAt: 'Juny 24, 2022',
-  },
-  {
-    title: 'Funky Stranger',
-    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ',
-    totalLikes: 109,
-    totalComments: 20,
-    totalViews: 11,
-    uploadedAt: 'Juny 24, 2022',
-  },
-  {
-    title: 'Horrible Creature at Night',
-    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ',
-    totalLikes: 92,
-    totalComments: 11,
-    totalViews: 27,
-    uploadedAt: 'Juny 24, 2022',
-  },
-  {
-    title: 'Funky Stranger',
-    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ',
-    totalLikes: 109,
-    totalComments: 20,
-    totalViews: 11,
-    uploadedAt: 'Juny 24, 2022',
-  },
-  {
-    title: 'Horrible Creature at Night',
-    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ',
-    totalLikes: 92,
-    totalComments: 11,
-    totalViews: 27,
-    uploadedAt: 'Juny 24, 2022',
-  },
-];
-
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState('alls');
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const toast = useToast();
+  const [storyData, setStoryData] = useState<any[]>(null);
+  const [availableCategories, setAvailableCategories] = useState<any[]>([]);
 
-  const elements = dummyDatas.map((element) => (
-    <StoryTileComponent
-      title={element.title}
-      body={element.body}
-      totalLikes={element.totalLikes}
-      totalComments={element.totalComments}
-      totalViews={element.totalViews}
-      uploadedAt={element.uploadedAt}
-    />
-  ));
+  const showToast = (toastTitle: String, toastStatus: any) => {
+    toast({
+      title: toastTitle,
+      containerStyle: { width: '100%' },
+      duration: 2000,
+      status: toastStatus,
+    });
+  };
+
+  const fetchData = () => {
+    GetCategoriesUseCase.handle((response) => setAvailableCategories(response.data));
+
+    GetStoriesUseCase.handle(
+      10,
+      null,
+      (response) => setStoryData(response.data),
+      (error) => console.error(error.response.data),
+    );
+  };
+
+  const onSubmitStoryClick: React.MouseEventHandler = () => {
+    CreateStoryUseCase.handle(
+      {
+        categoryId: parseInt((document.getElementById('categories') as HTMLSelectElement).value, 10),
+        title: (document.getElementById('title') as HTMLInputElement).value,
+        body: (document.getElementById('body') as HTMLTextAreaElement).value,
+      },
+      () => {
+        onClose();
+        showToast('Story Created', 'success');
+        fetchData();
+      },
+      () => showToast('Failed to Create Story', 'error'),
+    );
+  };
+
+  const categoriesElement = useMemo(() => availableCategories.map(
+    (element) => <option key={element.id} value={element.id}>{element.name}</option>,
+  ), [availableCategories]);
+
+  const elements = useMemo(() => {
+    if (storyData !== null) {
+      return storyData?.map((element) => (
+        <StoryTileComponent
+          key={element.id}
+          variant="tile"
+          id={element.id}
+          title={element.title}
+          body={_.truncate(element.body)}
+          totalLikes={element.likes.length}
+          totalComments={element.comments_count}
+          totalViews={element.views}
+          uploadedAt={(new Date(element.created_at)).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
+        />
+      ));
+    }
+    return (
+      <>
+        <StorySkeletonComponent />
+        <StorySkeletonComponent />
+        <StorySkeletonComponent />
+        <StorySkeletonComponent />
+        <StorySkeletonComponent />
+      </>
+    );
+  }, [storyData]);
+
+  useEffect(fetchData, []);
 
   return (
     <div className="flex flex-col w-screen h-screen bg-[#FFFCFC]">
@@ -112,6 +135,13 @@ export default function HomePage() {
               </FormControl>
               <Spacer height="1.5rem" />
               <FormControl>
+                <FormLabel htmlFor="categories">Categories</FormLabel>
+                <Select id="categories" placeholder="Select category">
+                  {categoriesElement}
+                </Select>
+              </FormControl>
+              <Spacer height="1.5rem" />
+              <FormControl>
                 <FormLabel htmlFor="body">Body</FormLabel>
                 <Textarea
                   id="body"
@@ -124,7 +154,7 @@ export default function HomePage() {
           <ModalFooter>
             <Button variant="ghost">Cancel</Button>
             <Spacer width="2rem" />
-            <AnoryPrimaryButtonComponent text="Post" onClick={() => console.log()} paddingX="2rem" />
+            <AnoryPrimaryButtonComponent text="Post" onClick={onSubmitStoryClick} paddingX="2rem" />
           </ModalFooter>
         </ModalContent>
       </Modal>

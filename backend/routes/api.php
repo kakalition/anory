@@ -5,8 +5,9 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\LikeDataController;
 use App\Http\Controllers\StoryController;
 use App\Http\Middleware\EnsureLoggedIn;
-use App\Models\Category;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -25,10 +26,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 // For testing purpose
-Route::get('/user', fn (Request $request) => response($request->user(), 200));
+// Route::get('/user', fn (Request $request) => response(Auth::user(), 200));
 
 Route::controller(StoryController::class)
-  ->middleware(EnsureLoggedIn::class)
   ->group(function () {
     Route::get('/stories', 'index');
     Route::get('/users/{user}/stories', 'userIndex');

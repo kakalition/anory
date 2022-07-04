@@ -19,7 +19,6 @@ return new class extends Migration
         ->on('categories')
         ->cascadeOnDelete();
       $table->integer('views');
-      $table->integer('likes');
       $table->string('title');
       $table->text('body');
       $table->timestamps();

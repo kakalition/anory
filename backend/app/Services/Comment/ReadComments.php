@@ -6,16 +6,18 @@ use App\Exceptions\StoryNotFoundException;
 use App\Exceptions\UserNotFoundException;
 use App\Models\Story;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
 
 class ReadComments
 {
   public function handle(array $data)
   {
-    $story = Story::where('id', $data['story_id'])
-      ->first()
+    $story = Story::find($data['story_id'])
       ->comments()
+      ->orderBy('created_at', 'desc')
       ->get();
 
+    Log::info($story);
     return $story;
   }
 }

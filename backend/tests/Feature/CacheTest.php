@@ -10,16 +10,11 @@ use App\Models\User;
 
 uses(RefreshDatabase::class);
 
-test('test', function () {
-  $categories = Category::factory()->count(3)
-    ->create();
+test('when test, should test. (HTTP 204)', function() {
+  registerUser('k@k', 'k@k', '00000000');
+  logout();
 
-  User::factory()->count(4)
-    ->has(Story::factory()->count(2), 'stories')
-    ->create();
-
-  $firstCategory = $categories[0]->name;
-
-  $response = getJson("/api/stories/$firstCategory");
+  $response = loginUser('k@k', '00000000');
+  $response->assertOk();
   $response->dump();
 });

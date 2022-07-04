@@ -8,7 +8,7 @@ class GetAllCategories
 {
   public function handle()
   {
-    $categories = Category::all();
+    $categories = Category::all(['id', 'name']);
 
     return $categories;
   }

@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources;
 
-use App\Models\Category;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class StoryResource extends JsonResource
@@ -14,8 +13,8 @@ class StoryResource extends JsonResource
       'author_id' => $this->author_id,
       'category' => $this->categoryName(),
       'views' => $this->views,
-      'likes' => $this->likeData()->where('status', 1)->count(),
-      'dislikes' => $this->likeData()->where('status', -1)->count(),
+      'likes' => $this->likeData()->get(),
+      'comments_count' => $this->totalComments(),
       'title' => $this->title,
       'body' => $this->body,
       'created_at' => $this->created_at

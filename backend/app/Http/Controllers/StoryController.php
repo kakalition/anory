@@ -8,18 +8,29 @@ use App\Http\Resources\StoryResource;
 use App\Models\Story;
 use App\Services\Story\CreateNewStory;
 use App\Services\Story\DeleteStory;
+use App\Services\Story\GetStories;
 use App\Services\Story\GetStoriesByCategory;
 use App\Services\Story\GetUserStories;
 use App\Services\Story\UpdateStory;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class StoryController extends Controller
 {
-  public function index()
+  public function index(Request $request, GetStories $getStories)
   {
-    return response(StoryResource::collection(Story::all()), 200);
+    try {
+      $stories = $getStories->handle(
+        $request->query('count'),
+        $request->query('query'),
+      );
+    } catch (Exception $exception) {
+      return response($exception->getMessage(), 500);
+    }
+
+    return response(StoryResource::collection($stories), 200);
   }
 
   public function indexByCategory(Request $request, GetStoriesByCategory $getStoriesByCategory)

@@ -13,18 +13,13 @@ class Story extends Model
     'author_id',
     'category_id',
     'views',
-    'likes',
     'title',
     'body'
   ];
 
-  public function likeData() {
-    return $this->morphMany(LikeData::class, 'likeable');
-  }
-
-  function category()
+  public function likeData()
   {
-    return $this->hasOne(Category::class, 'story_id', 'id');;
+    return $this->morphMany(LikeData::class, 'likeable');
   }
 
   function categoryName()
@@ -32,6 +27,13 @@ class Story extends Model
     return Category::where('id', $this->category_id)
       ->first()
       ->name;
+  }
+
+  function totalComments()
+  {
+    return $this
+      ->hasMany(Comment::class, 'story_id', 'id')
+      ->count();
   }
 
   public function comments()
