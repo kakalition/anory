@@ -9,6 +9,7 @@ import SearchIcon from './Icons/SearchIcon';
 
 export default function TopBarComponent() {
   const navigator = useNavigate();
+  const onIconClick: React.MouseEventHandler = () => navigator('/app');
   const onLogoutClick: React.MouseEventHandler = () => {
     LogoutUseCase.handle(
       (response) => {
@@ -22,9 +23,13 @@ export default function TopBarComponent() {
 
   return (
     <div className="flex flex-row justify-between items-center py-3 px-16 w-full h-full bg-white border-b-2 border-b-gray-200">
-      <div className="w-12 h-12 stroke-gray-900 stroke-[0.08rem]">
+      <button
+        type="button"
+        className="w-12 h-12 stroke-gray-900 stroke-[0.08rem]"
+        onClick={onIconClick}
+      >
         <AnnotationIcon />
-      </div>
+      </button>
       <InputGroup className="mx-16">
         <InputLeftElement pointerEvents="none">
           <div className="flex items-center m-2 w-full h-full stroke-gray-900 stroke-[0.08rem]">

@@ -5,6 +5,7 @@ namespace App\Services\Story;
 use App\Models\Story;
 use App\Services\BaseService;
 use App\Services\BaseServiceValidation;
+use Illuminate\Support\Facades\Log;
 
 class CreateNewStory extends BaseServiceValidation
 {

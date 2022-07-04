@@ -16,6 +16,7 @@ class GetStories
       $stories->where('title', 'ilike', $query);
     }
 
+    $stories->orderByDesc('created_at');
     return $stories->get();
   }
 }

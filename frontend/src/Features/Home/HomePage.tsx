@@ -1,9 +1,9 @@
 import {
   Button, FormControl, FormLabel, Input, Modal, ModalBody, ModalCloseButton, ModalContent,
-  ModalFooter, ModalHeader, ModalOverlay, Select, Textarea, useDisclosure,
+  ModalFooter, ModalHeader, ModalOverlay, Select, Textarea, useDisclosure, useToast,
 } from '@chakra-ui/react';
-import React, { useState, useEffect, useMemo } from 'react';
 import _ from 'lodash';
+import React, { useState, useEffect, useMemo } from 'react';
 import GetCategoriesUseCase from '../../UseCases/Category/GetCategoriesUseCase';
 import CreateStoryUseCase from '../../UseCases/Story/CreateStoryUseCase';
 import GetStoriesUseCase from '../../UseCases/Story/GetStoriesUseCase';
@@ -16,8 +16,29 @@ import Spacer from '../Utilities/Spacer';
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState('alls');
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const toast = useToast();
   const [storyData, setStoryData] = useState<any[]>([]);
   const [availableCategories, setAvailableCategories] = useState<any[]>([]);
+
+  const showToast = (toastTitle: String, toastStatus: any) => {
+    toast({
+      title: toastTitle,
+      containerStyle: { width: '100%' },
+      duration: 2000,
+      status: toastStatus,
+    });
+  };
+
+  const fetchData = () => {
+    GetCategoriesUseCase.handle((response) => setAvailableCategories(response.data));
+
+    GetStoriesUseCase.handle(
+      10,
+      null,
+      (response) => setStoryData(response.data),
+      (error) => console.error(error.response.data),
+    );
+  };
 
   const onSubmitStoryClick: React.MouseEventHandler = () => {
     CreateStoryUseCase.handle(
@@ -26,24 +47,14 @@ export default function HomePage() {
         title: (document.getElementById('title') as HTMLInputElement).value,
         body: (document.getElementById('body') as HTMLTextAreaElement).value,
       },
-      (response) => console.log('success'),
-      (error) => console.error(error.response),
+      () => {
+        onClose();
+        showToast('Story Created', 'success');
+        fetchData();
+      },
+      () => showToast('Failed to Create Story', 'error'),
     );
   };
-
-  useEffect(() => {
-    GetCategoriesUseCase.handle((response) => setAvailableCategories(response.data));
-
-    GetStoriesUseCase.handle(
-      10,
-      null,
-      (response) => {
-        setStoryData(response.data);
-        console.log(response.data);
-      },
-      (error) => console.error(error.response.data),
-    );
-  }, []);
 
   const categoriesElement = useMemo(() => availableCategories.map(
     (element) => <option key={element.id} value={element.id}>{element.name}</option>,
@@ -56,12 +67,14 @@ export default function HomePage() {
       id={element.id}
       title={element.title}
       body={_.truncate(element.body)}
-      totalLikes={element.likes}
+      totalLikes={element.likes.length}
       totalComments={element.comments_count}
       totalViews={element.views}
       uploadedAt={(new Date(element.created_at)).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
     />
   )), [storyData]);
+
+  useEffect(fetchData, []);
 
   return (
     <div className="flex flex-col w-screen h-screen bg-[#FFFCFC]">
