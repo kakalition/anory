@@ -9,6 +9,7 @@ import { AuthContext } from '../AuthenticationWrapper';
 import CommentSectionComponent from '../Component/CommentSectionComponent';
 import CommentTileComponent from '../Component/CommentTileComponent';
 import SideNavBarComponent from '../Component/SideNavBarComponent';
+import StorySkeletonComponent from '../Component/StorySkeletonComponent';
 import StoryTileComponent from '../Component/StoryTileComponent';
 import TopBarComponent from '../Component/TopBarComponent';
 import Spacer from '../Utilities/Spacer';
@@ -90,15 +91,7 @@ export default function StoryPage() {
 
   const storyTile = useMemo(() => {
     if (storyData.id === undefined) {
-      return (
-        <div className="p-[1.5rem] w-full bg-white rounded-lg drop-shadow-sm">
-          <Skeleton height="2rem" />
-          <Spacer height="1rem" />
-          <SkeletonText noOfLines={4} />
-          <Spacer height="1rem" />
-          <SkeletonText noOfLines={1} />
-        </div>
-      );
+      return <StorySkeletonComponent />;
     }
 
     return (

@@ -9,6 +9,7 @@ import CreateStoryUseCase from '../../UseCases/Story/CreateStoryUseCase';
 import GetStoriesUseCase from '../../UseCases/Story/GetStoriesUseCase';
 import AnoryPrimaryButtonComponent from '../Component/AnoryPrimaryButtonComponent';
 import SideNavBarComponent from '../Component/SideNavBarComponent';
+import StorySkeletonComponent from '../Component/StorySkeletonComponent';
 import StoryTileComponent from '../Component/StoryTileComponent';
 import TopBarComponent from '../Component/TopBarComponent';
 import Spacer from '../Utilities/Spacer';
@@ -17,7 +18,7 @@ export default function HomePage() {
   const [activeTab, setActiveTab] = useState('alls');
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
-  const [storyData, setStoryData] = useState<any[]>([]);
+  const [storyData, setStoryData] = useState<any[]>(null);
   const [availableCategories, setAvailableCategories] = useState<any[]>([]);
 
   const showToast = (toastTitle: String, toastStatus: any) => {
@@ -60,19 +61,32 @@ export default function HomePage() {
     (element) => <option key={element.id} value={element.id}>{element.name}</option>,
   ), [availableCategories]);
 
-  const elements = useMemo(() => storyData.map((element) => (
-    <StoryTileComponent
-      key={element.id}
-      variant="tile"
-      id={element.id}
-      title={element.title}
-      body={_.truncate(element.body)}
-      totalLikes={element.likes.length}
-      totalComments={element.comments_count}
-      totalViews={element.views}
-      uploadedAt={(new Date(element.created_at)).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
-    />
-  )), [storyData]);
+  const elements = useMemo(() => {
+    if (storyData !== null) {
+      return storyData?.map((element) => (
+        <StoryTileComponent
+          key={element.id}
+          variant="tile"
+          id={element.id}
+          title={element.title}
+          body={_.truncate(element.body)}
+          totalLikes={element.likes.length}
+          totalComments={element.comments_count}
+          totalViews={element.views}
+          uploadedAt={(new Date(element.created_at)).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
+        />
+      ));
+    }
+    return (
+      <>
+        <StorySkeletonComponent />
+        <StorySkeletonComponent />
+        <StorySkeletonComponent />
+        <StorySkeletonComponent />
+        <StorySkeletonComponent />
+      </>
+    );
+  }, [storyData]);
 
   useEffect(fetchData, []);
 

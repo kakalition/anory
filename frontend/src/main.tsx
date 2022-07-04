@@ -14,6 +14,8 @@ import StoryPage from './Features/Story/StoryPage';
 import './index.css';
 import LogoutUseCase from './UseCases/Auth/LogoutUseCase';
 
+// TOOD: migrate StoryDetailTileComponent to use UseLike hook
+
 axios.defaults.withCredentials = true;
 
 function Logout() {
