@@ -20,7 +20,7 @@ export default function StoryPage() {
   const toast = useToast();
   const [activeTab, setActiveTab] = useState('alls');
   const [storyData, setStoryData] = useState<any>({});
-  const [commentsData, setCommentsData] = useState<any[] | null>([]);
+  const [commentsData, setCommentsData] = useState<any[] | null>(null);
 
   const onInitialCommentCallback = () => {
     if (commentsData === null) return;
