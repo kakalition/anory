@@ -1,5 +1,7 @@
 import { Skeleton, SkeletonText, useToast } from '@chakra-ui/react';
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, {
+  useContext, useEffect, useMemo, useState,
+} from 'react';
 import { useParams } from 'react-router-dom';
 import GetCommentsUseCase from '../../UseCases/Comment/GetCommentsUseCase';
 import GetStoryUseCase from '../../UseCases/Story/GetStoryUseCase';
@@ -55,7 +57,7 @@ export default function StoryPage() {
     });
   };
 
-  useEffect(() => {
+  const fetchStoryAction = () => {
     if (params.id === undefined) return;
 
     GetStoryUseCase.handle(
@@ -66,6 +68,10 @@ export default function StoryPage() {
       },
       (error) => console.error(error.response.data),
     );
+  };
+
+  const fetchCommentsAction = () => {
+    if (params.id === undefined) return;
 
     GetCommentsUseCase.handle(
       parseInt(params.id, 10),
@@ -75,6 +81,11 @@ export default function StoryPage() {
       },
       (error) => console.error(error.response.data),
     );
+  };
+
+  useEffect(() => {
+    fetchStoryAction();
+    fetchCommentsAction();
   }, []);
 
   const storyTile = useMemo(() => {
@@ -102,7 +113,7 @@ export default function StoryPage() {
     );
   }, [storyData]);
 
-  const elements = useMemo(() => {
+  const commentsElement = useMemo(() => {
     if (commentsData === null) {
       return (
         <>
@@ -144,13 +155,13 @@ export default function StoryPage() {
           <Spacer height="2rem" />
           <CommentSectionComponent
             storyId={storyData.id}
-            commentsCount={storyData.comments_count}
+            commentsCount={commentsData?.length}
             onInitialCommentCallback={onInitialCommentCallback}
             onSuccessfullCommentCallback={onSuccessfullCommentCallback}
             onFailedCommentCallback={onFailedCommentCallback}
           />
           <div className="flex flex-col gap-6 w-full">
-            {elements}
+            {commentsElement}
           </div>
           <Spacer height="2rem" />
         </div>

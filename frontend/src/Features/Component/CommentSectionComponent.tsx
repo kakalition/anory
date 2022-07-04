@@ -8,7 +8,7 @@ import AnoryPrimaryButtonComponent from './AnoryPrimaryButtonComponent';
 
 type Params = {
   storyId: number,
-  commentsCount: number | null,
+  commentsCount: number | undefined,
   onInitialCommentCallback: () => void,
   onSuccessfullCommentCallback: (data: any) => void,
   onFailedCommentCallback: (message: any) => void,
