@@ -17,6 +17,7 @@ import Spacer from '../Utilities/Spacer';
 import OutlinedHeartIcon from './Icons/OutlinedHeartIcon';
 import ThreeDotsIcon from './Icons/ThreeDotsIcon';
 import DeleteCommentUseCase from '../../UseCases/Comment/DeleteCommentUseCase';
+import APICallBuilder from '../../UseCases/APICallBuilder';
 
 type Params = {
   id: number,
@@ -38,28 +39,32 @@ export default function CommentTileComponent(params: Params) {
   const cancelRef = useRef<any>(null);
   const [totalLike, isLikedByMe, onHeartClick] = useLike({ entityId: id, likeData, type: 'comments' });
 
-  const onDeleteClick: React.MouseEventHandler = () => {
-    DeleteCommentUseCase.handle(
-      { id },
-      (response) => {
-        onClose();
-        toast({
-          title: 'Delete Successful.',
-          position: 'top',
-          status: 'success',
-        });
-        onAfterDelete?.();
-      },
-      (error) => {
-        onClose();
-        toast({
-          title: 'Failed to delete comment.',
-          position: 'top',
-          status: 'error',
-        });
-      },
-    );
+  const onDeleteCommentSuccess = () => {
+    onClose();
+    toast({
+      title: 'Delete Successful.',
+      position: 'top',
+      status: 'success',
+    });
+    onAfterDelete?.();
   };
+
+  const onDeleteCommentFailed = () => {
+    onClose();
+    toast({
+      title: 'Failed to delete comment.',
+      position: 'top',
+      status: 'error',
+    });
+  };
+
+  const deleteCommentAPI = new APICallBuilder()
+    .addAction(DeleteCommentUseCase.create())
+    .addPayload({ id })
+    .addOnSuccess(onDeleteCommentSuccess)
+    .addOnFailed(onDeleteCommentFailed);
+
+  const onDeleteClick: React.MouseEventHandler = () => deleteCommentAPI.call();
 
   const menuElement = useMemo(() => {
     if (commenteeId === user.id) {

@@ -48,20 +48,20 @@ export default function HomePage() {
     .addOnSuccess((response) => setStoryData(response.data))
     .addOnFailed((error) => console.error(error.response.data));
 
-  const onSuccessSubmitStory = () => {
+  const onSubmitStorySuccess = () => {
     onClose();
     showToast('Story Created', 'success');
     getStoriesAPI.call();
   };
 
-  const onFailedSubmitStory = () => {
+  const onSubmitStoryFailed = () => {
     showToast('Failed to Create Story', 'error');
   };
 
   const submitStoryAPI = new APICallBuilder()
     .addAction(CreateStoryUseCase.create())
-    .addOnSuccess(onSuccessSubmitStory)
-    .addOnFailed(onFailedSubmitStory);
+    .addOnSuccess(onSubmitStorySuccess)
+    .addOnFailed(onSubmitStoryFailed);
 
   const onSubmitStoryClick: React.MouseEventHandler = () => {
     const storyPayload: CreateStoryPayload = {
