@@ -1,22 +1,22 @@
 import {
   AlertDialog,
   AlertDialogBody,
-  AlertDialogCloseButton,
   AlertDialogContent,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogOverlay,
   Button,
-  IconButton, Menu, MenuButton, MenuItem, MenuList, useDisclosure,
+  IconButton, Menu, MenuButton, MenuItem, MenuList, useDisclosure, useToast,
 } from '@chakra-ui/react';
 import React, {
-  useContext, useEffect, useMemo, useRef,
+  useContext, useMemo, useRef,
 } from 'react';
 import useLike from '../../Hooks/UseLike';
 import { AuthContext } from '../AuthenticationWrapper';
 import Spacer from '../Utilities/Spacer';
 import OutlinedHeartIcon from './Icons/OutlinedHeartIcon';
 import ThreeDotsIcon from './Icons/ThreeDotsIcon';
+import DeleteCommentUseCase from '../../UseCases/Comment/DeleteCommentUseCase';
 
 type Params = {
   id: number,
@@ -32,13 +32,32 @@ export default function CommentTileComponent(params: Params) {
     id, commenteeId, userId, postDate, comment, likeData,
   } = params;
   const user = useContext<any>(AuthContext);
+  const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = useRef<any>(null);
   const [totalLike, isLikedByMe, onHeartClick] = useLike({ entityId: id, likeData, type: 'comments' });
 
-  useEffect(() => {
-    console.log(`${commenteeId}:${user.id}`);
-  }, []);
+  const onDeleteClick: React.MouseEventHandler = () => {
+    DeleteCommentUseCase.handle(
+      { id },
+      (response) => {
+        onClose();
+        toast({
+          title: 'Delete Successful.',
+          position: 'top',
+          status: 'success',
+        });
+      },
+      (error) => {
+        onClose();
+        toast({
+          title: 'Failed to delete comment.',
+          position: 'top',
+          status: 'error',
+        });
+      },
+    );
+  };
 
   const menuElement = useMemo(() => {
     if (commenteeId === user.id) {
@@ -109,6 +128,7 @@ export default function CommentTileComponent(params: Params) {
                 bg="#FF6961"
                 textColor="#FFFFFF"
                 _hover={{ bg: '#E04D46' }}
+                onClick={onDeleteClick}
               >
                 Delete
               </Button>
