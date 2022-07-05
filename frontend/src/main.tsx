@@ -9,12 +9,16 @@ import AuthenticationWrapper from './Features/AuthenticationWrapper';
 import HomePage from './Features/Home/HomePage';
 import LandingPage from './Features/LandingPage/LandingPage';
 import LoginPage from './Features/Login/LoginPage';
+import MyAccountPage from './Features/MyAccount/MyAccountPage';
 import RegisterPage from './Features/Register/RegisterPage';
 import StoryPage from './Features/Story/StoryPage';
 import './index.css';
 import LogoutUseCase from './UseCases/Auth/LogoutUseCase';
 
 // TOOD: migrate StoryDetailTileComponent to use UseLike hook
+// TOOD: modularize base layout
+// TOOD: Create modal for comment editor
+// TODO: Create comment edit delete use case
 
 axios.defaults.withCredentials = true;
 
@@ -39,6 +43,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route path="/login" element={<LoginPage />} />
           <Route path="/logout" element={<Logout />} />
           <Route path="/app" element={<AuthenticationWrapper><HomePage /></AuthenticationWrapper>} />
+          <Route path="/app/my-account" element={<AuthenticationWrapper><MyAccountPage /></AuthenticationWrapper>} />
           <Route path="/story" element={<AuthenticationWrapper><StoryPage /></AuthenticationWrapper>}>
             <Route path=":id" element={<AuthenticationWrapper><StoryPage /></AuthenticationWrapper>} />
           </Route>

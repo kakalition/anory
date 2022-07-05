@@ -17,7 +17,6 @@ class ReadComments
       ->orderBy('created_at', 'desc')
       ->get();
 
-    Log::info($story);
     return $story;
   }
 }

@@ -1,16 +1,14 @@
-import { Skeleton, SkeletonText, useToast } from '@chakra-ui/react';
-import React, {
-  useContext, useEffect, useMemo, useState,
+import { useToast } from '@chakra-ui/react';
+import {
+  useEffect, useMemo, useState,
 } from 'react';
 import { useParams } from 'react-router-dom';
+import CommentTileMapper from '../../Mapper/CommentTileMapper';
 import GetCommentsUseCase from '../../UseCases/Comment/GetCommentsUseCase';
 import GetStoryUseCase from '../../UseCases/Story/GetStoryUseCase';
-import { AuthContext } from '../AuthenticationWrapper';
 import CommentSectionComponent from '../Component/CommentSectionComponent';
-import CommentTileComponent from '../Component/CommentTileComponent';
 import SideNavBarComponent from '../Component/SideNavBarComponent';
 import StorySkeletonComponent from '../Component/StorySkeletonComponent';
-import StoryTileComponent from '../Component/StoryTileComponent';
 import TopBarComponent from '../Component/TopBarComponent';
 import Spacer from '../Utilities/Spacer';
 import CommentSkeletonComponent from './Components/CommentSkeletonComponent';
@@ -117,20 +115,7 @@ export default function StoryPage() {
       );
     }
 
-    return commentsData?.map((element: any) => {
-      if (element === null) {
-        return <CommentSkeletonComponent />;
-      }
-      return (
-        <CommentTileComponent
-          id={element.id}
-          userId="x"
-          postDate={element.created_at}
-          comment={element.comment}
-          likeData={element.likeData}
-        />
-      );
-    });
+    return CommentTileMapper.handle(commentsData);
   }, [commentsData]);
 
   return (

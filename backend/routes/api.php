@@ -43,8 +43,9 @@ Route::controller(StoryController::class)
 Route::controller(CommentController::class)
   ->middleware(EnsureLoggedIn::class)
   ->group(function () {
-    Route::get('/stories/{story_id}/comments', 'indexByUser');
+    Route::get('/stories/{story_id}/comments', 'indexByStory');
     Route::post('/stories/{story_id}/comments', 'store');
+    Route::get('/comments', 'indexByUser');
     Route::put('/comments/{comment}', 'update');
     Route::patch('/comments/{comment}', 'update');
     Route::delete('/comments/{comment}', 'destroy');
