@@ -1,4 +1,4 @@
-import { useContext, useMemo, useState } from 'react';
+import { useContext, useState } from 'react';
 import { useToast } from '@chakra-ui/react';
 import _ from 'lodash';
 import { AuthContext } from '../../AuthenticationWrapper';

@@ -6,32 +6,38 @@ import {
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { AxiosResponse } from 'axios';
 import RegisterUseCase from '../../UseCases/Auth/RegisterUseCase';
 import AnoryLogo from '../Component/AnoryLogo';
 import Spacer from '../Utilities/Spacer';
+import APICallBuilder from '../../UseCases/APICallBuilder';
+import { RegisterPayload } from '../../UseCases/Auth/Payload/RegisterPayload';
 
 export default function RegisterPage() {
   const navigator = useNavigate();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const onSignInClickListener: React.MouseEventHandler = () => {
-    navigator('/login');
-  };
+  const onRegisterSuccess = (response: AxiosResponse) => { if (response.status === 201) navigator('/app'); };
+
+  const registerAPI = new APICallBuilder()
+    .addAction(RegisterUseCase.create())
+    .addOnSuccess(onRegisterSuccess)
+    .addOnFailed((error) => setErrorMessage(error.response.data.message));
+
+  const onSignInClickListener: React.MouseEventHandler = () => navigator('/login');
 
   const onRegisterClickListener: React.MouseEventHandler = async () => {
     const formData = new FormData(document.getElementById('register-form') as HTMLFormElement);
 
-    RegisterUseCase.handle(
-      {
-        name: formData.get('name')?.toString() ?? '',
-        email: formData.get('email')?.toString() ?? '',
-        password: formData.get('password')?.toString() ?? '',
-      },
-      (response) => {
-        if (response.status === 201) navigator('/app');
-      },
-      (error) => setErrorMessage(error.response.data.message),
-    );
+    const payload: RegisterPayload = {
+      name: formData.get('name')?.toString() ?? '',
+      email: formData.get('email')?.toString() ?? '',
+      password: formData.get('password')?.toString() ?? '',
+    };
+
+    registerAPI
+      .addPayload(payload)
+      .call();
   };
 
   return (
