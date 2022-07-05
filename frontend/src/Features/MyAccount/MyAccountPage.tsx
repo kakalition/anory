@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import CommentTileMapper from '../../Mapper/CommentTileMapper';
 import StoryTileMapper from '../../Mapper/StoryTileMapper';
 import GetUserCommentsUseCase from '../../UseCases/Comment/GetUserCommentsUseCase';
 import GetStoriesUseCase from '../../UseCases/Story/GetStoriesUseCase';
@@ -14,11 +15,11 @@ const dummyUserData = {
 };
 
 export default function MyAccountPage() {
-  const [storiesData, setStoriesData] = useState([]);
+  const [storiesData, setStoriesData] = useState([null, null, null]);
   const storiesElement = useMemo(() => StoryTileMapper.handle(storiesData), [storiesData]);
 
-  const [commentsData, setCommentsData] = useState([]);
-  const commentsElement = useMemo(() => <div />, [commentsData]);
+  const [commentsData, setCommentsData] = useState([null, null, null]);
+  const commentsElement = useMemo(() => CommentTileMapper.handle(commentsData), [commentsData]);
 
   const fetchStoriesData = () => {
     GetStoriesUseCase.handle(

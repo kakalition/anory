@@ -15,7 +15,6 @@ export default class CommentTileMapper {
           postDate={element.created_at}
           comment={element.comment}
           likeData={element.likeData}
-          isInteractive
         />
       );
     });

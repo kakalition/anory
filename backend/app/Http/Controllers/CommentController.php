@@ -22,7 +22,7 @@ class CommentController extends Controller
       ->limit(3)
       ->orderByDesc('created_at')
       ->get();
-    return response($comments, 200);
+    return response(CommentResource::collection($comments), 200);
   }
 
   public function indexByStory(Request $request, ReadComments $readComments)

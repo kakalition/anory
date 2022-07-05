@@ -8,7 +8,6 @@ type Params = {
   postDate: string,
   comment: string,
   likeData: any[],
-  isInteractive: boolean
 };
 
 export default function CommentTileComponent({
