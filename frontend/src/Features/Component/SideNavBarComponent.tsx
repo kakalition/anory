@@ -1,15 +1,24 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import Spacer from '../Utilities/Spacer';
 import AnoryLogo from './AnoryLogo';
 import AnoryPrimaryButtonComponent from './AnoryPrimaryButtonComponent';
 import AnorySideNavButtonComponent from './AnorySideNavButtonComponent';
 
 export default function SideNavBarComponent({ activeTab, onFABClick }: { activeTab: string, onFABClick: React.MouseEventHandler }) {
+  const navigator = useNavigate();
+
   return (
     <div className="flex flex-col justify-between py-8 pr-4 pl-16 w-full h-full">
       <div className="flex flex-col gap-3 w-full">
         <AnoryPrimaryButtonComponent text="New Post" onClick={onFABClick} />
         <Spacer height="0.75rem" />
+        <AnorySideNavButtonComponent
+          onClick={() => navigator('/app/my-account')}
+          stateKey="acc"
+          currentState={activeTab}
+          text="My Account"
+        />
         <AnorySideNavButtonComponent stateKey="alls" currentState={activeTab} text="All Stories" />
         <AnorySideNavButtonComponent stateKey="a" currentState={activeTab} text="Most Views" />
         <AnorySideNavButtonComponent stateKey="b" currentState={activeTab} text="Most Likes" />

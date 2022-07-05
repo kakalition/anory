@@ -16,7 +16,16 @@ use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class CommentController extends Controller
 {
-  public function indexByUser(Request $request, ReadComments $readComments)
+  public function indexByUser()
+  {
+    $comments = Comment::where('commentee_id', auth()->user()->id)
+      ->limit(3)
+      ->orderByDesc('created_at')
+      ->get();
+    return response($comments, 200);
+  }
+
+  public function indexByStory(Request $request, ReadComments $readComments)
   {
     try {
       $comments = $readComments->handle([
