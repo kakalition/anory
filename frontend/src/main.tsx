@@ -16,7 +16,9 @@ import './index.css';
 import LogoutUseCase from './UseCases/Auth/LogoutUseCase';
 
 // TOOD: migrate StoryDetailTileComponent to use UseLike hook
-// TOOD: modularize base layout 
+// TOOD: modularize base layout
+// TOOD: Create modal for comment editor
+// TODO: Create comment edit delete use case
 
 axios.defaults.withCredentials = true;
 
