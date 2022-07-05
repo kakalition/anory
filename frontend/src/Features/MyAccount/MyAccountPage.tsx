@@ -21,6 +21,10 @@ export default function MyAccountPage() {
   const [commentsData, setCommentsData] = useState([null, null, null]);
   const commentsElement = useMemo(() => CommentTileMapper.handle(commentsData), [commentsData]);
 
+  useEffect(() => {
+    console.log(commentsData);
+  }, [commentsData])
+
   const fetchStoriesData = () => {
     GetStoriesUseCase.handle(
       3,

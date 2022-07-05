@@ -11,6 +11,7 @@ export default class CommentTileMapper {
       return (
         <CommentTileComponent
           id={element.id}
+          commenteeId={element.commentee_id}
           userId="x"
           postDate={element.created_at}
           comment={element.comment}

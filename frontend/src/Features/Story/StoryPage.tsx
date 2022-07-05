@@ -3,6 +3,7 @@ import React, {
   useContext, useEffect, useMemo, useState,
 } from 'react';
 import { useParams } from 'react-router-dom';
+import CommentTileMapper from '../../Mapper/CommentTileMapper';
 import GetCommentsUseCase from '../../UseCases/Comment/GetCommentsUseCase';
 import GetStoryUseCase from '../../UseCases/Story/GetStoryUseCase';
 import { AuthContext } from '../AuthenticationWrapper';
@@ -117,20 +118,7 @@ export default function StoryPage() {
       );
     }
 
-    return commentsData?.map((element: any) => {
-      if (element === null) {
-        return <CommentSkeletonComponent />;
-      }
-      return (
-        <CommentTileComponent
-          id={element.id}
-          userId="x"
-          postDate={element.created_at}
-          comment={element.comment}
-          likeData={element.likeData}
-        />
-      );
-    });
+    return CommentTileMapper.handle(commentsData);
   }, [commentsData]);
 
   return (
