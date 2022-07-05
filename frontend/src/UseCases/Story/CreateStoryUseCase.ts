@@ -1,18 +1,10 @@
-import axios, { AxiosResponse } from 'axios';
+import axios from 'axios';
 import { API_BASE_URL } from '../../env';
-
-type Payload = {
-  categoryId: number | null | undefined,
-  title: string | null | undefined,
-  body: string | null | undefined
-};
+import { BaseUseCaseCreator } from '../BaseUseCaseCreator';
+import { CreateStoryPayload } from './Payload/CreateStoryPayload';
 
 export default class CreateStoryUseCase {
-  static handle(
-    payload: Payload,
-    onFulfilled: (response: AxiosResponse) => void,
-    onFailed: (error: any) => void,
-  ) {
+  static create: BaseUseCaseCreator = () => (payload: CreateStoryPayload, onSuccess, onFailed) => {
     axios({
       url: `${API_BASE_URL}/api/stories`,
       method: 'POST',
@@ -21,7 +13,7 @@ export default class CreateStoryUseCase {
         title: payload.title,
         body: payload.body,
       },
-    }).then(onFulfilled)
+    }).then(onSuccess)
       .catch(onFailed);
-  }
+  };
 }

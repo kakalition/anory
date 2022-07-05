@@ -4,9 +4,12 @@ import {
 } from '@chakra-ui/react';
 import _ from 'lodash';
 import React, { useState, useEffect, useMemo } from 'react';
+import APICallBuilder from '../../UseCases/APICallBuilder';
 import GetCategoriesUseCase from '../../UseCases/Category/GetCategoriesUseCase';
 import CreateStoryUseCase from '../../UseCases/Story/CreateStoryUseCase';
 import GetStoriesUseCase from '../../UseCases/Story/GetStoriesUseCase';
+import nCreateStoryUseCase from '../../UseCases/Story/NCreateStoryUseCase';
+import { CreateStoryPayload } from '../../UseCases/Story/Payload/CreateStoryPayload';
 import AnoryPrimaryButtonComponent from '../Component/AnoryPrimaryButtonComponent';
 import SideNavBarComponent from '../Component/SideNavBarComponent';
 import StorySkeletonComponent from '../Component/StorySkeletonComponent';
@@ -41,20 +44,29 @@ export default function HomePage() {
     );
   };
 
+  const onSuccessSubmitStory = () => {
+    onClose();
+    showToast('Story Created', 'success');
+    fetchData();
+  };
+
+  const onFailedSubmitStory = () => {
+    showToast('Failed to Create Story', 'error');
+  };
+
   const onSubmitStoryClick: React.MouseEventHandler = () => {
-    CreateStoryUseCase.handle(
-      {
-        categoryId: parseInt((document.getElementById('categories') as HTMLSelectElement).value, 10),
-        title: (document.getElementById('title') as HTMLInputElement).value,
-        body: (document.getElementById('body') as HTMLTextAreaElement).value,
-      },
-      () => {
-        onClose();
-        showToast('Story Created', 'success');
-        fetchData();
-      },
-      () => showToast('Failed to Create Story', 'error'),
-    );
+    const storyPayload: CreateStoryPayload = {
+      categoryId: parseInt((document.getElementById('categories') as HTMLSelectElement).value, 10),
+      title: (document.getElementById('title') as HTMLInputElement).value,
+      body: (document.getElementById('body') as HTMLTextAreaElement).value,
+    };
+
+    new APICallBuilder()
+      .addAction(CreateStoryUseCase.create())
+      .addPayload(storyPayload)
+      .addOnSuccess(onSuccessSubmitStory)
+      .addOnFailed(onFailedSubmitStory)
+      .call();
   };
 
   const categoriesElement = useMemo(() => availableCategories.map(
