@@ -34,7 +34,11 @@ export default function HomePage() {
   };
 
   const fetchData = () => {
-    GetCategoriesUseCase.handle((response) => setAvailableCategories(response.data));
+    new APICallBuilder()
+      .addAction(GetCategoriesUseCase.create())
+      .addOnSuccess((response) => setAvailableCategories(response.data))
+      .addOnFailed((error) => console.error(error))
+      .call();
 
     GetStoriesUseCase.handle(
       10,

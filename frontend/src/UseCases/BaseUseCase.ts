@@ -1,5 +1,7 @@
+import { AxiosResponse } from 'axios';
+
 export type BaseUseCase = (
   payload: any,
-  onSuccess: (() => void) | null,
-  onFailed: (() => void) | null
+  onSuccess: ((response: AxiosResponse) => void) | null,
+  onFailed: ((error: any) => void) | null
 ) => void;

@@ -1,3 +1,4 @@
+import { AxiosResponse } from 'axios';
 import { BaseUseCase } from './BaseUseCase';
 
 export default class APICallBuilder {
@@ -5,9 +6,9 @@ export default class APICallBuilder {
 
   private payload: any = null;
 
-  private onSuccess: (() => void) | null = null;
+  private onSuccess: ((response: AxiosResponse) => void) | null = null;
 
-  private onFailed: (() => void) | null = null;
+  private onFailed: ((error: any) => void) | null = null;
 
   addAction = (action: BaseUseCase) => {
     this.action = action;
@@ -19,12 +20,12 @@ export default class APICallBuilder {
     return this;
   };
 
-  addOnSuccess = (onSuccess: () => void) => {
+  addOnSuccess = (onSuccess: (response: AxiosResponse) => void) => {
     this.onSuccess = onSuccess;
     return this;
   };
 
-  addOnFailed = (onFailed: () => void) => {
+  addOnFailed = (onFailed: (error: any) => void) => {
     this.onFailed = onFailed;
     return this;
   };

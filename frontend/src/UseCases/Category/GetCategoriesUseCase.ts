@@ -1,15 +1,13 @@
-import axios, { AxiosResponse } from 'axios';
+import axios from 'axios';
 import { API_BASE_URL } from '../../env';
+import { BaseUseCaseCreator } from '../BaseUseCaseCreator';
 
 export default class GetCategoriesUseCase {
-  static handle(
-    onFulfilled: (response: AxiosResponse) => void,
-    onFailed: ((error: any) => void) = (error) => console.error(error),
-  ) {
+  static create: BaseUseCaseCreator = () => (payload, onSuccess, onFailed) => {
     axios({
       url: `${API_BASE_URL}/api/categories`,
       method: 'GET',
-    }).then(onFulfilled)
+    }).then(onSuccess)
       .catch(onFailed);
-  }
+  };
 }
