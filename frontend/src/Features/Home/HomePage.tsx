@@ -9,7 +9,6 @@ import {
   ModalContent,
   ModalFooter, ModalHeader, ModalOverlay, Select, Textarea, useDisclosure, useToast,
 } from '@chakra-ui/react';
-import _ from 'lodash';
 import React, { useState, useEffect, useMemo } from 'react';
 import StoryTileMapper from '../../Mapper/StoryTileMapper';
 import APICallBuilder from '../../UseCases/APICallBuilder';
