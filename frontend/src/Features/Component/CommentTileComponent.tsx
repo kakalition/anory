@@ -25,11 +25,12 @@ type Params = {
   postDate: string,
   comment: string,
   likeData: any[],
+  onAfterDelete: (() => void) | null
 };
 
 export default function CommentTileComponent(params: Params) {
   const {
-    id, commenteeId, userId, postDate, comment, likeData,
+    id, commenteeId, userId, postDate, comment, likeData, onAfterDelete = null,
   } = params;
   const user = useContext<any>(AuthContext);
   const toast = useToast();
@@ -47,6 +48,7 @@ export default function CommentTileComponent(params: Params) {
           position: 'top',
           status: 'success',
         });
+        onAfterDelete?.();
       },
       (error) => {
         onClose();

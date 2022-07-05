@@ -16,10 +16,7 @@ const dummyUserData = {
 
 export default function MyAccountPage() {
   const [storiesData, setStoriesData] = useState([null, null, null]);
-  const storiesElement = useMemo(() => StoryTileMapper.handle(storiesData), [storiesData]);
-
   const [commentsData, setCommentsData] = useState([null, null, null]);
-  const commentsElement = useMemo(() => CommentTileMapper.handle(commentsData), [commentsData]);
 
   const fetchStoriesData = () => {
     GetStoriesUseCase.handle(
@@ -34,6 +31,12 @@ export default function MyAccountPage() {
       (response) => setCommentsData(response.data),
     );
   };
+
+  const storiesElement = useMemo(() => StoryTileMapper.handle(storiesData), [storiesData]);
+  const commentsElement = useMemo(
+    () => CommentTileMapper.handle(commentsData, fetchCommentsData),
+    [commentsData],
+  );
 
   useEffect(() => {
     fetchStoriesData();

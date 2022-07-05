@@ -2,7 +2,10 @@ import CommentSkeletonComponent from '../Features/Story/Components/CommentSkelet
 import CommentTileComponent from '../Features/Component/CommentTileComponent';
 
 export default class CommentTileMapper {
-  static handle(entity: any[]) {
+  static handle(
+    entity: any[],
+    onAfterDelete: (() => void) | null = null,
+  ) {
     const mappedComponent = entity.map((element) => {
       if (element === null) {
         return <CommentSkeletonComponent />;
@@ -16,6 +19,7 @@ export default class CommentTileMapper {
           postDate={element.created_at}
           comment={element.comment}
           likeData={element.likeData}
+          onAfterDelete={onAfterDelete}
         />
       );
     });
