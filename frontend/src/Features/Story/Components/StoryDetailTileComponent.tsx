@@ -6,7 +6,7 @@ import EyeIcon from '../../Component/Icons/EyeIcon';
 import OutlinedHeartIcon from '../../Component/Icons/OutlinedHeartIcon';
 import Spacer from '../../Utilities/Spacer';
 import DeleteLikeDataUseCase from '../../../UseCases/LikeData/DeleteLikeDataUseCase';
-import LikeUseCase from '../../../UseCases/LikeData/LikeUseCase';
+import LikeUseCase from '../../../UseCases/LikeData/PostLikeUseCase';
 
 type Params = {
   id: number,
