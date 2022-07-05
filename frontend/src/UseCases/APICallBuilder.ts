@@ -6,6 +6,8 @@ export default class APICallBuilder {
 
   private payload: any = null;
 
+  private params: any = null;
+
   private onSuccess: ((response: AxiosResponse) => void) | null = null;
 
   private onFailed: ((error: any) => void) | null = null;
@@ -17,6 +19,11 @@ export default class APICallBuilder {
 
   addPayload = (payload: any) => {
     this.payload = payload;
+    return this;
+  };
+
+  addParams = (params: any) => {
+    this.params = params;
     return this;
   };
 
@@ -35,6 +42,6 @@ export default class APICallBuilder {
       throw new Error('Action should be added.');
     }
 
-    this.action(this.payload, this.onSuccess, this.onFailed);
+    this.action(this.payload, this.params, this.onSuccess, this.onFailed);
   };
 }

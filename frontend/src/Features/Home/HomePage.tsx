@@ -40,12 +40,12 @@ export default function HomePage() {
       .addOnFailed((error) => console.error(error))
       .call();
 
-    GetStoriesUseCase.handle(
-      10,
-      null,
-      (response) => setStoryData(response.data),
-      (error) => console.error(error.response.data),
-    );
+    new APICallBuilder()
+      .addAction(GetStoriesUseCase.create())
+      .addParams({ count: 2 })
+      .addOnSuccess((response) => setStoryData(response.data))
+      .addOnFailed((error) => console.error(error.response.data))
+      .call();
   };
 
   const onSuccessSubmitStory = () => {

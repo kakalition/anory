@@ -10,7 +10,7 @@ class GetStories
   public function handle(int $count, ?string $rawQuery)
   {
     $query = str_replace('-', ' ', $rawQuery ?? '');
-    $stories = Story::limit(5);
+    $stories = Story::limit($count);
 
     if ($query != '') {
       $stories->where('title', 'ilike', $query);
