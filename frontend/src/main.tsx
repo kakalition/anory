@@ -10,24 +10,30 @@ import HomePage from './Features/Home/HomePage';
 import LandingPage from './Features/LandingPage/LandingPage';
 import LoginPage from './Features/Login/LoginPage';
 import MyAccountPage from './Features/MyAccount/MyAccountPage';
+import NewStoryPage from './Features/NewStory/NewStoryPage';
 import RegisterPage from './Features/Register/RegisterPage';
 import StoryPage from './Features/Story/StoryPage';
 import './index.css';
+import APICallBuilder from './UseCases/APICallBuilder';
 import LogoutUseCase from './UseCases/Auth/LogoutUseCase';
 
-// TOOD: migrate StoryDetailTileComponent to use UseLike hook
-// TOOD: modularize base layout
 // TOOD: Create modal for comment editor
 // TODO: Create comment edit delete use case
+
+// TODO: Handle side nav highlight
+// TODO: Moves story creation in its own page
 
 axios.defaults.withCredentials = true;
 
 function Logout() {
   const navigator = useNavigate();
 
+  const logoutAPI = new APICallBuilder()
+    .addAction(LogoutUseCase.create())
+    .addOnSuccess(() => navigator('/'));
+
   useEffect(() => {
-    LogoutUseCase.handle();
-    navigator('/');
+    logoutAPI.call();
   }, []);
 
   return <div />;
@@ -44,6 +50,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route path="/logout" element={<Logout />} />
           <Route path="/app" element={<AuthenticationWrapper><HomePage /></AuthenticationWrapper>} />
           <Route path="/app/my-account" element={<AuthenticationWrapper><MyAccountPage /></AuthenticationWrapper>} />
+          <Route path="/new-story" element={<AuthenticationWrapper><NewStoryPage /></AuthenticationWrapper>} />
           <Route path="/story" element={<AuthenticationWrapper><StoryPage /></AuthenticationWrapper>}>
             <Route path=":id" element={<AuthenticationWrapper><StoryPage /></AuthenticationWrapper>} />
           </Route>
