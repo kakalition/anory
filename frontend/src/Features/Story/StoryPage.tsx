@@ -1,7 +1,7 @@
 import AnoryTemplateComponent from '../Component/AnoryTemplateComponent';
 import CommentSectionComponent from '../Component/CommentSectionComponent';
 import Spacer from '../Utilities/Spacer';
-import useStoryViewModel from './UseStoryViewModel';
+import useStoryViewModel from './StoryViewModel';
 
 export default function StoryPage() {
   const {

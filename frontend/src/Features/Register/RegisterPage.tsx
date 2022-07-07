@@ -3,7 +3,7 @@ import {
 } from '@chakra-ui/react';
 import AnoryLogo from '../Component/AnoryLogo';
 import Spacer from '../Utilities/Spacer';
-import RegisterViewModel from './RegisterViewMode';
+import RegisterViewModel from './RegisterViewModel';
 
 export default function RegisterPage() {
   const viewModel = new RegisterViewModel();

@@ -8,7 +8,7 @@ import AnoryPrimaryButtonComponent from '../Component/AnoryPrimaryButtonComponen
 import AnoryTemplateComponent from '../Component/AnoryTemplateComponent';
 
 import Spacer from '../Utilities/Spacer';
-import useNewStoryViewModel from './useNewStoryViewModel';
+import useNewStoryViewModel from './NewStoryViewModel';
 
 export default function NewStoryPage() {
   const { categoriesElement, onSubmitStoryClick } = useNewStoryViewModel();

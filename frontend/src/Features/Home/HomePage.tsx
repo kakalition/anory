@@ -1,7 +1,7 @@
 import { Select } from '@chakra-ui/react';
 import AnoryTemplateComponent from '../Component/AnoryTemplateComponent';
 import Spacer from '../Utilities/Spacer';
-import useHomePageViewModel from './useHomePageViewModel';
+import useHomePageViewModel from './HomePageViewModel';
 
 export default function HomePage() {
   const { storiesElement } = useHomePageViewModel();
