@@ -1,43 +1,12 @@
 import {
   Button, FormControl, FormLabel, Input,
 } from '@chakra-ui/react';
-import { AxiosResponse } from 'axios';
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import APICallBuilder from '../../UseCases/APICallBuilder';
-import LoginUseCase from '../../UseCases/Auth/LoginUseCase';
-import { LoginPayload } from '../../UseCases/Auth/Payload/LoginPayload';
 import AnoryLogo from '../Component/AnoryLogo';
 import Spacer from '../Utilities/Spacer';
+import LoginViewModel from './LoginViewModel';
 
 export default function LoginPage() {
-  const navigator = useNavigate();
-
-  const onLoginSuccess = (response: AxiosResponse) => {
-    if (response.status === 200) navigator('/app');
-    else console.log(response);
-  };
-
-  const onLoginFailed = (error: any) => console.error(error);
-
-  const loginAPI = new APICallBuilder()
-    .addAction(LoginUseCase.create())
-    .addOnSuccess(onLoginSuccess)
-    .addOnFailed(onLoginFailed);
-
-  const onSignUpClickListener: React.MouseEventHandler = () => navigator('/register');
-
-  const onSignInClickListener: React.MouseEventHandler = () => {
-    const formData = new FormData(document.getElementById('login-form') as HTMLFormElement);
-    const payload = {
-      email: formData.get('email')?.toString(),
-      password: formData.get('password')?.toString(),
-    } as LoginPayload;
-
-    loginAPI
-      .addPayload(payload)
-      .call();
-  };
+  const viewModel = new LoginViewModel();
 
   return (
     <div className="flex relative justify-center items-center w-screen h-screen bg-gray-50">
@@ -73,7 +42,7 @@ export default function LoginPage() {
             textColor="#FFFFFF"
             _hover={{ bg: '#FF8182' }}
             className="w-full"
-            onClick={onSignInClickListener}
+            onClick={viewModel.onSignInClickListener}
           >
             Sign In
           </Button>
@@ -84,7 +53,7 @@ export default function LoginPage() {
           <button
             className="text-blue-600 underline"
             type="button"
-            onClick={onSignUpClickListener}
+            onClick={viewModel.onSignUpClickListener}
           >
             Sign up here
           </button>
