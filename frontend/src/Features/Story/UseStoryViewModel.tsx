@@ -1,11 +1,28 @@
-/* import { useToast } from '@chakra-ui/react';
+import { useToast } from '@chakra-ui/react';
+import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import CommentTileMapper from '../../Mapper/CommentTileMapper';
+import APICallBuilder from '../../UseCases/APICallBuilder';
+import GetCommentsUseCase from '../../UseCases/Comment/GetCommentsUseCase';
+import GetStoryUseCase from '../../UseCases/Story/GetStoryUseCase';
+import StorySkeletonComponent from '../Component/StorySkeletonComponent';
+import StoryDetailTileComponent from './Components/StoryDetailTileComponent';
 
 export default function useStoryViewModel() {
   const params = useParams();
   const toast = useToast();
   const [storyData, setStoryData] = useState<any>({});
   const [commentsData, setCommentsData] = useState<any[]>([null, null, null]);
+
+  const showToast = (status: any, title: String, description: String | null = null) => {
+    toast({
+      title,
+      description,
+      containerStyle: { width: '100%' },
+      duration: 2000,
+      status,
+    });
+  };
 
   const onInitialCommentCallback = () => {
     if (commentsData === null) return;
@@ -20,12 +37,7 @@ export default function useStoryViewModel() {
     temporary.unshift(commentData);
     setCommentsData(temporary);
 
-    toast({
-      containerStyle: { width: '102%' },
-      title: 'Post Comment Successfull!',
-      status: 'success',
-      duration: 2002,
-    });
+    showToast('success', 'Post Comment Successfull!');
   };
 
   const onFailedCommentCallback = (message: any) => {
@@ -33,36 +45,32 @@ export default function useStoryViewModel() {
     const temporary = [...commentsData.filter((value) => value !== null)];
     setCommentsData(temporary);
 
-    toast({
-      containerStyle: { width: '102%' },
-      title: 'Post Comment Failed!',
-      description: message,
-      status: 'error',
-      duration: 2002,
-    });
+    showToast('error', 'Failed to Post Comment!', message);
   };
 
   const getStoryAPI = new APICallBuilder()
     .addAction(GetStoryUseCase.create())
     .addOnSuccess((response) => setStoryData(response.data))
-    .addOnFailed((error) => console.error(error));
+    .addOnFailed((error) => showToast('error', 'Failed to Get Story!', error.response.data.message));
 
   const getCommentsAPI = new APICallBuilder()
     .addAction(GetCommentsUseCase.create())
     .addOnSuccess((response) => setCommentsData(response.data))
-    .addOnFailed((error) => console.error(error));
+    .addOnFailed((error) => showToast('error', 'Failed to Get Story!', error.response.data.message));
 
   useEffect(() => {
     if (params.id === undefined) return;
 
-    getStoryAPI.addPayload({ id: params.id })
+    getStoryAPI
+      .addPayload({ id: params.id })
       .call();
 
-    getCommentsAPI.addPayload({ id: params.id })
+    getCommentsAPI
+      .addPayload({ id: params.id })
       .call();
   }, []);
 
-  const storyTile = useMemo(() => {
+  const storyTileElement = useMemo(() => {
     if (storyData.id === undefined) return <StorySkeletonComponent />;
 
     return (
@@ -81,5 +89,14 @@ export default function useStoryViewModel() {
     () => CommentTileMapper.handle(commentsData),
     [commentsData],
   );
+
+  return {
+    storyTileElement,
+    commentsElement,
+    storyId: storyData.id,
+    commentsCount: commentsData.filter((value) => value !== null).length,
+    onInitialCommentCallback,
+    onSuccessfullCommentCallback,
+    onFailedCommentCallback,
+  };
 }
- */
