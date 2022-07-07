@@ -1,4 +1,4 @@
-import { Toast, useToast } from '@chakra-ui/react';
+import { useToast } from '@chakra-ui/react';
 import { AxiosResponse } from 'axios';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -7,11 +7,11 @@ import LoginUseCase from '../../UseCases/Auth/LoginUseCase';
 import { LoginPayload } from '../../UseCases/Auth/Payload/LoginPayload';
 
 export default class LoginViewModel {
-  navigator = useNavigate();
+  private navigator = useNavigate();
 
-  toast = useToast();
+  private toast = useToast();
 
-  showToast = (status: any, message: any) => this.toast({
+  private showToast = (status: any, message: any) => this.toast({
     title: message,
     containerStyle: { width: '100%' },
     duration: 10000,
@@ -19,19 +19,19 @@ export default class LoginViewModel {
     position: 'top',
   });
 
-  onSignUpClickListener: React.MouseEventHandler = () => this.navigator('/register');
-
-  onLoginSuccess = (response: AxiosResponse) => {
+  private onLoginSuccess = (response: AxiosResponse) => {
     if (response.status === 200) this.navigator('/app');
     else this.showToast('info', response.data.message);
   };
 
-  onLoginFailed = (error: any) => this.showToast('error', error.response.data.message);
+  private onLoginFailed = (error: any) => this.showToast('error', error.response.data.message);
 
-  loginAPI = new APICallBuilder()
+  private loginAPI = new APICallBuilder()
     .addAction(LoginUseCase.create())
     .addOnSuccess(this.onLoginSuccess)
     .addOnFailed(this.onLoginFailed);
+
+  onSignUpClickListener: React.MouseEventHandler = () => this.navigator('/register');
 
   onSignInClickListener: React.MouseEventHandler = () => {
     const formData = new FormData(document.getElementById('login-form') as HTMLFormElement);

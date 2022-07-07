@@ -1,44 +1,12 @@
 import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
   Button, FormControl, FormLabel, Input,
 } from '@chakra-ui/react';
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { AxiosResponse } from 'axios';
-import RegisterUseCase from '../../UseCases/Auth/RegisterUseCase';
 import AnoryLogo from '../Component/AnoryLogo';
 import Spacer from '../Utilities/Spacer';
-import APICallBuilder from '../../UseCases/APICallBuilder';
-import { RegisterPayload } from '../../UseCases/Auth/Payload/RegisterPayload';
+import RegisterViewModel from './RegisterViewMode';
 
 export default function RegisterPage() {
-  const navigator = useNavigate();
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  const onRegisterSuccess = (response: AxiosResponse) => { if (response.status === 201) navigator('/app'); };
-
-  const registerAPI = new APICallBuilder()
-    .addAction(RegisterUseCase.create())
-    .addOnSuccess(onRegisterSuccess)
-    .addOnFailed((error) => setErrorMessage(error.response.data.message));
-
-  const onSignInClickListener: React.MouseEventHandler = () => navigator('/login');
-
-  const onRegisterClickListener: React.MouseEventHandler = async () => {
-    const formData = new FormData(document.getElementById('register-form') as HTMLFormElement);
-
-    const payload: RegisterPayload = {
-      name: formData.get('name')?.toString() ?? '',
-      email: formData.get('email')?.toString() ?? '',
-      password: formData.get('password')?.toString() ?? '',
-    };
-
-    registerAPI
-      .addPayload(payload)
-      .call();
-  };
+  const viewModel = new RegisterViewModel();
 
   return (
     <div className="flex relative flex-col justify-center items-center w-screen h-screen bg-gray-50">
@@ -85,7 +53,7 @@ export default function RegisterPage() {
             textColor="#FFFFFF"
             _hover={{ bg: '#FF8182' }}
             className="w-full"
-            onClick={onRegisterClickListener}
+            onClick={viewModel.onRegisterClickListener}
           >
             Sign Up
           </Button>
@@ -96,7 +64,7 @@ export default function RegisterPage() {
           <button
             className="text-blue-600 underline"
             type="button"
-            onClick={onSignInClickListener}
+            onClick={viewModel.onSignInClickListener}
           >
             Sign in here
           </button>
@@ -104,12 +72,6 @@ export default function RegisterPage() {
       </div>
       <div className="absolute bottom-6">
         <AnoryLogo />
-      </div>
-      <div className={`${errorMessage === null ? 'hidden' : 'block'} absolute bottom-6 px-8 w-full`}>
-        <Alert status="error">
-          <AlertIcon />
-          <AlertDescription>{errorMessage}</AlertDescription>
-        </Alert>
       </div>
     </div>
   );
