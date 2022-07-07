@@ -1,23 +1,9 @@
-import { useToast } from '@chakra-ui/react';
-import {
-  useEffect, useMemo, useState,
-} from 'react';
+/* import { useToast } from '@chakra-ui/react';
 import { useParams } from 'react-router-dom';
-import CommentTileMapper from '../../Mapper/CommentTileMapper';
-import APICallBuilder from '../../UseCases/APICallBuilder';
-import GetCommentsUseCase from '../../UseCases/Comment/GetCommentsUseCase';
-import GetStoryUseCase from '../../UseCases/Story/GetStoryUseCase';
-import CommentSectionComponent from '../Component/CommentSectionComponent';
-import SideNavBarComponent from '../Component/SideNavBarComponent';
-import StorySkeletonComponent from '../Component/StorySkeletonComponent';
-import TopBarComponent from '../Component/TopBarComponent';
-import Spacer from '../Utilities/Spacer';
-import StoryDetailTileComponent from './Components/StoryDetailTileComponent';
 
-export default function StoryPage() {
+export default function useStoryViewModel() {
   const params = useParams();
   const toast = useToast();
-  const [activeTab, setActiveTab] = useState('alls');
   const [storyData, setStoryData] = useState<any>({});
   const [commentsData, setCommentsData] = useState<any[]>([null, null, null]);
 
@@ -35,10 +21,10 @@ export default function StoryPage() {
     setCommentsData(temporary);
 
     toast({
-      containerStyle: { width: '100%' },
+      containerStyle: { width: '102%' },
       title: 'Post Comment Successfull!',
       status: 'success',
-      duration: 2000,
+      duration: 2002,
     });
   };
 
@@ -48,11 +34,11 @@ export default function StoryPage() {
     setCommentsData(temporary);
 
     toast({
-      containerStyle: { width: '100%' },
+      containerStyle: { width: '102%' },
       title: 'Post Comment Failed!',
       description: message,
       status: 'error',
-      duration: 2000,
+      duration: 2002,
     });
   };
 
@@ -95,34 +81,5 @@ export default function StoryPage() {
     () => CommentTileMapper.handle(commentsData),
     [commentsData],
   );
-
-  return (
-    <div className="flex flex-col w-screen h-screen bg-[#FFFCFC]">
-      <div className="w-full h-[8%]">
-        <TopBarComponent />
-      </div>
-      <div className="flex relative flex-row w-full h-[92%]">
-        <div className="w-[20%] h-full">
-          <SideNavBarComponent activeTab={activeTab} />
-        </div>
-        <div className="overflow-y-scroll pt-8 pr-16 pl-4 w-[80%]">
-          <div className="flex flex-col gap-6">
-            {storyTile}
-          </div>
-          <Spacer height="2rem" />
-          <CommentSectionComponent
-            storyId={storyData.id}
-            commentsCount={commentsData?.length}
-            onInitialCommentCallback={onInitialCommentCallback}
-            onSuccessfullCommentCallback={onSuccessfullCommentCallback}
-            onFailedCommentCallback={onFailedCommentCallback}
-          />
-          <div className="flex flex-col gap-6 w-full">
-            {commentsElement}
-          </div>
-          <Spacer height="2rem" />
-        </div>
-      </div>
-    </div>
-  );
 }
+ */

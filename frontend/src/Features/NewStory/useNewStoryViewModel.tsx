@@ -1,11 +1,12 @@
-import { useDisclosure, useToast } from '@chakra-ui/react';
+import { useToast } from '@chakra-ui/react';
 import { useEffect, useMemo, useState } from 'react';
 import { AxiosResponse } from 'axios';
 import APICallBuilder from '../../UseCases/APICallBuilder';
 import GetCategoriesUseCase from '../../UseCases/Category/GetCategoriesUseCase';
+import CreateStoryUseCase from '../../UseCases/Story/CreateStoryUseCase';
+import { CreateStoryPayload } from '../../UseCases/Story/Payload/CreateStoryPayload';
 
-export default function useAnoryTemplateViewModel() {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+export default function useNewStoryViewModel() {
   const toast = useToast();
   const [availableCategories, setAvailableCategories] = useState<any[]>([]);
 
@@ -17,6 +18,31 @@ export default function useAnoryTemplateViewModel() {
       duration: 2000,
       status,
     });
+  };
+
+  const onSubmitStorySuccess = () => {
+    showToast('success', 'Story Created');
+  };
+
+  const onSubmitStoryFailed = () => {
+    showToast('error', 'Failed to Create Story');
+  };
+
+  const submitStoryAPI = new APICallBuilder()
+    .addAction(CreateStoryUseCase.create())
+    .addOnSuccess(onSubmitStorySuccess)
+    .addOnFailed(onSubmitStoryFailed);
+
+  const onSubmitStoryClick: React.MouseEventHandler = () => {
+    const storyPayload: CreateStoryPayload = {
+      categoryId: parseInt((document.getElementById('categories') as HTMLSelectElement).value, 10),
+      title: (document.getElementById('title') as HTMLInputElement).value,
+      body: (document.getElementById('body') as HTMLTextAreaElement).value,
+    };
+
+    submitStoryAPI
+      .addPayload(storyPayload)
+      .call();
   };
 
   const onGetCategoriesSuccess = (response: AxiosResponse) => setAvailableCategories(response.data);
@@ -36,9 +62,7 @@ export default function useAnoryTemplateViewModel() {
   }, []);
 
   return {
-    isModalOpen: isOpen,
-    openModal: onOpen,
-    closeModal: onClose,
     categoriesElement,
+    onSubmitStoryClick,
   };
 }

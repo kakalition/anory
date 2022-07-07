@@ -1,23 +1,13 @@
 import { Select } from '@chakra-ui/react';
 import AnoryTemplateComponent from '../Component/AnoryTemplateComponent';
-import useAnoryTemplateViewModel from '../Component/useAnoryTemplateViewModel';
 import Spacer from '../Utilities/Spacer';
 import useHomePageViewModel from './useHomePageViewModel';
 
 export default function HomePage() {
-  const {
-    isModalOpen, openModal, closeModal, categoriesElement,
-  } = useAnoryTemplateViewModel();
-  const { storiesElement, onSubmitStoryClick } = useHomePageViewModel(closeModal);
+  const { storiesElement } = useHomePageViewModel();
 
   return (
-    <AnoryTemplateComponent
-      isModalOpen={isModalOpen}
-      openModal={openModal}
-      closeModal={closeModal}
-      categoriesElement={categoriesElement}
-      onSubmitStoryClick={onSubmitStoryClick}
-    >
+    <AnoryTemplateComponent>
       <div className="flex flex-row gap-2 justify-between items-center">
         <Select placeholder="Sort Order" height="3rem">
           <option value="ascending">Ascending</option>

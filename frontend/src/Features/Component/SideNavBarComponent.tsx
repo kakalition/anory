@@ -5,13 +5,13 @@ import AnoryLogo from './AnoryLogo';
 import AnoryPrimaryButtonComponent from './AnoryPrimaryButtonComponent';
 import AnorySideNavButtonComponent from './AnorySideNavButtonComponent';
 
-export default function SideNavBarComponent({ activeTab, onFABClick }: { activeTab: string, onFABClick: React.MouseEventHandler }) {
+export default function SideNavBarComponent({ activeTab }: { activeTab: string }) {
   const navigator = useNavigate();
 
   return (
     <div className="flex flex-col justify-between py-8 pr-4 pl-16 w-full h-full">
       <div className="flex flex-col gap-3 w-full">
-        <AnoryPrimaryButtonComponent text="New Post" onClick={onFABClick} />
+        <AnoryPrimaryButtonComponent text="New Post" onClick={() => navigator('/new-story')} />
         <Spacer height="0.75rem" />
         <AnorySideNavButtonComponent
           onClick={() => navigator('/app/my-account')}
