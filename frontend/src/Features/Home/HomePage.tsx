@@ -7,84 +7,20 @@ import {
   ModalBody,
   ModalCloseButton,
   ModalContent,
-  ModalFooter, ModalHeader, ModalOverlay, Select, Textarea, useDisclosure, useToast,
+  ModalFooter, ModalHeader, ModalOverlay, Select, Textarea,
 } from '@chakra-ui/react';
-import React, { useState, useEffect, useMemo } from 'react';
-import StoryTileMapper from '../../Mapper/StoryTileMapper';
-import APICallBuilder from '../../UseCases/APICallBuilder';
-import GetCategoriesUseCase from '../../UseCases/Category/GetCategoriesUseCase';
-import CreateStoryUseCase from '../../UseCases/Story/CreateStoryUseCase';
-import GetStoriesUseCase from '../../UseCases/Story/GetStoriesUseCase';
-import { CreateStoryPayload } from '../../UseCases/Story/Payload/CreateStoryPayload';
+import { useState } from 'react';
 import AnoryPrimaryButtonComponent from '../Component/AnoryPrimaryButtonComponent';
 import SideNavBarComponent from '../Component/SideNavBarComponent';
 import TopBarComponent from '../Component/TopBarComponent';
 import Spacer from '../Utilities/Spacer';
+import useHomePageViewModel from './useHomePageViewModel';
 
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState('alls');
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const toast = useToast();
-  const [storyData, setStoryData] = useState<any[]>([null, null, null, null, null]);
-  const [availableCategories, setAvailableCategories] = useState<any[]>([]);
-
-  const showToast = (toastTitle: String, toastStatus: any) => {
-    toast({
-      title: toastTitle,
-      containerStyle: { width: '100%' },
-      duration: 2000,
-      status: toastStatus,
-    });
-  };
-
-  const getCategoriesAPI = new APICallBuilder()
-    .addAction(GetCategoriesUseCase.create())
-    .addOnSuccess((response) => setAvailableCategories(response.data))
-    .addOnFailed((error) => console.error(error));
-
-  const getStoriesAPI = new APICallBuilder()
-    .addAction(GetStoriesUseCase.create())
-    .addParams({ count: 10 })
-    .addOnSuccess((response) => setStoryData(response.data))
-    .addOnFailed((error) => console.error(error.response.data));
-
-  const onSubmitStorySuccess = () => {
-    onClose();
-    showToast('Story Created', 'success');
-    getStoriesAPI.call();
-  };
-
-  const onSubmitStoryFailed = () => {
-    showToast('Failed to Create Story', 'error');
-  };
-
-  const submitStoryAPI = new APICallBuilder()
-    .addAction(CreateStoryUseCase.create())
-    .addOnSuccess(onSubmitStorySuccess)
-    .addOnFailed(onSubmitStoryFailed);
-
-  const onSubmitStoryClick: React.MouseEventHandler = () => {
-    const storyPayload: CreateStoryPayload = {
-      categoryId: parseInt((document.getElementById('categories') as HTMLSelectElement).value, 10),
-      title: (document.getElementById('title') as HTMLInputElement).value,
-      body: (document.getElementById('body') as HTMLTextAreaElement).value,
-    };
-
-    submitStoryAPI
-      .addPayload(storyPayload)
-      .call();
-  };
-
-  const categoriesElement = useMemo(() => availableCategories.map(
-    (element) => <option key={element.id} value={element.id}>{element.name}</option>,
-  ), [availableCategories]);
-
-  const elements = useMemo(() => StoryTileMapper.handle(storyData), [storyData]);
-
-  useEffect(() => {
-    getCategoriesAPI.call();
-    getStoriesAPI.call();
-  }, []);
+  const {
+    isModalOpen, openModal, closeModal, onSubmitStoryClick, categoriesElement, storiesElement,
+  } = useHomePageViewModel();
 
   return (
     <div className="flex flex-col w-screen h-screen bg-[#FFFCFC]">
@@ -93,7 +29,7 @@ export default function HomePage() {
       </div>
       <div className="flex relative flex-row w-full h-[92%]">
         <div className="w-[20%] h-full">
-          <SideNavBarComponent activeTab={activeTab} onFABClick={onOpen} />
+          <SideNavBarComponent activeTab={activeTab} onFABClick={openModal} />
         </div>
         <div className="overflow-y-scroll pt-8 pr-16 pl-4 w-[80%]">
           <div className="flex flex-row gap-2 justify-between items-center">
@@ -112,13 +48,13 @@ export default function HomePage() {
           </div>
           <Spacer height="1.5rem" />
           <div className="flex flex-col gap-6">
-            {elements}
+            {storiesElement}
           </div>
           <Spacer height="1.5rem" />
         </div>
       </div>
 
-      <Modal isOpen={isOpen} onClose={onClose} size="6xl" isCentered>
+      <Modal isOpen={isModalOpen} onClose={closeModal} size="6xl" isCentered>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Post New Story</ModalHeader>
