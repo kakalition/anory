@@ -1,28 +1,20 @@
-import axios, { AxiosResponse } from 'axios';
+import axios from 'axios';
 import { API_BASE_URL } from '../../env';
-
-type Payload = {
-  email: string | null | undefined,
-  password: string | null | undefined
-};
+import { BaseUseCaseCreator } from '../BaseUseCaseCreator';
+import { LoginPayload } from './Payload/LoginPayload';
 
 export default class LoginUseCase {
-  static handle(
-    payload: Payload,
-    onFulfilled: (response: AxiosResponse) => void,
-    onFailed: (error: any) => void,
-  ) {
-    axios({ url: `${API_BASE_URL}/sanctum/csrf-cookie`, method: 'GET' })
-      .then(() => {
-        axios({
-          url: `${API_BASE_URL}/login`,
-          method: 'POST',
-          data: {
-            email: payload.email,
-            password: payload.password,
-          },
-        }).then(onFulfilled)
-          .catch(onFailed);
-      });
-  }
+  static create:
+  BaseUseCaseCreator = () => async (payload: LoginPayload, queries, onSuccess, onFailed) => {
+      await axios({ url: `${API_BASE_URL}/sanctum/csrf-cookie`, method: 'GET' });
+      axios({
+        url: `${API_BASE_URL}/login`,
+        method: 'POST',
+        data: {
+          email: payload.email,
+          password: payload.password,
+        },
+      }).then(onSuccess)
+        .catch(onFailed);
+    };
 }

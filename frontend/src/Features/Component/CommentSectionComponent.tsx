@@ -1,7 +1,10 @@
 import {
   Divider, Select, Skeleton, Textarea,
 } from '@chakra-ui/react';
+import { AxiosResponse } from 'axios';
 import { useMemo } from 'react';
+import APICallBuilder from '../../UseCases/APICallBuilder';
+import { PostCommentPayload } from '../../UseCases/Comment/Payload/PostCommentPayload';
 import PostCommentUseCase from '../../UseCases/Comment/PostCommentUseCase';
 import Spacer from '../Utilities/Spacer';
 import AnoryPrimaryButtonComponent from './AnoryPrimaryButtonComponent';
@@ -20,19 +23,30 @@ export default function CommentSectionComponent(params: Params) {
     storyId, commentsCount,
   } = params;
 
+  const onPostCommentSuccess = (response: AxiosResponse) => {
+    onSuccessfullCommentCallback(response.data);
+    (document.getElementById('comment') as HTMLTextAreaElement).value = '';
+  };
+
+  const onPostCommentFailed = (error: any) => {
+    onFailedCommentCallback(error.response.data.comment[0]);
+  };
+
+  const postCommentAPI = new APICallBuilder()
+    .addAction(PostCommentUseCase.create())
+    .addOnSuccess(onPostCommentSuccess)
+    .addOnFailed(onPostCommentFailed);
+
   const onPostCommentClick: React.MouseEventHandler = () => {
     onInitialCommentCallback();
-    PostCommentUseCase.handle(
-      {
-        storyId,
-        comment: (document.getElementById('comment') as HTMLTextAreaElement).value,
-      },
-      (response) => {
-        onSuccessfullCommentCallback(response.data);
-        (document.getElementById('comment') as HTMLTextAreaElement).value = '';
-      },
-      (error) => onFailedCommentCallback(error.response.data.comment[0]),
-    );
+    const payload: PostCommentPayload = {
+      storyId,
+      comment: (document.getElementById('comment') as HTMLTextAreaElement).value,
+    };
+
+    postCommentAPI
+      .addPayload(payload)
+      .call();
   };
 
   const commentsCountElement = useMemo(() => {

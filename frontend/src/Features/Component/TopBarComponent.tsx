@@ -1,25 +1,30 @@
 import {
   Button, Input, InputGroup, InputLeftElement,
 } from '@chakra-ui/react';
+import { AxiosResponse } from 'axios';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import APICallBuilder from '../../UseCases/APICallBuilder';
 import LogoutUseCase from '../../UseCases/Auth/LogoutUseCase';
 import AnnotationIcon from './Icons/AnnotationIcon';
 import SearchIcon from './Icons/SearchIcon';
 
 export default function TopBarComponent() {
   const navigator = useNavigate();
+
   const onIconClick: React.MouseEventHandler = () => navigator('/app');
-  const onLogoutClick: React.MouseEventHandler = () => {
-    LogoutUseCase.handle(
-      (response) => {
-        if (response.status === 204) {
-          navigator('/login');
-        }
-      },
-      (error) => console.error(error.response.data),
-    );
+
+  const onLogoutSuccess = (response: AxiosResponse) => {
+    if (response.status === 204) navigator('/login');
+    else console.log(response);
   };
+
+  const logoutAPI = new APICallBuilder()
+    .addAction(LogoutUseCase.create())
+    .addOnSuccess(onLogoutSuccess)
+    .addOnFailed((error) => console.error(error.response.data));
+
+  const onLogoutClick: React.MouseEventHandler = () => logoutAPI.call();
 
   return (
     <div className="flex flex-row justify-between items-center py-3 px-16 w-full h-full bg-white border-b-2 border-b-gray-200">

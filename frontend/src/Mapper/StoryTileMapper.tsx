@@ -3,7 +3,7 @@ import StorySkeletonComponent from '../Features/Component/StorySkeletonComponent
 import StoryTileComponent from '../Features/Component/StoryTileComponent';
 
 export default class StoryTileMapper {
-  static handle(entities: any[]) {
+  static handle(entities: any[], variant: 'tile' | 'detail' = 'tile') {
     const mappedComponent = entities.map((element) => {
       if (element === null) {
         return <StorySkeletonComponent />;
@@ -12,7 +12,7 @@ export default class StoryTileMapper {
       return (
         <StoryTileComponent
           key={element.id}
-          variant="tile"
+          variant={variant}
           id={element.id}
           title={element.title}
           body={_.truncate(element.body)}

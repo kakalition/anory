@@ -1,9 +1,12 @@
 import { useToast } from '@chakra-ui/react';
+import { AxiosResponse } from 'axios';
 import _ from 'lodash';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { AuthContext } from '../Features/AuthenticationWrapper';
+import APICallBuilder from '../UseCases/APICallBuilder';
 import DeleteLikeDataUseCase from '../UseCases/LikeData/DeleteLikeDataUseCase';
-import LikeUseCase from '../UseCases/LikeData/LikeUseCase';
+import { PostLikePayload } from '../UseCases/LikeData/Payload/PostLikePayload';
+import PostLikeUseCase from '../UseCases/LikeData/PostLikeUseCase';
 
 type Params = {
   entityId: number,
@@ -30,35 +33,47 @@ export default function useLike(params: Params): [number, boolean, React.MouseEv
     });
   };
 
+  const onPostLikeSuccess = (response: AxiosResponse) => setLikeByMeData(response.data);
+  const onPostLikeFailed = () => {
+    showFailedToast('Failed to like this story.');
+    setLikeByMeData(null);
+    setTotalLike(totalLike - 1);
+  };
+
+  const postLikeAPI = new APICallBuilder()
+    .addAction(PostLikeUseCase.create())
+    .addOnSuccess(onPostLikeSuccess)
+    .addOnFailed(onPostLikeFailed);
+
+  const onDeleteLikeSuccess = (response: AxiosResponse) => { console.log(response); };
+  const onDeleteLikeFailed = (temporaryLikeData: any) => () => {
+    showFailedToast('Failed to dislike this story.');
+    setLikeByMeData(temporaryLikeData);
+    setTotalLike(totalLike + 1);
+  };
+
+  const deleteLikeAPI = new APICallBuilder()
+    .addAction(DeleteLikeDataUseCase.create())
+    .addOnSuccess(onDeleteLikeSuccess)
+    .addOnFailed(onDeleteLikeFailed(likeByMeData));
+
   const likeAction = () => {
     setLikeByMeData({});
     setTotalLike(totalLike + 1);
 
-    LikeUseCase.handle(
-      { id: entityId, type },
-      (response) => setLikeByMeData(response.data),
-      () => {
-        showFailedToast('Failed to like this story.');
-        setLikeByMeData(null);
-        setTotalLike(totalLike - 1);
-      },
-    );
+    const payload: PostLikePayload = { id: entityId, type };
+    postLikeAPI
+      .addPayload(payload)
+      .call();
   };
 
   const dislikeAction = (likeId: any) => {
-    const temporaryLikeData = likeByMeData;
     setLikeByMeData(null);
     setTotalLike(totalLike - 1);
 
-    DeleteLikeDataUseCase.handle(
-      likeId,
-      null,
-      () => {
-        showFailedToast('Failed to dislike this story.');
-        setLikeByMeData(temporaryLikeData);
-        setTotalLike(totalLike + 1);
-      },
-    );
+    deleteLikeAPI
+      .addPayload({ id: likeId })
+      .call();
   };
 
   const onHeartClick: React.MouseEventHandler = () => {

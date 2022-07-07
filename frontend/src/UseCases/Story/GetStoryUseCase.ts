@@ -1,16 +1,13 @@
-import axios, { AxiosResponse } from 'axios';
+import axios from 'axios';
 import { API_BASE_URL } from '../../env';
+import { BaseUseCaseCreator } from '../BaseUseCaseCreator';
 
 export default class GetStoryUseCase {
-  static handle(
-    storyId: number,
-    onFulfilled: (response: AxiosResponse) => void,
-    onFailed: (error: any) => void,
-  ) {
+  static create: BaseUseCaseCreator = () => (payload, queries, onSuccess, onFailed) => {
     axios({
-      url: `${API_BASE_URL}/api/stories/${storyId}`,
+      url: `${API_BASE_URL}/api/stories/${payload.id}`,
       method: 'GET',
-    }).then(onFulfilled)
+    }).then(onSuccess)
       .catch(onFailed);
-  }
+  };
 }

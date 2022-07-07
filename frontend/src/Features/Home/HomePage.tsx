@@ -1,16 +1,23 @@
 import {
-  Button, FormControl, FormLabel, Input, Modal, ModalBody, ModalCloseButton, ModalContent,
+  Button,
+  FormControl,
+  FormLabel,
+  Input,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
   ModalFooter, ModalHeader, ModalOverlay, Select, Textarea, useDisclosure, useToast,
 } from '@chakra-ui/react';
-import _ from 'lodash';
 import React, { useState, useEffect, useMemo } from 'react';
+import StoryTileMapper from '../../Mapper/StoryTileMapper';
+import APICallBuilder from '../../UseCases/APICallBuilder';
 import GetCategoriesUseCase from '../../UseCases/Category/GetCategoriesUseCase';
 import CreateStoryUseCase from '../../UseCases/Story/CreateStoryUseCase';
 import GetStoriesUseCase from '../../UseCases/Story/GetStoriesUseCase';
+import { CreateStoryPayload } from '../../UseCases/Story/Payload/CreateStoryPayload';
 import AnoryPrimaryButtonComponent from '../Component/AnoryPrimaryButtonComponent';
 import SideNavBarComponent from '../Component/SideNavBarComponent';
-import StorySkeletonComponent from '../Component/StorySkeletonComponent';
-import StoryTileComponent from '../Component/StoryTileComponent';
 import TopBarComponent from '../Component/TopBarComponent';
 import Spacer from '../Utilities/Spacer';
 
@@ -18,7 +25,7 @@ export default function HomePage() {
   const [activeTab, setActiveTab] = useState('alls');
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
-  const [storyData, setStoryData] = useState<any[]>(null);
+  const [storyData, setStoryData] = useState<any[]>([null, null, null, null, null]);
   const [availableCategories, setAvailableCategories] = useState<any[]>([]);
 
   const showToast = (toastTitle: String, toastStatus: any) => {
@@ -30,65 +37,54 @@ export default function HomePage() {
     });
   };
 
-  const fetchData = () => {
-    GetCategoriesUseCase.handle((response) => setAvailableCategories(response.data));
+  const getCategoriesAPI = new APICallBuilder()
+    .addAction(GetCategoriesUseCase.create())
+    .addOnSuccess((response) => setAvailableCategories(response.data))
+    .addOnFailed((error) => console.error(error));
 
-    GetStoriesUseCase.handle(
-      10,
-      null,
-      (response) => setStoryData(response.data),
-      (error) => console.error(error.response.data),
-    );
+  const getStoriesAPI = new APICallBuilder()
+    .addAction(GetStoriesUseCase.create())
+    .addParams({ count: 10 })
+    .addOnSuccess((response) => setStoryData(response.data))
+    .addOnFailed((error) => console.error(error.response.data));
+
+  const onSubmitStorySuccess = () => {
+    onClose();
+    showToast('Story Created', 'success');
+    getStoriesAPI.call();
   };
 
+  const onSubmitStoryFailed = () => {
+    showToast('Failed to Create Story', 'error');
+  };
+
+  const submitStoryAPI = new APICallBuilder()
+    .addAction(CreateStoryUseCase.create())
+    .addOnSuccess(onSubmitStorySuccess)
+    .addOnFailed(onSubmitStoryFailed);
+
   const onSubmitStoryClick: React.MouseEventHandler = () => {
-    CreateStoryUseCase.handle(
-      {
-        categoryId: parseInt((document.getElementById('categories') as HTMLSelectElement).value, 10),
-        title: (document.getElementById('title') as HTMLInputElement).value,
-        body: (document.getElementById('body') as HTMLTextAreaElement).value,
-      },
-      () => {
-        onClose();
-        showToast('Story Created', 'success');
-        fetchData();
-      },
-      () => showToast('Failed to Create Story', 'error'),
-    );
+    const storyPayload: CreateStoryPayload = {
+      categoryId: parseInt((document.getElementById('categories') as HTMLSelectElement).value, 10),
+      title: (document.getElementById('title') as HTMLInputElement).value,
+      body: (document.getElementById('body') as HTMLTextAreaElement).value,
+    };
+
+    submitStoryAPI
+      .addPayload(storyPayload)
+      .call();
   };
 
   const categoriesElement = useMemo(() => availableCategories.map(
     (element) => <option key={element.id} value={element.id}>{element.name}</option>,
   ), [availableCategories]);
 
-  const elements = useMemo(() => {
-    if (storyData !== null) {
-      return storyData?.map((element) => (
-        <StoryTileComponent
-          key={element.id}
-          variant="tile"
-          id={element.id}
-          title={element.title}
-          body={_.truncate(element.body)}
-          totalLikes={element.likes.length}
-          totalComments={element.comments_count}
-          totalViews={element.views}
-          uploadedAt={(new Date(element.created_at)).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
-        />
-      ));
-    }
-    return (
-      <>
-        <StorySkeletonComponent />
-        <StorySkeletonComponent />
-        <StorySkeletonComponent />
-        <StorySkeletonComponent />
-        <StorySkeletonComponent />
-      </>
-    );
-  }, [storyData]);
+  const elements = useMemo(() => StoryTileMapper.handle(storyData), [storyData]);
 
-  useEffect(fetchData, []);
+  useEffect(() => {
+    getCategoriesAPI.call();
+    getStoriesAPI.call();
+  }, []);
 
   return (
     <div className="flex flex-col w-screen h-screen bg-[#FFFCFC]">

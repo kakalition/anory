@@ -1,34 +1,42 @@
 import {
   Button, FormControl, FormLabel, Input,
 } from '@chakra-ui/react';
+import { AxiosResponse } from 'axios';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import APICallBuilder from '../../UseCases/APICallBuilder';
 import LoginUseCase from '../../UseCases/Auth/LoginUseCase';
+import { LoginPayload } from '../../UseCases/Auth/Payload/LoginPayload';
 import AnoryLogo from '../Component/AnoryLogo';
 import Spacer from '../Utilities/Spacer';
 
 export default function LoginPage() {
   const navigator = useNavigate();
 
-  const onSignUpClickListener: React.MouseEventHandler = () => {
-    navigator('/register');
+  const onLoginSuccess = (response: AxiosResponse) => {
+    if (response.status === 200) navigator('/app');
+    else console.log(response);
   };
+
+  const onLoginFailed = (error: any) => console.error(error);
+
+  const loginAPI = new APICallBuilder()
+    .addAction(LoginUseCase.create())
+    .addOnSuccess(onLoginSuccess)
+    .addOnFailed(onLoginFailed);
+
+  const onSignUpClickListener: React.MouseEventHandler = () => navigator('/register');
 
   const onSignInClickListener: React.MouseEventHandler = () => {
     const formData = new FormData(document.getElementById('login-form') as HTMLFormElement);
+    const payload = {
+      email: formData.get('email')?.toString(),
+      password: formData.get('password')?.toString(),
+    } as LoginPayload;
 
-    LoginUseCase.handle(
-      {
-        email: formData.get('email')?.toString(),
-        password: formData.get('password')?.toString(),
-      },
-      (response) => {
-        if (response.status === 200) {
-          navigator('/app');
-        }
-      },
-      (error) => console.error(error),
-    );
+    loginAPI
+      .addPayload(payload)
+      .call();
   };
 
   return (

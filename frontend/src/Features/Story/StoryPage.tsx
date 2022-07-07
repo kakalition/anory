@@ -4,6 +4,7 @@ import {
 } from 'react';
 import { useParams } from 'react-router-dom';
 import CommentTileMapper from '../../Mapper/CommentTileMapper';
+import APICallBuilder from '../../UseCases/APICallBuilder';
 import GetCommentsUseCase from '../../UseCases/Comment/GetCommentsUseCase';
 import GetStoryUseCase from '../../UseCases/Story/GetStoryUseCase';
 import CommentSectionComponent from '../Component/CommentSectionComponent';
@@ -19,7 +20,7 @@ export default function StoryPage() {
   const toast = useToast();
   const [activeTab, setActiveTab] = useState('alls');
   const [storyData, setStoryData] = useState<any>({});
-  const [commentsData, setCommentsData] = useState<any[] | null>(null);
+  const [commentsData, setCommentsData] = useState<any[]>([null, null, null]);
 
   const onInitialCommentCallback = () => {
     if (commentsData === null) return;
@@ -56,41 +57,28 @@ export default function StoryPage() {
     });
   };
 
-  const fetchStoryAction = () => {
-    if (params.id === undefined) return;
+  const getStoryAPI = new APICallBuilder()
+    .addAction(GetStoryUseCase.create())
+    .addOnSuccess((response) => setStoryData(response.data))
+    .addOnFailed((error) => console.error(error));
 
-    GetStoryUseCase.handle(
-      parseInt(params.id, 10),
-      (response) => {
-        console.log(response.data);
-        setStoryData(response.data);
-      },
-      (error) => console.error(error.response.data),
-    );
-  };
-
-  const fetchCommentsAction = () => {
-    if (params.id === undefined) return;
-
-    GetCommentsUseCase.handle(
-      parseInt(params.id, 10),
-      (response) => {
-        setCommentsData(response.data);
-        console.log(response.data);
-      },
-      (error) => console.error(error.response.data),
-    );
-  };
+  const getCommentsAPI = new APICallBuilder()
+    .addAction(GetCommentsUseCase.create())
+    .addOnSuccess((response) => setCommentsData(response.data))
+    .addOnFailed((error) => console.error(error));
 
   useEffect(() => {
-    fetchStoryAction();
-    fetchCommentsAction();
+    if (params.id === undefined) return;
+
+    getStoryAPI.addPayload({ id: params.id })
+      .call();
+
+    getCommentsAPI.addPayload({ id: params.id })
+      .call();
   }, []);
 
   const storyTile = useMemo(() => {
-    if (storyData.id === undefined) {
-      return <StorySkeletonComponent />;
-    }
+    if (storyData.id === undefined) return <StorySkeletonComponent />;
 
     return (
       <StoryDetailTileComponent
@@ -104,19 +92,10 @@ export default function StoryPage() {
     );
   }, [storyData]);
 
-  const commentsElement = useMemo(() => {
-    if (commentsData === null) {
-      return (
-        <>
-          <CommentSkeletonComponent />
-          <CommentSkeletonComponent />
-          <CommentSkeletonComponent />
-        </>
-      );
-    }
-
-    return CommentTileMapper.handle(commentsData);
-  }, [commentsData]);
+  const commentsElement = useMemo(
+    () => CommentTileMapper.handle(commentsData),
+    [commentsData],
+  );
 
   return (
     <div className="flex flex-col w-screen h-screen bg-[#FFFCFC]">
