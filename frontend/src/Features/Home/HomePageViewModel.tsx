@@ -4,7 +4,7 @@ import {
 } from 'react';
 import { AxiosResponse } from 'axios';
 import { AuthContext } from '../AuthenticationWrapper';
-import storyEntityJSONMapper from '../../Function/Mapper/StoryEntityJSONMapper';
+import storyEntityJSONMapper from '../../Function/Mapper/StoryJSONMapper';
 import StoryEntity from '../../Type/StoryEntity';
 import storyComponentMapper from '../../Function/Mapper/StoryComponentMapper';
 import NewApiCallBuilder from '../../UseCases/NewAPICallBuilder';

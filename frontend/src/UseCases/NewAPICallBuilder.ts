@@ -57,6 +57,7 @@ export default class NewApiCallBuilder {
     axios({
       url: `${API_BASE_URL}/${this.endpoint}`,
       method: this.method,
+      data: this.payload,
       params: this.params,
     }).then(this.onSuccess)
       .catch(this.onFailed);

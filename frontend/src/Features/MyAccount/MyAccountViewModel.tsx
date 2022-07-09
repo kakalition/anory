@@ -16,7 +16,9 @@ export default function useMyAccountViewModel() {
   const fetchStoriesData = new APICallBuilder()
     .addAction(GetStoriesUseCase.create())
     .addParams({ count: 3 })
-    .addOnSuccess((response) => setStoriesData(response.data));
+    .addOnSuccess((response) => {
+      setStoriesData(response.data);
+    });
 
   const storiesElement = useMemo(() => StoryTileMapper.handle(storiesData), [storiesData]);
   const commentsElement = useMemo(

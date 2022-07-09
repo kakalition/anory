@@ -3,7 +3,10 @@ import LikeDataEntity from './LikeDataEntity';
 type StoryEntity = {
   id: number,
   authorId: number,
-  category: string,
+  category: {
+    id: number,
+    name: string
+  },
   views: number,
   likes: LikeDataEntity[],
   commentsCount: number,

@@ -1,11 +1,14 @@
 import StoryEntity from '../../Type/StoryEntity';
 import LikeDataEntity from '../../Type/LikeDataEntity';
 
-const storyEntityJSONMapper = (json: any) => {
+const storyJSONMapper = (json: any) => {
   const entity: StoryEntity = {
     id: json.id,
     authorId: json.author_id,
-    category: json.category,
+    category: {
+      id: json.category.id,
+      name: json.category.name,
+    },
     commentsCount: json.comments_count,
     likes: json.likes.map((element: any) => ({
       id: element.id,
@@ -23,4 +26,4 @@ const storyEntityJSONMapper = (json: any) => {
   return entity;
 };
 
-export default storyEntityJSONMapper;
+export default storyJSONMapper;

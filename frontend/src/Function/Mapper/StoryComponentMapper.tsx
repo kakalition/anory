@@ -8,9 +8,14 @@ const storyComponentMapper = (
   onAfterDelete?: () => void,
 ) => {
   const mappedComponent = entities.map((element) => {
-    if (element === null) return <StorySkeletonComponent />;
+    if (element === null) return <StorySkeletonComponent key={Math.random()} />;
     return (
-      <StoryTileComponent userId={userId} storyEntity={element} onAfterDelete={onAfterDelete} />
+      <StoryTileComponent
+        key={element.id}
+        userId={userId}
+        storyEntity={element}
+        onAfterDelete={onAfterDelete}
+      />
     );
   });
 
