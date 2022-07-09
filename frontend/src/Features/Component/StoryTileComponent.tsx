@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { createEntityMenu } from '../../Function/ComponentFactory/EntityMenuFactory';
 import Spacer from '../Utilities/Spacer';
 import EyeIcon from './Icons/EyeIcon';
 import FilledChatAltIcon from './Icons/FilledChatAltIcon';
@@ -6,7 +7,8 @@ import FilledHeartIcon from './Icons/FilledHeartIcon';
 
 type Params = {
   id: number,
-  variant: 'tile' | 'detail',
+  authorId: number,
+  userId: number,
   title: string,
   body: string,
   totalLikes: number,
@@ -16,18 +18,26 @@ type Params = {
 };
 
 export default function StoryTileComponent({
-  id, variant, title, body, totalLikes, totalComments, totalViews, uploadedAt,
+  id, authorId, userId, title, body, totalLikes, totalComments, totalViews, uploadedAt,
 }: Params) {
   const navigator = useNavigate();
+
+  const onEditClick = () => console.log('implements');
+  const onDeleteClick = () => console.log('implements');
+  const baseEntityMenu = createEntityMenu(onEditClick, onDeleteClick);
+  const entityMenu = baseEntityMenu(userId, authorId);
 
   return (
     <button
       type="button"
       className={`p-[1.5rem] w-full text-left bg-white rounded-lg drop-shadow-sm 
-      transition duration-75 select-none ${variant === 'tile' ? 'hover:drop-shadow-md ' : null}`}
+      transition duration-75 select-none hover:drop-shadow-md`}
       onClick={() => navigator(`/story/${id}`)}
     >
-      <p className="font-roboto text-3xl font-medium">{title}</p>
+      <div className="flex flex-row justify-between items-center w-full">
+        <p className="font-roboto text-3xl font-medium">{title}</p>
+        {entityMenu}
+      </div>
       <Spacer height="1rem" />
       <p className="font-roboto">{body}</p>
       <Spacer height="1rem" />

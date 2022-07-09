@@ -1,13 +1,22 @@
 import { useToast } from '@chakra-ui/react';
-import { useEffect, useMemo, useState } from 'react';
+import R from 'ramda';
+import {
+  useContext, useEffect, useMemo, useState,
+} from 'react';
 import { AxiosResponse } from 'axios';
-import StoryTileMapper from '../../Mapper/StoryTileMapper';
 import APICallBuilder from '../../UseCases/APICallBuilder';
 import GetStoriesUseCase from '../../UseCases/Story/GetStoriesUseCase';
+import { AuthContext } from '../AuthenticationWrapper';
+import storyEntityJSONMapper from '../../Function/Mapper/StoryEntityJSONMapper';
+import StoryEntity from '../../Type/StoryEntity';
+import storyComponentMapper from '../../Function/Mapper/StoryComponentMapper';
 
 export default function useHomePageViewModel() {
   const toast = useToast();
-  const [storyData, setStoryData] = useState<any[]>([null, null, null, null, null]);
+  const user = useContext<any>(AuthContext);
+  const [storyData, setStoryData] = useState<StoryEntity[] | null[]>(
+    [null, null, null, null, null],
+  );
 
   const showToast = (status: any, title: String, description: String | null = null) => {
     toast({
@@ -19,7 +28,10 @@ export default function useHomePageViewModel() {
     });
   };
 
-  const onGetStoriesSuccess = (response: AxiosResponse) => setStoryData(response.data);
+  const onGetStoriesSuccess = (response: AxiosResponse) => {
+    const entities = response.data.map((element: any) => storyEntityJSONMapper(element));
+    setStoryData(entities);
+  };
   const onGetStoriesFailed = (error: any) => showToast('error', error.response.data);
 
   const getStoriesAPI = new APICallBuilder()
@@ -28,7 +40,10 @@ export default function useHomePageViewModel() {
     .addOnSuccess(onGetStoriesSuccess)
     .addOnFailed(onGetStoriesFailed);
 
-  const storiesElement = useMemo(() => StoryTileMapper.handle(storyData), [storyData]);
+  const storiesElement = useMemo(
+    () => storyComponentMapper(user.id, storyData),
+    [storyData],
+  );
 
   useEffect(() => {
     getStoriesAPI.call();
