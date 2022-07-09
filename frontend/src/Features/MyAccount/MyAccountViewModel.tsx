@@ -1,26 +1,33 @@
-import { useEffect, useMemo, useState } from 'react';
+import {
+  useContext, useEffect, useMemo, useState,
+} from 'react';
+import storyComponentMapper from '../../Function/Mapper/StoryComponentMapper';
+import storyJSONMapper from '../../Function/Mapper/StoryJSONMapper';
 import CommentTileMapper from '../../Mapper/CommentTileMapper';
-import StoryTileMapper from '../../Mapper/StoryTileMapper';
-import APICallBuilder from '../../UseCases/APICallBuilder';
-import GetUserCommentsUseCase from '../../UseCases/Comment/GetUserCommentsUseCase';
-import GetStoriesUseCase from '../../UseCases/Story/GetStoriesUseCase';
+import StoryEntity from '../../Type/StoryEntity';
+import NewApiCallBuilder from '../../UseCases/NewAPICallBuilder';
+import { AuthContext } from '../AuthenticationWrapper';
 
 export default function useMyAccountViewModel() {
-  const [storiesData, setStoriesData] = useState([null, null, null]);
+  const user = useContext<any>(AuthContext);
+  const [storiesData, setStoriesData] = useState<StoryEntity[] | null[]>([null, null, null]);
   const [commentsData, setCommentsData] = useState([null, null, null]);
 
-  const fetchCommentsAPI = new APICallBuilder()
-    .addAction(GetUserCommentsUseCase.create())
+  const fetchCommentsAPI = NewApiCallBuilder.getInstance()
+    .addEndpoint('api/users/comments')
+    .addParams({ count: 3 })
+    .addMethod('GET')
     .addOnSuccess((response) => setCommentsData(response.data));
 
-  const fetchStoriesData = new APICallBuilder()
-    .addAction(GetStoriesUseCase.create())
+  const fetchStoriesData = NewApiCallBuilder.getInstance()
+    .addEndpoint('api/users/stories')
+    .addMethod('GET')
     .addParams({ count: 3 })
     .addOnSuccess((response) => {
-      setStoriesData(response.data);
+      setStoriesData(response.data.map(storyJSONMapper));
     });
 
-  const storiesElement = useMemo(() => StoryTileMapper.handle(storiesData), [storiesData]);
+  const storiesElement = useMemo(() => storyComponentMapper(user.id, storiesData), [storiesData]);
   const commentsElement = useMemo(
     () => CommentTileMapper.handle(commentsData, () => fetchCommentsAPI.call()),
     [commentsData],
