@@ -32,7 +32,7 @@ export default function AnoryTemplateComponent(params: Params) {
         <div className="w-[20%] h-full">
           <SideNavBarComponent activeTab={activeTab} />
         </div>
-        <div className="overflow-y-scroll pt-8 pr-16 pl-4 w-[80%]">
+        <div className="overflow-y-scroll px-4 pt-8 w-[80%]">
           {children}
         </div>
       </div>

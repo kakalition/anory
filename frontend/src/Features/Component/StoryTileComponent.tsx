@@ -1,76 +1,82 @@
 import { useNavigate } from 'react-router-dom';
-import { createEntityMenu } from '../../Function/ComponentFactory/EntityMenuFactory';
+import StoryComponentEntity from '../../Function/ComponentEntity/StoryComponentEntity';
+import EntityMenuFactory from '../../Function/ComponentFactory/EntityMenuFactory';
+import StoryEntity from '../../Type/StoryEntity';
 import Spacer from '../Utilities/Spacer';
 import EyeIcon from './Icons/EyeIcon';
 import FilledChatAltIcon from './Icons/FilledChatAltIcon';
 import FilledHeartIcon from './Icons/FilledHeartIcon';
+import useDeleteStory from './ViewModel/useDeleteStory';
 
 type Params = {
-  id: number,
-  authorId: number,
   userId: number,
-  title: string,
-  body: string,
-  totalLikes: number,
-  totalComments: number,
-  totalViews: number,
-  uploadedAt: string
+  storyEntity: StoryEntity,
+  onAfterDelete?: () => void,
 };
 
-export default function StoryTileComponent({
-  id, authorId, userId, title, body, totalLikes, totalComments, totalViews, uploadedAt,
-}: Params) {
+export default function StoryTileComponent(params: Params) {
+  const { userId, storyEntity, onAfterDelete } = params;
+  const entity = StoryComponentEntity.prepare(storyEntity, 'brief');
   const navigator = useNavigate();
+  const { openDeleteDialog, deleteDialogComponent } = useDeleteStory(storyEntity.id, onAfterDelete);
 
-  const onEditClick = () => console.log('implements');
-  const onDeleteClick = () => console.log('implements');
-  const baseEntityMenu = createEntityMenu(onEditClick, onDeleteClick);
-  const entityMenu = baseEntityMenu(userId, authorId);
+  const onEditMenuClick = () => console.log('implements');
+  const onDeleteMenuClick = openDeleteDialog;
+  const baseEntityMenu = EntityMenuFactory.createEntityMenu(onEditMenuClick, onDeleteMenuClick);
+  const entityMenu = baseEntityMenu(userId, entity.authorId);
+
+  const onCardClick = () => navigator(`/story/${entity.id}`);
 
   return (
-    <button
-      type="button"
-      className={`p-[1.5rem] w-full text-left bg-white rounded-lg drop-shadow-sm 
-      transition duration-75 select-none hover:drop-shadow-md`}
-      onClick={() => navigator(`/story/${id}`)}
+    <div
+      className="overflow-x-hidden relative w-full bg-white rounded-lg drop-shadow-sm hover:drop-shadow-md transition duration-75"
     >
-      <div className="flex flex-row justify-between items-center w-full">
-        <p className="font-roboto text-3xl font-medium">{title}</p>
+      <button
+        type="button"
+        className="p-[1.5rem] w-full text-left bg-white rounded-lg select-none "
+        onClick={onCardClick}
+      >
+        <div className="flex flex-row justify-between items-center w-full">
+          <p className="font-roboto text-3xl font-medium">{entity.title}</p>
+        </div>
+        <Spacer height="1rem" />
+        <p className="font-roboto">{entity.body}</p>
+        <Spacer height="1rem" />
+        <div className="flex flex-row justify-between w-full">
+          <div className="flex flex-row">
+            <div className="flex flex-row items-center">
+              <div className="w-8 h-8 fill-[#FF4033]">
+                <FilledHeartIcon />
+              </div>
+              <Spacer width="0.7rem" />
+              <p className="pt-[0.1rem] font-roboto text-lg">{entity.likes.length}</p>
+            </div>
+            <Spacer width="1rem" />
+            <div className="flex flex-row items-center">
+              <div className="w-8 h-8 fill-[#549DE1]">
+                <FilledChatAltIcon />
+              </div>
+              <Spacer width="0.7rem" />
+              <p className="pt-[0.1rem] font-roboto text-lg">{entity.commentsCount}</p>
+            </div>
+          </div>
+          <div className="flex flex-row items-center">
+            <div className="flex flex-row items-center">
+              <div className="w-8 h-8 stroke-gray-900 stroke-2">
+                <EyeIcon />
+              </div>
+              <Spacer width="0.7rem" />
+              <p className="pt-[0.1rem] font-roboto text-lg">{entity.views}</p>
+            </div>
+            <Spacer width="1.5rem" />
+            <p className="pt-[0.2rem]">{`Uploaded at: ${entity.createdAt}`}</p>
+          </div>
+        </div>
+      </button>
+      <div className="absolute top-4 right-4">
         {entityMenu}
+        {deleteDialogComponent}
       </div>
-      <Spacer height="1rem" />
-      <p className="font-roboto">{body}</p>
-      <Spacer height="1rem" />
-      <div className="flex flex-row justify-between w-full">
-        <div className="flex flex-row">
-          <div className="flex flex-row items-center">
-            <div className="w-8 h-8 fill-[#FF4033]">
-              <FilledHeartIcon />
-            </div>
-            <Spacer width="0.7rem" />
-            <p className="pt-[0.1rem] font-roboto text-lg">{totalLikes}</p>
-          </div>
-          <Spacer width="1rem" />
-          <div className="flex flex-row items-center">
-            <div className="w-8 h-8 fill-[#549DE1]">
-              <FilledChatAltIcon />
-            </div>
-            <Spacer width="0.7rem" />
-            <p className="pt-[0.1rem] font-roboto text-lg">{totalComments}</p>
-          </div>
-        </div>
-        <div className="flex flex-row items-center">
-          <div className="flex flex-row items-center">
-            <div className="w-8 h-8 stroke-gray-900 stroke-2">
-              <EyeIcon />
-            </div>
-            <Spacer width="0.7rem" />
-            <p className="pt-[0.1rem] font-roboto text-lg">{totalViews}</p>
-          </div>
-          <Spacer width="1.5rem" />
-          <p className="pt-[0.2rem]">{`Uploaded at: ${uploadedAt}`}</p>
-        </div>
-      </div>
-    </button>
+    </div>
   );
 }
