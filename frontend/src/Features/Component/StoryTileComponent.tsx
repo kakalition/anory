@@ -20,7 +20,7 @@ export default function StoryTileComponent(params: Params) {
   const navigator = useNavigate();
   const { openDeleteDialog, deleteDialogComponent } = useDeleteStory(storyEntity.id, onAfterDelete);
 
-  const onEditMenuClick = () => console.log('implements');
+  const onEditMenuClick = () => navigator(`/story/edit/${storyEntity.id}`);
   const onDeleteMenuClick = openDeleteDialog;
   const baseEntityMenu = EntityMenuFactory.createEntityMenu(onEditMenuClick, onDeleteMenuClick);
   const entityMenu = baseEntityMenu(userId, entity.authorId);
