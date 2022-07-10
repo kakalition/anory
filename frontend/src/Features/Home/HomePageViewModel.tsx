@@ -4,7 +4,7 @@ import {
 } from 'react';
 import { AxiosResponse } from 'axios';
 import { AuthContext } from '../AuthenticationWrapper';
-import storyEntityJSONMapper from '../../Function/Mapper/StoryJSONMapper';
+import storyJsonMapper from '../../Function/Mapper/StoryJsonMapper';
 import StoryEntity from '../../Type/StoryEntity';
 import storyComponentMapper from '../../Function/Mapper/StoryComponentMapper';
 import NewApiCallBuilder from '../../UseCases/NewAPICallBuilder';
@@ -27,7 +27,7 @@ export default function useHomePageViewModel() {
   };
 
   const onGetStoriesSuccess = (response: AxiosResponse) => {
-    const entities = response.data.map((element: any) => storyEntityJSONMapper(element));
+    const entities = response.data.map((element: any) => storyJsonMapper(element));
     setStoryData(entities);
   };
 

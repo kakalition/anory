@@ -9,19 +9,21 @@ import { PostLikePayload } from '../UseCases/LikeData/Payload/PostLikePayload';
 import PostLikeUseCase from '../UseCases/LikeData/PostLikeUseCase';
 
 type Params = {
+  userId: number,
   entityId: number,
   type: 'stories' | 'comments',
   likeData: any[]
 };
 
 export default function useLike(params: Params): [number, boolean, React.MouseEventHandler] {
-  const { entityId, type, likeData } = params;
+  const {
+    userId, entityId, type, likeData,
+  } = params;
 
   const toast = useToast();
-  const user = useContext<any>(AuthContext);
   const [totalLike, setTotalLike] = useState(likeData.length);
   const [likeByMeData, setLikeByMeData] = useState<any>(
-    likeData.find((value) => value.likee_id === user.id),
+    likeData.find((value) => value.likee_id === userId),
   );
 
   const showFailedToast = (toastTitle: String) => {

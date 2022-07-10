@@ -7,7 +7,6 @@ import { curry } from 'ramda';
 import _ from 'lodash';
 import NewApiCallBuilder from '../../../UseCases/NewAPICallBuilder';
 import Spacer from '../../Utilities/Spacer';
-import String from '../../../Function/Helper/String';
 
 const baseUseDeleteEntity = (type: 'story' | 'comment', id: number, onAfterDelete: (() => void)) => {
   const toast = useToast();

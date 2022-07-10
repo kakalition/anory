@@ -9,35 +9,32 @@ import {
   IconButton, Menu, MenuButton, MenuItem, MenuList, useDisclosure, useToast,
 } from '@chakra-ui/react';
 import React, {
-  useContext, useMemo, useRef,
+   useMemo, useRef,
 } from 'react';
 import useLike from '../../Hooks/UseLike';
-import { AuthContext } from '../AuthenticationWrapper';
 import Spacer from '../Utilities/Spacer';
 import OutlinedHeartIcon from './Icons/OutlinedHeartIcon';
 import ThreeDotsIcon from './Icons/ThreeDotsIcon';
 import DeleteCommentUseCase from '../../UseCases/Comment/DeleteCommentUseCase';
 import APICallBuilder from '../../UseCases/APICallBuilder';
+import CommentEntity from '../../Type/CommentEntity';
 
 type Params = {
-  id: number,
-  commenteeId: number,
-  userId: string,
-  postDate: string,
-  comment: string,
-  likeData: any[],
-  onAfterDelete: (() => void) | null
+  userId: number,
+  commentEntity: CommentEntity,
+  onAfterDelete: (() => void) | undefined
 };
 
 export default function CommentTileComponent(params: Params) {
-  const {
-    id, commenteeId, userId, postDate, comment, likeData, onAfterDelete = null,
-  } = params;
-  const user = useContext<any>(AuthContext);
+  const { userId, commentEntity, onAfterDelete = null } = params;
+  console.log(commentEntity);
+
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = useRef<any>(null);
-  const [totalLike, isLikedByMe, onHeartClick] = useLike({ entityId: id, likeData, type: 'comments' });
+  const [totalLike, isLikedByMe, onHeartClick] = useLike({
+    userId, entityId: commentEntity.id, likeData: commentEntity.likeData, type: 'comments',
+  });
 
   const onDeleteCommentSuccess = () => {
     onClose();
@@ -60,14 +57,14 @@ export default function CommentTileComponent(params: Params) {
 
   const deleteCommentAPI = new APICallBuilder()
     .addAction(DeleteCommentUseCase.create())
-    .addPayload({ id })
+    .addPayload({ id: commentEntity.id })
     .addOnSuccess(onDeleteCommentSuccess)
     .addOnFailed(onDeleteCommentFailed);
 
   const onDeleteClick: React.MouseEventHandler = () => deleteCommentAPI.call();
 
   const menuElement = useMemo(() => {
-    if (commenteeId === user.id) {
+    if (commentEntity.commenteeId === userId) {
       return (
         <Menu>
           <MenuButton
@@ -95,7 +92,7 @@ export default function CommentTileComponent(params: Params) {
           {menuElement}
         </div>
         <Spacer height="1rem" />
-        <p>{comment}</p>
+        <p>{commentEntity.comment}</p>
         <Spacer height="1rem" />
         <div className="flex flex-row justify-between items-center">
           <div className="flex flex-row items-center">
@@ -109,7 +106,7 @@ export default function CommentTileComponent(params: Params) {
             <Spacer width="0.7rem" />
             <p className="pt-[0.1rem] font-roboto text-lg">{`${totalLike}`}</p>
           </div>
-          <p className="font-light text-gray-500">{postDate}</p>
+          <p className="font-light text-gray-500">{commentEntity.createdAt}</p>
         </div>
       </div>
       <AlertDialog

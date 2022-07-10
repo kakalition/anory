@@ -15,16 +15,15 @@ type Params = {
 };
 
 export default function StoryTileComponent(params: Params) {
+  const navigator = useNavigate();
   const { userId, storyEntity, onAfterDelete = (() => null) } = params;
   const entity = StoryComponentEntity.prepare(storyEntity, 'brief');
-  const navigator = useNavigate();
   const {
     openDeleteDialog, deleteDialogComponent,
   } = useDeleteStory(storyEntity.id, onAfterDelete);
 
   const onEditMenuClick = () => navigator(`/story/edit/${storyEntity.id}`);
-  const onDeleteMenuClick = openDeleteDialog;
-  const baseEntityMenu = EntityMenuFactory.createEntityMenu(onEditMenuClick, onDeleteMenuClick);
+  const baseEntityMenu = EntityMenuFactory.createEntityMenu(onEditMenuClick, openDeleteDialog);
   const entityMenu = baseEntityMenu(userId, entity.authorId);
 
   const onCardClick = () => navigator(`/story/${entity.id}`);
