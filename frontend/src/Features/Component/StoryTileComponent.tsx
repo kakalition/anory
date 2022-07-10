@@ -1,13 +1,15 @@
-import React, { ReactFragment } from 'react';
+import React, { ReactFragment, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import StoryComponentEntity from '../../Function/ComponentEntity/StoryComponentEntity';
 import EntityMenuFactory from '../../Function/ComponentFactory/EntityMenuFactory';
 import useLike from '../../Hooks/UseLike';
 import StoryEntity from '../../Type/StoryEntity';
+import { AuthContext } from '../AuthenticationWrapper';
 import Spacer from '../Utilities/Spacer';
 import EyeIcon from './Icons/EyeIcon';
 import FilledChatAltIcon from './Icons/FilledChatAltIcon';
 import FilledHeartIcon from './Icons/FilledHeartIcon';
+import OutlinedHeartIcon from './Icons/OutlinedHeartIcon';
 import { useDeleteStory } from './ViewModel/useDeleteEntity';
 
 type Params = {
@@ -38,18 +40,23 @@ function ButtonCardWrapper(params: ButtonCardWrapperParams) {
 }
 
 type TileLayoutParams = {
+  type: 'brief' | 'detail',
   entity: StoryEntity,
   entityMenu: React.ReactNode,
   deleteDialogComponent: React.ReactNode,
-  containerCss? : string
 };
 
 function TileLayout({
-  entity, entityMenu, deleteDialogComponent,
+  type, entity, entityMenu, deleteDialogComponent,
 }: TileLayoutParams) {
   const {
     title, body, likes, commentsCount, views, createdAt,
   } = entity;
+
+  const user = useContext<any>(AuthContext);
+  const [totalLike, isLikedByMe, onHeartClick] = useLike({
+    userId: user.id, entityId: entity.id, likeData: likes, type: 'stories',
+  });
 
   return (
     <>
@@ -62,11 +69,16 @@ function TileLayout({
       <div className="flex flex-row justify-between w-full">
         <div className="flex flex-row">
           <div className="flex flex-row items-center">
-            <div className="w-8 h-8 fill-[#FF4033]">
-              <FilledHeartIcon />
-            </div>
+            <button
+              type="button"
+              className={`w-8 h-8 ${isLikedByMe ? 'fill-[#FF4033]' : 'stroke-[#FF4033] stroke-2 fill-transparent'}`}
+              onClick={onHeartClick}
+              disabled={type === 'brief'}
+            >
+              <OutlinedHeartIcon />
+            </button>
             <Spacer width="0.7rem" />
-            <p className="pt-[0.1rem] font-roboto text-lg">{likes.length}</p>
+            <p className="pt-[0.1rem] font-roboto text-lg">{totalLike}</p>
           </div>
           <Spacer width="1rem" />
           <div className="flex flex-row items-center">
@@ -109,10 +121,6 @@ export default function StoryTileComponent(params: Params) {
   const {
     openDeleteDialog, deleteDialogComponent,
   } = useDeleteStory(storyEntity.id, onAfterDelete);
-
-  const [totalLike, isLikedByMe, onHeartClick] = useLike({
-    userId, entityId: entity.id, likeData: entity.likes, type: 'stories',
-  });
 
   const onEditMenuClick = () => navigator(`/story/edit/${storyEntity.id}`);
   const baseEntityMenu = EntityMenuFactory.createEntityMenu(onEditMenuClick, openDeleteDialog);
