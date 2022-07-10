@@ -1,7 +1,7 @@
 import StoryEntity from '../../Type/StoryEntity';
 import LikeDataEntity from '../../Type/LikeDataEntity';
 
-const storyJsonMapper = (json: any) => {
+const storyJsonMapper = (json: any): StoryEntity => {
   const entity: StoryEntity = {
     id: json.id,
     authorId: json.author_id,

@@ -27,7 +27,6 @@ type Params = {
 
 export default function CommentTileComponent(params: Params) {
   const { userId, commentEntity, onAfterDelete = null } = params;
-  console.log(commentEntity);
 
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();

@@ -1,19 +1,27 @@
 import { useToast } from '@chakra-ui/react';
-import { useEffect, useMemo, useState } from 'react';
+import {
+  useContext, useEffect, useMemo, useState,
+} from 'react';
 import { useParams } from 'react-router-dom';
-import CommentTileMapper from '../../Mapper/CommentTileMapper';
-import APICallBuilder from '../../UseCases/APICallBuilder';
-import GetCommentsUseCase from '../../UseCases/Comment/GetCommentsUseCase';
+import { compose, prop, map } from 'ramda';
+import storyJsonMapper from '../../Function/Mapper/StoryJsonMapper';
+import commentJsonMapper from '../../Function/Mapper/CommentJSONMapper';
 import NewApiCallBuilder from '../../UseCases/NewAPICallBuilder';
-import GetStoryUseCase from '../../UseCases/Story/GetStoryUseCase';
-import StorySkeletonComponent from '../Component/StorySkeletonComponent';
-import StoryDetailTileComponent from './Components/StoryDetailTileComponent';
+import StoryEntity from '../../Type/StoryEntity';
+import CommentEntity from '../../Type/CommentEntity';
+import { AuthContext } from '../AuthenticationWrapper';
+import StoryComponentMapper from '../../Function/Mapper/StoryComponentMapper';
+import CommentComponentMapper from '../../Function/Mapper/CommentComponentMapper';
+
+// TODO: use mapper on axios response
+// change story detail to storytile and use storymapper
 
 export default function useStoryViewModel() {
   const params = useParams();
   const toast = useToast();
-  const [storyData, setStoryData] = useState<any>({});
-  const [commentsData, setCommentsData] = useState<any[]>([null, null, null]);
+  const user = useContext<any>(AuthContext);
+  const [storyData, setStoryData] = useState<StoryEntity | null>(null);
+  const [commentsData, setCommentsData] = useState<(CommentEntity | null)[]>([null, null, null]);
 
   const showToast = (status: any, title: String, description: String | null = null) => {
     toast({
@@ -49,15 +57,29 @@ export default function useStoryViewModel() {
     showToast('error', 'Failed to Post Comment!', message);
   };
 
+  const onFetchStorySuccess = compose(
+    setStoryData,
+    storyJsonMapper,
+    prop<string, any>('data'),
+  );
+
   const fetchStoryAPI = NewApiCallBuilder.getInstance()
     .addEndpoint(`api/stories/${params.id}`)
-    .addOnSuccess((response) => setStoryData(response.data))
+    .addMethod('GET')
+    .addOnSuccess(onFetchStorySuccess)
     .addOnFailed((error) => showToast('error', 'Failed to Get Story!', error.response.data.message));
 
+  const onFetchCommentsSuccess = compose(
+    setCommentsData,
+    map(commentJsonMapper),
+    prop<string, any>('data'),
+  );
+
   const fetchCommentsAPI = NewApiCallBuilder.getInstance()
-    .addEndpoint(`/api/stories${params.id}/comments`)
-    .addOnSuccess((response) => setCommentsData(response.data))
-    .addOnFailed((error) => showToast('error', 'Failed to Get Story!', error.response.data.message));
+    .addEndpoint(`api/stories/${params.id}/comments`)
+    .addMethod('GET')
+    .addOnSuccess(onFetchCommentsSuccess)
+    .addOnFailed((error) => showToast('error', 'Failed to Get Comment!', error.response.data.message));
 
   useEffect(() => {
     if (params.id === undefined) return;
@@ -66,30 +88,20 @@ export default function useStoryViewModel() {
     fetchCommentsAPI.call();
   }, []);
 
-  const storyTileElement = useMemo(() => {
-    if (storyData.id === undefined) return <StorySkeletonComponent />;
-
-    return (
-      <StoryDetailTileComponent
-        id={storyData.id}
-        title={storyData.title}
-        body={storyData.body}
-        likeData={storyData.likes}
-        totalViews={storyData.views}
-        uploadedAt={(new Date(storyData.created_at)).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
-      />
-    );
-  }, [storyData]);
+  const storyTileElement = useMemo(
+    () => StoryComponentMapper.single(user.id, storyData, fetchStoryAPI.call),
+    [storyData],
+  );
 
   const commentsElement = useMemo(
-    () => CommentTileMapper.handle(commentsData),
+    () => CommentComponentMapper.array(user.id, commentsData, fetchCommentsAPI.call),
     [commentsData],
   );
 
   return {
     storyTileElement,
     commentsElement,
-    storyId: storyData.id,
+    storyId: storyData?.id,
     commentsCount: commentsData.filter((value) => value !== null).length,
     onInitialCommentCallback,
     onSuccessfullCommentCallback,
