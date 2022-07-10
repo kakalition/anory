@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import CommentTileMapper from '../../Mapper/CommentTileMapper';
 import APICallBuilder from '../../UseCases/APICallBuilder';
 import GetCommentsUseCase from '../../UseCases/Comment/GetCommentsUseCase';
+import NewApiCallBuilder from '../../UseCases/NewAPICallBuilder';
 import GetStoryUseCase from '../../UseCases/Story/GetStoryUseCase';
 import StorySkeletonComponent from '../Component/StorySkeletonComponent';
 import StoryDetailTileComponent from './Components/StoryDetailTileComponent';
@@ -48,26 +49,21 @@ export default function useStoryViewModel() {
     showToast('error', 'Failed to Post Comment!', message);
   };
 
-  const getStoryAPI = new APICallBuilder()
-    .addAction(GetStoryUseCase.create())
+  const fetchStoryAPI = NewApiCallBuilder.getInstance()
+    .addEndpoint(`api/stories/${params.id}`)
     .addOnSuccess((response) => setStoryData(response.data))
     .addOnFailed((error) => showToast('error', 'Failed to Get Story!', error.response.data.message));
 
-  const getCommentsAPI = new APICallBuilder()
-    .addAction(GetCommentsUseCase.create())
+  const fetchCommentsAPI = NewApiCallBuilder.getInstance()
+    .addEndpoint(`/api/stories${params.id}/comments`)
     .addOnSuccess((response) => setCommentsData(response.data))
     .addOnFailed((error) => showToast('error', 'Failed to Get Story!', error.response.data.message));
 
   useEffect(() => {
     if (params.id === undefined) return;
 
-    getStoryAPI
-      .addPayload({ id: params.id })
-      .call();
-
-    getCommentsAPI
-      .addPayload({ id: params.id })
-      .call();
+    fetchStoryAPI.call();
+    fetchCommentsAPI.call();
   }, []);
 
   const storyTileElement = useMemo(() => {
