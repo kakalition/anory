@@ -1,23 +1,12 @@
 import {
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogOverlay,
-  Button,
-  IconButton, Menu, MenuButton, MenuItem, MenuList, useDisclosure, useToast,
+  IconButton, Menu, MenuButton, MenuItem, MenuList,
 } from '@chakra-ui/react';
-import React, {
-  useMemo, useRef,
-} from 'react';
 import useLike from '../../Hooks/UseLike';
 import Spacer from '../Utilities/Spacer';
 import OutlinedHeartIcon from './Icons/OutlinedHeartIcon';
 import ThreeDotsIcon from './Icons/ThreeDotsIcon';
-import DeleteCommentUseCase from '../../UseCases/Comment/DeleteCommentUseCase';
-import APICallBuilder from '../../UseCases/APICallBuilder';
 import CommentEntity from '../../Type/CommentEntity';
+import { useDeleteComment } from './ViewModel/useDeleteEntity';
 
 type Params = {
   userId: number,
@@ -26,43 +15,18 @@ type Params = {
 };
 
 export default function CommentTileComponent(params: Params) {
-  const { userId, commentEntity, onAfterDelete = null } = params;
+  const { userId, commentEntity, onAfterDelete = () => null } = params;
 
-  const toast = useToast();
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const cancelRef = useRef<any>(null);
+  const { openDeleteDialog, deleteDialogComponent } = useDeleteComment(
+    commentEntity.id,
+    onAfterDelete,
+  );
+
   const [totalLike, isLikedByMe, onHeartClick] = useLike({
     userId, entityId: commentEntity.id, likeData: commentEntity.likeData, type: 'comments',
   });
 
-  const onDeleteCommentSuccess = () => {
-    onClose();
-    toast({
-      title: 'Delete Successful.',
-      position: 'top',
-      status: 'success',
-    });
-    onAfterDelete?.();
-  };
-
-  const onDeleteCommentFailed = () => {
-    onClose();
-    toast({
-      title: 'Failed to delete comment.',
-      position: 'top',
-      status: 'error',
-    });
-  };
-
-  const deleteCommentAPI = new APICallBuilder()
-    .addAction(DeleteCommentUseCase.create())
-    .addPayload({ id: commentEntity.id })
-    .addOnSuccess(onDeleteCommentSuccess)
-    .addOnFailed(onDeleteCommentFailed);
-
-  const onDeleteClick: React.MouseEventHandler = () => deleteCommentAPI.call();
-
-  const menuElement = useMemo(() => {
+  const generateMenuElement = () => {
     if (commentEntity.commenteeId === userId) {
       return (
         <Menu>
@@ -74,14 +38,16 @@ export default function CommentTileComponent(params: Params) {
           />
           <MenuList>
             <MenuItem>Edit</MenuItem>
-            <MenuItem onClick={onOpen}>Delete</MenuItem>
+            <MenuItem onClick={openDeleteDialog}>Delete</MenuItem>
           </MenuList>
         </Menu>
       );
     }
 
     return <div />;
-  }, []);
+  };
+
+  const menuElement = generateMenuElement();
 
   return (
     <>
@@ -108,37 +74,7 @@ export default function CommentTileComponent(params: Params) {
           <p className="font-light text-gray-500">{commentEntity.createdAt}</p>
         </div>
       </div>
-      <AlertDialog
-        isOpen={isOpen}
-        leastDestructiveRef={cancelRef}
-        onClose={onClose}
-        isCentered
-      >
-        <AlertDialogOverlay>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              Delete Comment
-            </AlertDialogHeader>
-            <AlertDialogBody>
-              Are you sure? This action cannot be undone.
-            </AlertDialogBody>
-            <AlertDialogFooter>
-              <Button ref={cancelRef} onClick={onClose}>
-                Cancel
-              </Button>
-              <Spacer width="1rem" />
-              <Button
-                bg="#FF6961"
-                textColor="#FFFFFF"
-                _hover={{ bg: '#E04D46' }}
-                onClick={onDeleteClick}
-              >
-                Delete
-              </Button>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialogOverlay>
-      </AlertDialog>
+      {deleteDialogComponent}
     </>
   );
 }

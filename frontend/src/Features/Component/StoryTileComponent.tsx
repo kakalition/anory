@@ -1,4 +1,4 @@
-import React, { ReactFragment, useContext } from 'react';
+import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import StoryComponentEntity from '../../Function/ComponentEntity/StoryComponentEntity';
 import EntityMenuFactory from '../../Function/ComponentFactory/EntityMenuFactory';
@@ -8,7 +8,6 @@ import { AuthContext } from '../AuthenticationWrapper';
 import Spacer from '../Utilities/Spacer';
 import EyeIcon from './Icons/EyeIcon';
 import FilledChatAltIcon from './Icons/FilledChatAltIcon';
-import FilledHeartIcon from './Icons/FilledHeartIcon';
 import OutlinedHeartIcon from './Icons/OutlinedHeartIcon';
 import { useDeleteStory } from './ViewModel/useDeleteEntity';
 
@@ -135,6 +134,7 @@ export default function StoryTileComponent(params: Params) {
     ? (
       <ButtonCardWrapper containerCss={containerCss} onCardClick={onCardClick}>
         <TileLayout
+          type={type}
           entity={entity}
           entityMenu={entityMenu}
           deleteDialogComponent={deleteDialogComponent}
@@ -143,10 +143,10 @@ export default function StoryTileComponent(params: Params) {
     )
     : (
       <TileLayout
+        type={type}
         entity={entity}
         entityMenu={entityMenu}
         deleteDialogComponent={deleteDialogComponent}
-        containerCss={containerCss}
       />
     );
 

@@ -40,7 +40,7 @@ export default function useStoryViewModel() {
     setCommentsData(temporary);
   };
 
-  const onSuccessfullCommentCallback = (commentData: any) => {
+  const onSuccessfullCommentCallback = (commentData: CommentEntity) => {
     if (commentsData === null) return;
     const temporary = [...commentsData.filter((value) => value !== null)];
     temporary.unshift(commentData);
@@ -69,8 +69,14 @@ export default function useStoryViewModel() {
     .addOnSuccess(onFetchStorySuccess)
     .addOnFailed((error) => showToast('error', 'Failed to Get Story!', error.response.data.message));
 
+  const log = (a: any) => {
+    console.log(a);
+    return a;
+  };
+
   const onFetchCommentsSuccess = compose(
     setCommentsData,
+    log,
     map(commentJsonMapper),
     prop<string, any>('data'),
   );

@@ -3,6 +3,7 @@ import {
 } from '@chakra-ui/react';
 import { AxiosResponse } from 'axios';
 import { useMemo } from 'react';
+import commentJsonMapper from '../../Function/Mapper/CommentJSONMapper';
 import APICallBuilder from '../../UseCases/APICallBuilder';
 import { PostCommentPayload } from '../../UseCases/Comment/Payload/PostCommentPayload';
 import PostCommentUseCase from '../../UseCases/Comment/PostCommentUseCase';
@@ -24,7 +25,7 @@ export default function CommentSectionComponent(params: Params) {
   } = params;
 
   const onPostCommentSuccess = (response: AxiosResponse) => {
-    onSuccessfullCommentCallback(response.data);
+    onSuccessfullCommentCallback(commentJsonMapper(response.data));
     (document.getElementById('comment') as HTMLTextAreaElement).value = '';
   };
 
