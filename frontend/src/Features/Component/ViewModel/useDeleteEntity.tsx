@@ -3,13 +3,18 @@ import {
   AlertDialogHeader, AlertDialogOverlay, Button, useDisclosure, useToast,
 } from '@chakra-ui/react';
 import { useRef } from 'react';
+import { curry } from 'ramda';
+import _ from 'lodash';
 import NewApiCallBuilder from '../../../UseCases/NewAPICallBuilder';
 import Spacer from '../../Utilities/Spacer';
+import String from '../../../Function/Helper/String';
 
-export default function useDeleteComment(id: number, onAfterDelete?: () => void) {
+const baseUseDeleteEntity = (type: 'story' | 'comment', id: number, onAfterDelete: (() => void)) => {
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = useRef<any>(null);
+
+  const apiResource = type === 'story' ? 'stories' : 'comments';
 
   const onDeleteStorySuccess = () => {
     onClose();
@@ -24,14 +29,14 @@ export default function useDeleteComment(id: number, onAfterDelete?: () => void)
   const onDeleteStoryFailed = () => {
     onClose();
     toast({
-      title: 'Failed to delete comment.',
+      title: `Failed to delete ${type}.`,
       position: 'top',
       status: 'error',
     });
   };
 
   const deleteStoryAPI = NewApiCallBuilder.getInstance()
-    .addEndpoint(`api/stories/${id}`)
+    .addEndpoint(`api/${apiResource}/${id}`)
     .addMethod('DELETE')
     .addOnSuccess(onDeleteStorySuccess)
     .addOnFailed(onDeleteStoryFailed);
@@ -46,7 +51,7 @@ export default function useDeleteComment(id: number, onAfterDelete?: () => void)
       <AlertDialogOverlay>
         <AlertDialogContent>
           <AlertDialogHeader>
-            Delete Story
+            {`Delete ${_.capitalize(type)}`}
           </AlertDialogHeader>
           <AlertDialogBody>
             Are you sure? This action cannot be undone.
@@ -74,4 +79,9 @@ export default function useDeleteComment(id: number, onAfterDelete?: () => void)
     openDeleteDialog: onOpen,
     deleteDialogComponent: component,
   };
-}
+};
+
+const useDeleteEntity = curry(baseUseDeleteEntity);
+
+export const useDeleteStory = useDeleteEntity('story');
+export const useDeleteComment = useDeleteEntity('comment');

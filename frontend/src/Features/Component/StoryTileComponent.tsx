@@ -6,7 +6,7 @@ import Spacer from '../Utilities/Spacer';
 import EyeIcon from './Icons/EyeIcon';
 import FilledChatAltIcon from './Icons/FilledChatAltIcon';
 import FilledHeartIcon from './Icons/FilledHeartIcon';
-import useDeleteStory from './ViewModel/useDeleteStory';
+import { useDeleteStory } from './ViewModel/useDeleteEntity';
 
 type Params = {
   userId: number,
@@ -15,10 +15,12 @@ type Params = {
 };
 
 export default function StoryTileComponent(params: Params) {
-  const { userId, storyEntity, onAfterDelete } = params;
+  const { userId, storyEntity, onAfterDelete = (() => null) } = params;
   const entity = StoryComponentEntity.prepare(storyEntity, 'brief');
   const navigator = useNavigate();
-  const { openDeleteDialog, deleteDialogComponent } = useDeleteStory(storyEntity.id, onAfterDelete);
+  const {
+    openDeleteDialog, deleteDialogComponent,
+  } = useDeleteStory(storyEntity.id, onAfterDelete);
 
   const onEditMenuClick = () => navigator(`/story/edit/${storyEntity.id}`);
   const onDeleteMenuClick = openDeleteDialog;

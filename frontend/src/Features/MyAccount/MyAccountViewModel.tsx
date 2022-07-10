@@ -27,7 +27,11 @@ export default function useMyAccountViewModel() {
       setStoriesData(response.data.map(storyJSONMapper));
     });
 
-  const storiesElement = useMemo(() => storyComponentMapper(user.id, storiesData), [storiesData]);
+  const storiesElement = useMemo(
+    () => storyComponentMapper(user.id, storiesData, () => fetchStoriesData.call()),
+    [storiesData],
+  );
+
   const commentsElement = useMemo(
     () => CommentTileMapper.handle(commentsData, () => fetchCommentsAPI.call()),
     [commentsData],
