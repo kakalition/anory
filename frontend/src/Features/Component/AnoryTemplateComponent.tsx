@@ -24,7 +24,7 @@ export default function AnoryTemplateComponent(params: Params) {
   const [activeTab, setActiveTab] = useState('alls');
 
   return (
-    <div className="flex flex-col w-screen h-screen bg-[#FFFCFC]">
+    <div className="flex overflow-hidden flex-col w-screen h-screen bg-[#FFFCFC]">
       <div className="w-full h-[8%]">
         <TopBarComponent />
       </div>
@@ -32,7 +32,7 @@ export default function AnoryTemplateComponent(params: Params) {
         <div className="w-[20%] h-full">
           <SideNavBarComponent activeTab={activeTab} />
         </div>
-        <div className="overflow-y-scroll px-4 pt-8 w-[80%]">
+        <div className="overflow-y-scroll pt-8 pr-16 pl-4 w-[80%]">
           {children}
         </div>
       </div>

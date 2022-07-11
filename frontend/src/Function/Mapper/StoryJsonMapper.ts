@@ -1,5 +1,6 @@
+import { map } from 'ramda';
 import StoryEntity from '../../Type/StoryEntity';
-import LikeDataEntity from '../../Type/LikeDataEntity';
+import EntityJsonMapper from './EntityJsonMapper';
 
 const storyJsonMapper = (json: any): StoryEntity => {
   const entity: StoryEntity = {
@@ -10,13 +11,7 @@ const storyJsonMapper = (json: any): StoryEntity => {
       name: json.category.name,
     },
     commentsCount: json.comments_count,
-    likes: json.likes.map((element: any) => ({
-      id: element.id,
-      likeeId: element.likee_id,
-      likeableId: element.likeable_id,
-      likeableType: element.likeable_type,
-      createdAt: element.created_at,
-    }) as LikeDataEntity),
+    likes: map(EntityJsonMapper.likeData, json.likes),
     views: json.views,
     title: json.title,
     body: json.body,

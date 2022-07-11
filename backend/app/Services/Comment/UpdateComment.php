@@ -5,10 +5,11 @@ namespace App\Services\Comment;
 use App\Exceptions\CommentNotFoundException;
 use App\Models\Comment;
 use App\Services\BaseService;
+use App\Services\BaseServiceValidation;
 
-class UpdateComment extends BaseService
+class UpdateComment extends BaseServiceValidation
 {
-  protected function rules($data)
+  protected function validationRules(array $data): array
   {
     return [
       'comment_id' => 'required|integer',

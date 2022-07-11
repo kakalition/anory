@@ -7,6 +7,7 @@ import OutlinedHeartIcon from './Icons/OutlinedHeartIcon';
 import ThreeDotsIcon from './Icons/ThreeDotsIcon';
 import CommentEntity from '../../Type/CommentEntity';
 import { useDeleteComment } from './ViewModel/useDeleteEntity';
+import useEditComment from './ViewModel/useEditComment';
 
 type Params = {
   userId: number,
@@ -20,6 +21,11 @@ export default function CommentTileComponent(params: Params) {
   const { openDeleteDialog, deleteDialogComponent } = useDeleteComment(
     commentEntity.id,
     onAfterDelete,
+  );
+
+  const { openEditDialog, editDialogComponent } = useEditComment(
+    commentEntity.id,
+    commentEntity.comment,
   );
 
   const [totalLike, isLikedByMe, onHeartClick] = useLike({
@@ -37,7 +43,7 @@ export default function CommentTileComponent(params: Params) {
             variant="outline"
           />
           <MenuList>
-            <MenuItem>Edit</MenuItem>
+            <MenuItem onClick={openEditDialog}>Edit</MenuItem>
             <MenuItem onClick={openDeleteDialog}>Delete</MenuItem>
           </MenuList>
         </Menu>
@@ -75,6 +81,7 @@ export default function CommentTileComponent(params: Params) {
         </div>
       </div>
       {deleteDialogComponent}
+      {editDialogComponent}
     </>
   );
 }

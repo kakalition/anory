@@ -17,11 +17,10 @@ import APICallBuilder from './UseCases/APICallBuilder';
 import LogoutUseCase from './UseCases/Auth/LogoutUseCase';
 import StoryEditorPage from './Features/StoryEditor/StoryEditorPage';
 
-// TOOD: Create modal for comment editor
-// TODO: Create comment edit delete use case
-
 // TODO: Handle side nav highlight
-// TODO: Moves story creation in its own page
+// TODO: Fix bug: able to update comment but likedata is messed up
+
+// TOOD NOW: Create onAfterEdit hook
 
 axios.defaults.withCredentials = true;
 
