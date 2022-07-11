@@ -18,9 +18,6 @@ import LogoutUseCase from './UseCases/Auth/LogoutUseCase';
 import StoryEditorPage from './Features/StoryEditor/StoryEditorPage';
 
 // TODO: Handle side nav highlight
-// TODO: Fix bug: able to update comment but likedata is messed up
-
-// TOOD NOW: Create onAfterEdit hook
 
 axios.defaults.withCredentials = true;
 
