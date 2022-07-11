@@ -7,38 +7,39 @@ import { useRef, useState } from 'react';
 import NewApiCallBuilder from '../../../UseCases/NewAPICallBuilder';
 import Spacer from '../../Utilities/Spacer';
 
-const useEditComment = (id: number, initialComment: string) => {
+const useEditComment = (id: number, initialComment: string, onAfterEdit?: () => void) => {
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = useRef<any>(null);
 
   const [comment, setComment] = useState(initialComment);
 
-  const onDeleteStorySuccess = () => {
-    onClose();
+  const onEditCommentSuccess = () => {
     toast({
       title: 'Update Successful.',
       position: 'top',
       status: 'success',
     });
+    onAfterEdit?.();
+    onClose();
   };
 
-  const onDeleteStoryFailed = (error: any) => {
-    onClose();
+  const onEditCommentFailed = (error: any) => {
     toast({
       title: 'Failed to update story.',
       description: error.response.data.message,
       position: 'top',
       status: 'error',
     });
+    onClose();
   };
 
   const editCommentAPI = NewApiCallBuilder.getInstance()
     .addEndpoint(`api/comments/${id}`)
     .addMethod('PATCH')
     .addPayload({ comment })
-    .addOnSuccess(onDeleteStorySuccess)
-    .addOnFailed(onDeleteStoryFailed);
+    .addOnSuccess(onEditCommentSuccess)
+    .addOnFailed(onEditCommentFailed);
 
   const component = (
     <Modal

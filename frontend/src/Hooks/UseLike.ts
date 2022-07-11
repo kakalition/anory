@@ -23,8 +23,6 @@ export default function useLike(params: Params): [number, boolean, React.MouseEv
     likeData.find((value) => value.likeeId === userId),
   );
 
-  console.log(likeByMeData);
-
   const showFailedToast = (toastTitle: String) => {
     toast({
       title: toastTitle,

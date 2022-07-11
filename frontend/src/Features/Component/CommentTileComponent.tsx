@@ -12,11 +12,17 @@ import useEditComment from './ViewModel/useEditComment';
 type Params = {
   userId: number,
   commentEntity: CommentEntity,
-  onAfterDelete: (() => void) | undefined
+  onAfterDelete?: () => void,
+  onAfterEdit?: () => void,
 };
 
 export default function CommentTileComponent(params: Params) {
-  const { userId, commentEntity, onAfterDelete = () => null } = params;
+  const {
+    userId,
+    commentEntity,
+    onAfterDelete = () => null,
+    onAfterEdit = () => null,
+  } = params;
 
   const { openDeleteDialog, deleteDialogComponent } = useDeleteComment(
     commentEntity.id,
@@ -26,6 +32,7 @@ export default function CommentTileComponent(params: Params) {
   const { openEditDialog, editDialogComponent } = useEditComment(
     commentEntity.id,
     commentEntity.comment,
+    onAfterEdit,
   );
 
   const [totalLike, isLikedByMe, onHeartClick] = useLike({

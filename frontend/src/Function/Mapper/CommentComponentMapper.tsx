@@ -7,6 +7,7 @@ namespace CommentComponentMapper {
     userId: number,
     entities: (CommentEntity | null)[],
     onAfterDelete?: () => void,
+    onAfterEdit?: () => void,
   ) => {
     const mappedComponent = entities.map((element) => {
       if (element === null) return <CommentSkeletonComponent key={Math.random()} />;
@@ -16,6 +17,7 @@ namespace CommentComponentMapper {
           userId={userId}
           commentEntity={element}
           onAfterDelete={onAfterDelete}
+          onAfterEdit={onAfterEdit}
         />
       );
     });
