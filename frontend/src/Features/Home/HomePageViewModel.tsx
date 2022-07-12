@@ -12,6 +12,7 @@ import StoryComponentMapper from '../../Function/Mapper/StoryComponentMapper';
 export default function useHomePageViewModel() {
   const toast = useToast();
   const user = useContext<any>(AuthContext);
+  const [count, setCount] = useState(10);
 
   const [storiesData, setStoriesData] = useState<(StoryEntity | null)[]>(
     [null, null, null, null, null]);
@@ -35,7 +36,7 @@ export default function useHomePageViewModel() {
 
   const getStoriesAPI = NewApiCallBuilder.getInstance()
     .addEndpoint('api/stories')
-    .addParams({ count: 10 })
+    .addParams({ count })
     .addOnSuccess(onGetStoriesSuccess)
     .addOnFailed(onGetStoriesFailed);
 
@@ -45,6 +46,14 @@ export default function useHomePageViewModel() {
     setIsStoriesDirty(false);
   }, [isStoriesDirty]);
 
+  const [shouldRefetch, setShouldRefetch] = useState(false);
+  useEffect(() => {
+    setCount(count + 10);
+    getStoriesAPI
+      .addParams({ count: count + 10 })
+      .call();
+  }, [shouldRefetch]);
+
   const storiesElement = useMemo(
     () => StoryComponentMapper.array(user.id, storiesData, () => setIsStoriesDirty(true)),
     [storiesData],
@@ -52,5 +61,6 @@ export default function useHomePageViewModel() {
 
   return {
     storiesElement,
+    refetchStories: () => setShouldRefetch(true),
   };
 }

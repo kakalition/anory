@@ -1,10 +1,23 @@
 import { Select } from '@chakra-ui/react';
+import { useEffect } from 'react';
+import HtmlHelper from '../../Function/Helper/HtmlHelper';
 import AnoryTemplateComponent from '../Component/AnoryTemplateComponent';
 import Spacer from '../Utilities/Spacer';
 import useHomePageViewModel from './HomePageViewModel';
 
 export default function HomePage() {
-  const { storiesElement } = useHomePageViewModel();
+  const { storiesElement, refetchStories } = useHomePageViewModel();
+
+  const scrollListener: EventListener = (event) => {
+    const target = event.target as HTMLDivElement;
+    const isAtBottom = HtmlHelper.isScrolledToBottom(50, target);
+  };
+
+  useEffect(() => {
+    const root = document.getElementById('anory-content') as HTMLDivElement;
+    root.addEventListener('scroll', scrollListener);
+    return () => root.removeEventListener('scroll', scrollListener);
+  }, []);
 
   return (
     <AnoryTemplateComponent>
