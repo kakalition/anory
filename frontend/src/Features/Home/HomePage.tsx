@@ -6,7 +6,7 @@ import Spacer from '../Utilities/Spacer';
 import useHomePageViewModel from './HomePageViewModel';
 
 export default function HomePage() {
-  const { storiesElement, markShouldRefetchDirty } = useHomePageViewModel();
+  const { storiesElement, markShouldRefetchDirty, showSpinner } = useHomePageViewModel();
 
   const scrollListener: EventListener = (event) => {
     const target = event.target as HTMLDivElement;
@@ -40,7 +40,7 @@ export default function HomePage() {
       <Spacer height="1.5rem" />
       <div className="flex flex-col gap-6 justify-center items-center">
         {storiesElement}
-        <Spinner size="lg" />
+        { showSpinner ? <Spinner size="lg" /> : null }
       </div>
       <Spacer height="1.5rem" />
     </AnoryTemplateComponent>
