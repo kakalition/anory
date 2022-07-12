@@ -8,11 +8,12 @@ import storyJsonMapper from '../../Function/Mapper/StoryJsonMapper';
 import StoryEntity from '../../Type/StoryEntity';
 import NewApiCallBuilder from '../../UseCases/NewAPICallBuilder';
 import StoryComponentMapper from '../../Function/Mapper/StoryComponentMapper';
+import useDirty from '../../Hooks/UseDirty';
 
 export default function useHomePageViewModel() {
   const toast = useToast();
   const user = useContext<any>(AuthContext);
-  const [count, setCount] = useState(10);
+  const [count, setCount] = useState(0);
 
   const [storiesData, setStoriesData] = useState<(StoryEntity | null)[]>(
     [null, null, null, null, null]);
@@ -46,13 +47,13 @@ export default function useHomePageViewModel() {
     setIsStoriesDirty(false);
   }, [isStoriesDirty]);
 
-  const [shouldRefetch, setShouldRefetch] = useState(false);
+  const [shouldRefetchMark, markShouldRefetchDirty] = useDirty();
   useEffect(() => {
     setCount(count + 10);
     getStoriesAPI
       .addParams({ count: count + 10 })
       .call();
-  }, [shouldRefetch]);
+  }, [shouldRefetchMark]);
 
   const storiesElement = useMemo(
     () => StoryComponentMapper.array(user.id, storiesData, () => setIsStoriesDirty(true)),
@@ -61,6 +62,6 @@ export default function useHomePageViewModel() {
 
   return {
     storiesElement,
-    refetchStories: () => setShouldRefetch(true),
+    markShouldRefetchDirty,
   };
 }

@@ -1,4 +1,4 @@
-import { Select } from '@chakra-ui/react';
+import { Select, Spinner } from '@chakra-ui/react';
 import { useEffect } from 'react';
 import HtmlHelper from '../../Function/Helper/HtmlHelper';
 import AnoryTemplateComponent from '../Component/AnoryTemplateComponent';
@@ -6,11 +6,13 @@ import Spacer from '../Utilities/Spacer';
 import useHomePageViewModel from './HomePageViewModel';
 
 export default function HomePage() {
-  const { storiesElement, refetchStories } = useHomePageViewModel();
+  const { storiesElement, markShouldRefetchDirty } = useHomePageViewModel();
 
   const scrollListener: EventListener = (event) => {
     const target = event.target as HTMLDivElement;
-    const isAtBottom = HtmlHelper.isScrolledToBottom(50, target);
+    const isAtBottom = HtmlHelper.isScrolledToBottom(0, target);
+
+    if (isAtBottom) markShouldRefetchDirty();
   };
 
   useEffect(() => {
@@ -36,8 +38,9 @@ export default function HomePage() {
         </Select>
       </div>
       <Spacer height="1.5rem" />
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-6 justify-center items-center">
         {storiesElement}
+        <Spinner size="lg" />
       </div>
       <Spacer height="1.5rem" />
     </AnoryTemplateComponent>
