@@ -18,6 +18,7 @@ import LogoutUseCase from './UseCases/Auth/LogoutUseCase';
 import StoryEditorPage from './Features/StoryEditor/StoryEditorPage';
 
 // TODO: Handle side nav highlight
+// TODO: Find way to design layout without nesting button
 
 axios.defaults.withCredentials = true;
 

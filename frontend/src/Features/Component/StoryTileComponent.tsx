@@ -121,8 +121,17 @@ export default function StoryTileComponent(params: Params) {
     openDeleteDialog, deleteDialogComponent,
   } = useDeleteStory(storyEntity.id, onAfterDelete);
 
-  const onEditMenuClick = () => navigator(`/story/edit/${storyEntity.id}`);
-  const baseEntityMenu = EntityMenuFactory.createEntityMenu(onEditMenuClick, openDeleteDialog);
+  const onEditMenuClick: React.MouseEventHandler = (event) => {
+    event.stopPropagation();
+    navigator(`/story/edit/${storyEntity.id}`);
+  };
+
+  const onDeleteMenuClick: React.MouseEventHandler = (event) => {
+    event.stopPropagation();
+    openDeleteDialog();
+  };
+
+  const baseEntityMenu = EntityMenuFactory.createEntityMenu(onEditMenuClick, onDeleteMenuClick);
   const entityMenu = baseEntityMenu(userId, entity.authorId);
 
   const onCardClick = () => navigator(`/story/${entity.id}`);

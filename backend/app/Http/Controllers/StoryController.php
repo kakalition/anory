@@ -65,7 +65,7 @@ class StoryController extends Controller
     try {
       $story = $createNewStory->handle([
         'author_id' => $request->user()->id,
-        'category_id' => $request->input('categoryId'),
+        'category_id' => $request->input('category_id'),
         'title' => $request->input('title'),
         'body' => $request->input('body'),
       ]);

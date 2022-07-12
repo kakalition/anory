@@ -36,8 +36,8 @@ namespace EntityMenuFactory {
   * (userId -> (commenteeId -> React.ReactNode))
   */
   export const createEntityMenu = (
-    onEditCallback: () => void,
-    onDeleteCallback: () => void,
+    onEditCallback: React.MouseEventHandler,
+    onDeleteCallback: React.MouseEventHandler,
   ) => {
     const menuItems = (
       <>

@@ -6,15 +6,15 @@ import { AxiosResponse } from 'axios';
 import { AuthContext } from '../AuthenticationWrapper';
 import storyJsonMapper from '../../Function/Mapper/StoryJsonMapper';
 import StoryEntity from '../../Type/StoryEntity';
-import storyComponentMapper from '../../Function/Mapper/StoryComponentMapper';
 import NewApiCallBuilder from '../../UseCases/NewAPICallBuilder';
+import StoryComponentMapper from '../../Function/Mapper/StoryComponentMapper';
 
 export default function useHomePageViewModel() {
   const toast = useToast();
   const user = useContext<any>(AuthContext);
-  const [storyData, setStoryData] = useState<StoryEntity[] | null[]>(
-    [null, null, null, null, null],
-  );
+
+  const [storiesData, setStoriesData] = useState<(StoryEntity | null)[]>(
+    [null, null, null, null, null]);
 
   const showToast = (status: any, title: String, description: String | null = null) => {
     toast({
@@ -27,8 +27,8 @@ export default function useHomePageViewModel() {
   };
 
   const onGetStoriesSuccess = (response: AxiosResponse) => {
-    const entities = response.data.map((element: any) => storyJsonMapper(element));
-    setStoryData(entities);
+    const entities = response.data.map(storyJsonMapper);
+    setStoriesData(entities);
   };
 
   const onGetStoriesFailed = (error: any) => showToast('error', error.response.data);
@@ -39,14 +39,16 @@ export default function useHomePageViewModel() {
     .addOnSuccess(onGetStoriesSuccess)
     .addOnFailed(onGetStoriesFailed);
 
-  const storiesElement = useMemo(
-    () => storyComponentMapper(user.id, storyData, getStoriesAPI.call),
-    [storyData],
-  );
-
+  const [isStoriesDirty, setIsStoriesDirty] = useState(true);
   useEffect(() => {
     getStoriesAPI.call();
-  }, []);
+    setIsStoriesDirty(false);
+  }, [isStoriesDirty]);
+
+  const storiesElement = useMemo(
+    () => StoryComponentMapper.array(user.id, storiesData, () => setIsStoriesDirty(true)),
+    [storiesData],
+  );
 
   return {
     storiesElement,
