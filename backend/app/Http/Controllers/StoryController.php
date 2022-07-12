@@ -50,13 +50,14 @@ class StoryController extends Controller
   {
     try {
       $stories = $getUserStories->handle(
-        $request->route('user')
+        auth()->user()->id,
+        $request->query('count')
       );
     } catch (Exception $exception) {
       return response($exception->getMessage(), 500);
     }
 
-    return response($stories, 200);
+    return response(StoryResource::collection($stories), 200);
   }
 
   public function store(Request $request, CreateNewStory $createNewStory)
@@ -64,7 +65,7 @@ class StoryController extends Controller
     try {
       $story = $createNewStory->handle([
         'author_id' => $request->user()->id,
-        'category_id' => $request->input('categoryId'),
+        'category_id' => $request->input('category_id'),
         'title' => $request->input('title'),
         'body' => $request->input('body'),
       ]);

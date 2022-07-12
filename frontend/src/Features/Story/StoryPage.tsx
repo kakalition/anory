@@ -17,7 +17,7 @@ export default function StoryPage() {
       </div>
       <Spacer height="2rem" />
       <CommentSectionComponent
-        storyId={storyId}
+        storyId={storyId ?? -1}
         commentsCount={commentsCount}
         onInitialCommentCallback={onInitialCommentCallback}
         onSuccessfullCommentCallback={onSuccessfullCommentCallback}

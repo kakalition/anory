@@ -24,7 +24,7 @@ export default function AnoryTemplateComponent(params: Params) {
   const [activeTab, setActiveTab] = useState('alls');
 
   return (
-    <div className="flex flex-col w-screen h-screen bg-[#FFFCFC]">
+    <div className="flex overflow-hidden flex-col w-screen h-screen bg-[#FFFCFC]">
       <div className="w-full h-[8%]">
         <TopBarComponent />
       </div>

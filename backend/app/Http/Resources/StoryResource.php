@@ -11,7 +11,7 @@ class StoryResource extends JsonResource
     return [
       'id' => $this->id,
       'author_id' => $this->author_id,
-      'category' => $this->categoryName(),
+      'category' => $this->category(),
       'views' => $this->views,
       'likes' => $this->likeData()->get(),
       'comments_count' => $this->totalComments(),

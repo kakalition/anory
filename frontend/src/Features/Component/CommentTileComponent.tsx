@@ -1,73 +1,46 @@
 import {
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogOverlay,
-  Button,
-  IconButton, Menu, MenuButton, MenuItem, MenuList, useDisclosure, useToast,
+  IconButton, Menu, MenuButton, MenuItem, MenuList,
 } from '@chakra-ui/react';
-import React, {
-  useContext, useMemo, useRef,
-} from 'react';
 import useLike from '../../Hooks/UseLike';
-import { AuthContext } from '../AuthenticationWrapper';
 import Spacer from '../Utilities/Spacer';
 import OutlinedHeartIcon from './Icons/OutlinedHeartIcon';
 import ThreeDotsIcon from './Icons/ThreeDotsIcon';
-import DeleteCommentUseCase from '../../UseCases/Comment/DeleteCommentUseCase';
-import APICallBuilder from '../../UseCases/APICallBuilder';
+import CommentEntity from '../../Type/CommentEntity';
+import { useDeleteComment } from './ViewModel/useDeleteEntity';
+import useEditComment from './ViewModel/useEditComment';
 
 type Params = {
-  id: number,
-  commenteeId: number,
-  userId: string,
-  postDate: string,
-  comment: string,
-  likeData: any[],
-  onAfterDelete: (() => void) | null
+  userId: number,
+  commentEntity: CommentEntity,
+  onAfterDelete?: () => void,
+  onAfterEdit?: () => void,
 };
 
 export default function CommentTileComponent(params: Params) {
   const {
-    id, commenteeId, userId, postDate, comment, likeData, onAfterDelete = null,
+    userId,
+    commentEntity,
+    onAfterDelete = () => null,
+    onAfterEdit = () => null,
   } = params;
-  const user = useContext<any>(AuthContext);
-  const toast = useToast();
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const cancelRef = useRef<any>(null);
-  const [totalLike, isLikedByMe, onHeartClick] = useLike({ entityId: id, likeData, type: 'comments' });
 
-  const onDeleteCommentSuccess = () => {
-    onClose();
-    toast({
-      title: 'Delete Successful.',
-      position: 'top',
-      status: 'success',
-    });
-    onAfterDelete?.();
-  };
+  const { openDeleteDialog, deleteDialogComponent } = useDeleteComment(
+    commentEntity.id,
+    onAfterDelete,
+  );
 
-  const onDeleteCommentFailed = () => {
-    onClose();
-    toast({
-      title: 'Failed to delete comment.',
-      position: 'top',
-      status: 'error',
-    });
-  };
+  const { openEditDialog, editDialogComponent } = useEditComment(
+    commentEntity.id,
+    commentEntity.comment,
+    onAfterEdit,
+  );
 
-  const deleteCommentAPI = new APICallBuilder()
-    .addAction(DeleteCommentUseCase.create())
-    .addPayload({ id })
-    .addOnSuccess(onDeleteCommentSuccess)
-    .addOnFailed(onDeleteCommentFailed);
+  const [totalLike, isLikedByMe, onHeartClick] = useLike({
+    userId, entityId: commentEntity.id, likeData: commentEntity.likeData, type: 'comments',
+  });
 
-  const onDeleteClick: React.MouseEventHandler = () => deleteCommentAPI.call();
-
-  const menuElement = useMemo(() => {
-    if (commenteeId === user.id) {
+  const generateMenuElement = () => {
+    if (commentEntity.commenteeId === userId) {
       return (
         <Menu>
           <MenuButton
@@ -77,15 +50,17 @@ export default function CommentTileComponent(params: Params) {
             variant="outline"
           />
           <MenuList>
-            <MenuItem>Edit</MenuItem>
-            <MenuItem onClick={onOpen}>Delete</MenuItem>
+            <MenuItem onClick={openEditDialog}>Edit</MenuItem>
+            <MenuItem onClick={openDeleteDialog}>Delete</MenuItem>
           </MenuList>
         </Menu>
       );
     }
 
     return <div />;
-  }, []);
+  };
+
+  const menuElement = generateMenuElement();
 
   return (
     <>
@@ -95,7 +70,7 @@ export default function CommentTileComponent(params: Params) {
           {menuElement}
         </div>
         <Spacer height="1rem" />
-        <p>{comment}</p>
+        <p>{commentEntity.comment}</p>
         <Spacer height="1rem" />
         <div className="flex flex-row justify-between items-center">
           <div className="flex flex-row items-center">
@@ -109,40 +84,11 @@ export default function CommentTileComponent(params: Params) {
             <Spacer width="0.7rem" />
             <p className="pt-[0.1rem] font-roboto text-lg">{`${totalLike}`}</p>
           </div>
-          <p className="font-light text-gray-500">{postDate}</p>
+          <p className="font-light text-gray-500">{commentEntity.createdAt}</p>
         </div>
       </div>
-      <AlertDialog
-        isOpen={isOpen}
-        leastDestructiveRef={cancelRef}
-        onClose={onClose}
-        isCentered
-      >
-        <AlertDialogOverlay>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              Delete Comment
-            </AlertDialogHeader>
-            <AlertDialogBody>
-              Are you sure? This action cannot be undone.
-            </AlertDialogBody>
-            <AlertDialogFooter>
-              <Button ref={cancelRef} onClick={onClose}>
-                Cancel
-              </Button>
-              <Spacer width="1rem" />
-              <Button
-                bg="#FF6961"
-                textColor="#FFFFFF"
-                _hover={{ bg: '#E04D46' }}
-                onClick={onDeleteClick}
-              >
-                Delete
-              </Button>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialogOverlay>
-      </AlertDialog>
+      {deleteDialogComponent}
+      {editDialogComponent}
     </>
   );
 }

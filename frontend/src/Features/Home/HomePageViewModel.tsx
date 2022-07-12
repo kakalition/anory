@@ -1,13 +1,20 @@
 import { useToast } from '@chakra-ui/react';
-import { useEffect, useMemo, useState } from 'react';
+import {
+  useContext, useEffect, useMemo, useState,
+} from 'react';
 import { AxiosResponse } from 'axios';
-import StoryTileMapper from '../../Mapper/StoryTileMapper';
-import APICallBuilder from '../../UseCases/APICallBuilder';
-import GetStoriesUseCase from '../../UseCases/Story/GetStoriesUseCase';
+import { AuthContext } from '../AuthenticationWrapper';
+import storyJsonMapper from '../../Function/Mapper/StoryJsonMapper';
+import StoryEntity from '../../Type/StoryEntity';
+import NewApiCallBuilder from '../../UseCases/NewAPICallBuilder';
+import StoryComponentMapper from '../../Function/Mapper/StoryComponentMapper';
 
 export default function useHomePageViewModel() {
   const toast = useToast();
-  const [storyData, setStoryData] = useState<any[]>([null, null, null, null, null]);
+  const user = useContext<any>(AuthContext);
+
+  const [storiesData, setStoriesData] = useState<(StoryEntity | null)[]>(
+    [null, null, null, null, null]);
 
   const showToast = (status: any, title: String, description: String | null = null) => {
     toast({
@@ -19,20 +26,29 @@ export default function useHomePageViewModel() {
     });
   };
 
-  const onGetStoriesSuccess = (response: AxiosResponse) => setStoryData(response.data);
+  const onGetStoriesSuccess = (response: AxiosResponse) => {
+    const entities = response.data.map(storyJsonMapper);
+    setStoriesData(entities);
+  };
+
   const onGetStoriesFailed = (error: any) => showToast('error', error.response.data);
 
-  const getStoriesAPI = new APICallBuilder()
-    .addAction(GetStoriesUseCase.create())
+  const getStoriesAPI = NewApiCallBuilder.getInstance()
+    .addEndpoint('api/stories')
     .addParams({ count: 10 })
     .addOnSuccess(onGetStoriesSuccess)
     .addOnFailed(onGetStoriesFailed);
 
-  const storiesElement = useMemo(() => StoryTileMapper.handle(storyData), [storyData]);
-
+  const [isStoriesDirty, setIsStoriesDirty] = useState(true);
   useEffect(() => {
     getStoriesAPI.call();
-  }, []);
+    setIsStoriesDirty(false);
+  }, [isStoriesDirty]);
+
+  const storiesElement = useMemo(
+    () => StoryComponentMapper.array(user.id, storiesData, () => setIsStoriesDirty(true)),
+    [storiesData],
+  );
 
   return {
     storiesElement,

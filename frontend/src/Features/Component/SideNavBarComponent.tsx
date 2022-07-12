@@ -11,7 +11,7 @@ export default function SideNavBarComponent({ activeTab }: { activeTab: string }
   return (
     <div className="flex flex-col justify-between py-8 pr-4 pl-16 w-full h-full">
       <div className="flex flex-col gap-3 w-full">
-        <AnoryPrimaryButtonComponent text="New Post" onClick={() => navigator('/new-story')} />
+        <AnoryPrimaryButtonComponent text="New Post" onClick={() => navigator('/story/new')} />
         <Spacer height="0.75rem" />
         <AnorySideNavButtonComponent
           onClick={() => navigator('/app/my-account')}

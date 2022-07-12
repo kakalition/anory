@@ -1,33 +1,73 @@
-import { useEffect, useMemo, useState } from 'react';
-import CommentTileMapper from '../../Mapper/CommentTileMapper';
-import StoryTileMapper from '../../Mapper/StoryTileMapper';
-import APICallBuilder from '../../UseCases/APICallBuilder';
-import GetUserCommentsUseCase from '../../UseCases/Comment/GetUserCommentsUseCase';
-import GetStoriesUseCase from '../../UseCases/Story/GetStoriesUseCase';
+import {
+  useContext, useEffect, useMemo, useState,
+} from 'react';
+import { compose, map, prop } from 'ramda';
+import storyJsonMapper from '../../Function/Mapper/StoryJsonMapper';
+import StoryEntity from '../../Type/StoryEntity';
+import NewApiCallBuilder from '../../UseCases/NewAPICallBuilder';
+import { AuthContext } from '../AuthenticationWrapper';
+import commentJsonMapper from '../../Function/Mapper/CommentJSONMapper';
+import CommentEntity from '../../Type/CommentEntity';
+import StoryComponentMapper from '../../Function/Mapper/StoryComponentMapper';
+import CommentComponentMapper from '../../Function/Mapper/CommentComponentMapper';
 
 export default function useMyAccountViewModel() {
-  const [storiesData, setStoriesData] = useState([null, null, null]);
-  const [commentsData, setCommentsData] = useState([null, null, null]);
+  const user = useContext<any>(AuthContext);
 
-  const fetchCommentsAPI = new APICallBuilder()
-    .addAction(GetUserCommentsUseCase.create())
-    .addOnSuccess((response) => setCommentsData(response.data));
+  const [storiesData, setStoriesData] = useState<(StoryEntity | null)[]>([null, null, null]);
+  const [isStoriesDataDirty, setIsStoriesDataDirty] = useState(false);
 
-  const fetchStoriesData = new APICallBuilder()
-    .addAction(GetStoriesUseCase.create())
-    .addParams({ count: 3 })
-    .addOnSuccess((response) => setStoriesData(response.data));
-
-  const storiesElement = useMemo(() => StoryTileMapper.handle(storiesData), [storiesData]);
-  const commentsElement = useMemo(
-    () => CommentTileMapper.handle(commentsData, () => fetchCommentsAPI.call()),
-    [commentsData],
+  const onFetchStoriesDataSuccess = compose(
+    setStoriesData,
+    map(storyJsonMapper),
+    prop<string, any>('data'),
   );
+
+  const fetchStoriesData = NewApiCallBuilder.getInstance()
+    .addEndpoint('api/users/stories')
+    .addMethod('GET')
+    .addParams({ count: 3 })
+    .addOnSuccess(onFetchStoriesDataSuccess);
+
+  useEffect(() => {
+    fetchStoriesData.call();
+    setIsStoriesDataDirty(false);
+  }, [isStoriesDataDirty]);
+
+  const [commentsData, setCommentsData] = useState<(CommentEntity | null)[]>([null, null, null]);
+  const [isCommentsDataDirty, setIsCommentsDataDirty] = useState(false);
+
+  const onFetchCommentsSuccess = compose(
+    setCommentsData,
+    map(commentJsonMapper),
+    prop<string, any>('data'),
+  );
+
+  const fetchCommentsAPI = NewApiCallBuilder.getInstance()
+    .addEndpoint('api/users/comments')
+    .addParams({ count: 3 })
+    .addMethod('GET')
+    .addOnSuccess(onFetchCommentsSuccess);
 
   useEffect(() => {
     fetchCommentsAPI.call();
-    fetchStoriesData.call();
-  }, []);
+    setIsCommentsDataDirty(false);
+  }, [isCommentsDataDirty]);
+
+  const storiesElement = useMemo(
+    () => StoryComponentMapper.array(user.id, storiesData, () => setIsStoriesDataDirty(true)),
+    [storiesData],
+  );
+
+  const commentsElement = useMemo(
+    () => CommentComponentMapper.array(
+      user.id,
+      commentsData,
+      () => setIsCommentsDataDirty(true),
+      () => setIsCommentsDataDirty(true),
+    ),
+    [commentsData],
+  );
 
   return {
     storiesElement,

@@ -22,6 +22,12 @@ class Story extends Model
     return $this->morphMany(LikeData::class, 'likeable');
   }
 
+  function category()
+  {
+    return Category::where('id', $this->category_id)
+      ->first(['id', 'name']);
+  }
+
   function categoryName()
   {
     return Category::where('id', $this->category_id)

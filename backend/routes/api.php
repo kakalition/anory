@@ -30,8 +30,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::controller(StoryController::class)
   ->group(function () {
+    Route::get('/users/stories', 'userIndex');
     Route::get('/stories', 'index');
-    Route::get('/users/{user}/stories', 'userIndex');
     Route::get('/stories/categories/{categoryName}', 'indexByCategory');
     Route::post('/stories', 'store');
     Route::get('/stories/{story}', 'show');
@@ -43,9 +43,9 @@ Route::controller(StoryController::class)
 Route::controller(CommentController::class)
   ->middleware(EnsureLoggedIn::class)
   ->group(function () {
+    Route::get('users/comments', 'indexByUser');
     Route::get('/stories/{story_id}/comments', 'indexByStory');
     Route::post('/stories/{story_id}/comments', 'store');
-    Route::get('/comments', 'indexByUser');
     Route::put('/comments/{comment}', 'update');
     Route::patch('/comments/{comment}', 'update');
     Route::delete('/comments/{comment}', 'destroy');
