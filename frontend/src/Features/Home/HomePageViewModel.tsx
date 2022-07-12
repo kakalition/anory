@@ -3,6 +3,7 @@ import {
   useContext, useEffect, useMemo, useState,
 } from 'react';
 import { AxiosResponse } from 'axios';
+import { last } from 'ramda';
 import { AuthContext } from '../AuthenticationWrapper';
 import storyJsonMapper from '../../Function/Mapper/StoryJsonMapper';
 import StoryEntity from '../../Type/StoryEntity';
@@ -30,17 +31,28 @@ export default function useHomePageViewModel() {
     });
   };
 
-  const onGetStoriesSuccess = (response: AxiosResponse) => {
+  const storyEntityAndResponseEquality = (
+    response: AxiosResponse,
+  ) => last(storiesData)?.id === last(response.data as Array<StoryEntity>)?.id;
+
+  const onRefetchSuccess = (response: AxiosResponse) => {
     // TODO: Modify this with real implementation
-    if (storiesData.length === response.data.length) {
+    if (last(storiesData) !== null && storyEntityAndResponseEquality(response)) {
       setShowSpinner(false);
       setShouldStopRefetch(true);
+      setTimeout(() => setShouldStopRefetch(false), 2000);
       return;
     }
 
     const entities = response.data.map(storyJsonMapper);
     setStoriesData(entities);
     setCount(count + 10);
+    setShowSpinner(false);
+  };
+
+  const onDirtySuccess = (response: AxiosResponse) => {
+    const entities = response.data.map(storyJsonMapper);
+    setStoriesData(entities);
     setShowSpinner(false);
   };
 
@@ -51,13 +63,14 @@ export default function useHomePageViewModel() {
 
   const getStoriesAPI = NewApiCallBuilder.getInstance()
     .addEndpoint('api/stories')
-    .addParams({ count })
-    .addOnSuccess(onGetStoriesSuccess)
     .addOnFailed(onGetStoriesFailed);
 
   const [storiesMark, markStoriesDirty] = useDirty();
   useEffect(() => {
-    getStoriesAPI.call();
+    getStoriesAPI
+      .addParams({ count })
+      .addOnSuccess(onDirtySuccess)
+      .call();
   }, [storiesMark]);
 
   const [shouldRefetchMark, markShouldRefetchDirty] = useDirty();
@@ -70,6 +83,7 @@ export default function useHomePageViewModel() {
     setShowSpinner(true);
     getStoriesAPI
       .addParams({ count: count + 10 })
+      .addOnSuccess(onRefetchSuccess)
       .call();
   }, [shouldRefetchMark]);
 
