@@ -3,6 +3,7 @@ import {
   useContext, useEffect, useMemo, useState,
 } from 'react';
 import { AxiosResponse } from 'axios';
+import { last } from 'ramda';
 import { AuthContext } from '../AuthenticationWrapper';
 import storyJsonMapper from '../../Function/Mapper/StoryJsonMapper';
 import StoryEntity from '../../Type/StoryEntity';
@@ -30,9 +31,13 @@ export default function useHomePageViewModel() {
     });
   };
 
+  const storyEntityAndResponseEquality = (
+    response: AxiosResponse,
+  ) => last(storiesData)?.id === last(response.data as Array<StoryEntity>)?.id;
+
   const onGetStoriesSuccess = (response: AxiosResponse) => {
     // TODO: Modify this with real implementation
-    if (storiesData.length === response.data.length) {
+    if (last(storiesData) !== null && storyEntityAndResponseEquality(response)) {
       setShowSpinner(false);
       setShouldStopRefetch(true);
       return;
@@ -58,6 +63,7 @@ export default function useHomePageViewModel() {
   const [storiesMark, markStoriesDirty] = useDirty();
   useEffect(() => {
     getStoriesAPI.call();
+    console.log('marked dirty');
   }, [storiesMark]);
 
   const [shouldRefetchMark, markShouldRefetchDirty] = useDirty();
