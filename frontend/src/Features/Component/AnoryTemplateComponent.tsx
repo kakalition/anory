@@ -1,17 +1,4 @@
-import {
-  Button,
-  FormControl,
-  FormLabel,
-  Input,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter, ModalHeader, ModalOverlay, Select, Textarea,
-} from '@chakra-ui/react';
 import React, { useState } from 'react';
-import Spacer from '../Utilities/Spacer';
-import AnoryPrimaryButtonComponent from './AnoryPrimaryButtonComponent';
 import SideNavBarComponent from './SideNavBarComponent';
 import TopBarComponent from './TopBarComponent';
 
@@ -32,7 +19,7 @@ export default function AnoryTemplateComponent(params: Params) {
         <div className="w-[20%] h-full">
           <SideNavBarComponent activeTab={activeTab} />
         </div>
-        <div className="overflow-y-scroll pt-8 pr-16 pl-4 w-[80%]">
+        <div className="overflow-y-scroll pt-8 pr-16 pl-4 w-[80%]" id="anory-content">
           {children}
         </div>
       </div>

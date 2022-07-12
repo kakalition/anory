@@ -17,9 +17,9 @@ class StoryFactory extends Factory
   public function definition()
   {
     return [
+      'author_id' => 1,
       'category_id' => $this->faker->numberBetween(1, 3),
-      'views' => $this->faker->randomNumber(2, true),
-      'likes' => $this->faker->randomNumber(2, true),
+      'views' => 0,
       'title' => $this->faker->sentence(4),
       'body' => $this->faker->text(400),
     ];
